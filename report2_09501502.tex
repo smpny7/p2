@@ -1,0 +1,444 @@
+\documentclass[a4j,11pt]{jarticle}
+
+\usepackage[top=25truemm,  bottom=30truemm,
+            left=25truemm, right=25truemm]{geometry}
+
+\title{工学基礎実験実習 \\
+       ファイル操作とシェル 第 2 回レポート}
+
+\author{氏名: 池田 海斗 (IKEDA, Kaito) \\
+        学生番号: 09501502}
+
+\date{出題日: 2019年05月21日 \\
+      提出日: 2019年05月22日 \\
+      締切日: 2019年05月28日 \\}
+
+\begin{document}
+\maketitle
+
+
+
+\section{概要} %1
+本日の講義では，前回のディレクトリ操作をより確かなものにしつつ，より発展的なターミナルでのコマンド操作について学修したので報告する．また，本日の講義でシステムの操作についても学修したため，計算機の動作が不安定になった際でも対応が可能となった．
+
+
+
+\section{ファイルリダイレクションとパイプ} %2
+
+%==================================================================%
+\subsection{リダイレクション}
+\vspace{\baselineskip}
+
+%------------------------------------------------------------------%
+
+\subsubsection{標準出力のリダイレクション}
+
+コマンドやを実行するとその出力は画面に表示されるが，\verb|>|記号を使うとこの出力をファイルに書き込むことが出来る．
+使用例は以下の通りである．
+
+\begin{verbatim}
+
+$ ls > test.txt
+
+\end{verbatim}
+
+このようにすると，lsの結果がtext.txtファイルに記録される．
+
+%------------------------------------------------------------------%
+
+\subsubsection{標準入力のリダイレクション}
+
+ファイルからデータを読み込む際には，\verb|<|記号で入力するファイルを指定する．
+使用例は以下の通りである．
+
+\begin{verbatim}
+
+$ sort < test.txt
+
+Desktop
+Documents
+Downloads
+Maildir
+p1
+public_html
+solarsystem1.tex~
+test.txt
+
+\end{verbatim}
+
+このようにすると，ファイルをターミナル上に読み込み，処理することが出来る．
+
+%------------------------------------------------------------------%
+
+\subsubsection{アペンド}
+
+ある特定のファイルの末尾に出力をアペンド(追加)することができ，その場合には\verb|>>|を用いる．
+使用例は以下の通りである．
+
+\begin{verbatim}
+
+$ cat test2.txt 
+No1
+No2
+No3
+No4
+No5
+No6
+
+$ cat test2.txt >> test.txt 
+
+$ cat test.txt 
+Desktop
+Documents
+Downloads
+Maildir
+p1
+public_html
+solarsystem1.tex~
+test.txt
+No1
+No2
+No3
+No4
+No5
+No6
+
+\end{verbatim}
+
+このようにすると，「test.txt」ファイル(2.1.2章より)の末尾に「test2.txt」ファイルの内容を追加することが出来る．
+
+%------------------------------------------------------------------%
+
+\subsubsection{標準エラー出力のリダイレクション}
+
+標準出力と標準エラー出力をそれぞれ別のファイルに出力することが出来る．\\
+使用例は以下の通りである．
+
+\begin{verbatim}
+
+$ sort test.txt 1> out.dat 2> err.dat
+
+\end{verbatim}
+
+このようにすると，標準出力が「out.dat」，標準エラーが「err.dat」というファイルに出力される．\\
+
+また，標準出力と標準エラー出力を同一のファイルに書き込みたい場合には以下のようにする．
+\begin{verbatim}
+
+$ sort test.txt > all.dat 2>&1
+
+\end{verbatim}
+
+標準出力，標準エラー共に必要のない場合には
+\begin{verbatim}
+
+$sort test.txt > /dev/null 2>&1
+
+\end{verbatim}
+
+とすればよい．
+
+%------------------------------------------------------------------%
+
+
+%==================================================================%
+\subsection{パイプ}
+
+あるコマンドの出力を別のコマンドの入力としたいときに，\verb|｜|でつないで使用する．\\
+\ 使用例は以下の通りである．
+
+\begin{verbatim}
+
+$ cat test.txt | sort
+
+\end{verbatim}
+
+このようにすると，読み込んだ「test.txt」ファイル内の並び替えが実行できる．
+
+
+%==================================================================%
+\subsection{\texttt{sort}関数}
+
+\verb|sort|コマンドの概要は，以下の通りである．
+\begin{description}
+  \item[機能]
+    入力行の並び替えの実行
+  \item[形式]
+    \verb|sort| \verb|(option)| \verb|[file name]|
+  \item[オプション]
+    オプションは下記の通りである．
+    \begin{itemize}
+      \item \verb|-n|：  数値として並び替えを行う
+      \item \verb|-r|：  降順に並び替えを行う
+    \end{itemize}
+  \item[使用例]
+    \begin{verbatim}
+
+
+$ sort test2.txt
+No1
+No2
+No3
+No4
+No5
+No6
+file1
+file2
+test.txt
+
+    \end{verbatim}
+\end{description}
+
+%==================================================================%
+\subsection{\texttt{history}関数}
+
+\verb|history|コマンドの概要は，以下の通りである．
+\begin{description}
+  \item[機能]
+    過去に入力したコマンドを表示
+  \item[形式]
+    \verb|history| \verb|(option)|
+  \item[オプション]
+    オプションは下記の通りである．
+    \begin{itemize}
+      \item (数字)：  過去(数字)個のコマンドを表示
+      \item !(数字)：  (数字)の付いた番号のコマンドを再び実行
+    \end{itemize}
+  \item[使用例]
+    \begin{verbatim}
+
+
+$ history 5
+ 478  sort test2.txt
+ 479  edu-platex report2_09501502.tex
+ 480  cd p1/file2
+ 481  edu-platex report2_09501502.tex
+ 482  history 5
+
+    \end{verbatim}
+\end{description}
+
+≪ 考察 ≫
+今回この章で学んだことは，これから書いたプログラムを実行したり確認作業をしたりするときに役立つと思うので，今後も忘れないようにしたい．また，＾Dの表記がCtrl+Dだということをこの章で新たに知ることができた．
+
+
+\vspace{\baselineskip}
+\section{コマンドと実行可能ファイルの関係} %3
+
+%==================================================================%
+\subsection{実行ファイルの作成}
+
+プログラミング言語であるC言語によって書かれたソースファイルを以下のようにコンパイルして，実行可能形式である”a.out”というファイルを作成することが出来る．\\
+\ 使用例は以下の通りである．
+
+\begin{verbatim}
+
+$ cat hello.c
+#include<stdio.h>
+int main (void)
+{
+    printf ("Hello!\n");
+    return 0;
+}
+$ gcc hello.c
+$ ./a.out
+Hello!
+
+\end{verbatim}
+
+%==================================================================%
+\subsection{シェルスクリプト}
+
+実行可能形式のファイルは，シェルスクリプトによっても作成することができる．
+シェルスクリプトを実行可能にするためには，chmodコマンドを用いる必要がある．
+これは，このファイルのパーミッションが現在ユーザーには無く，このままでは実行することが出来ないからである．\\
+\ 使用例は以下の通りである．
+
+\begin{verbatim}
+
+$ chmod +x hello.sh
+$ ./hello.sh
+Hello!
+
+\end{verbatim}
+
+
+
+\section{コマンド実行} %4
+
+%==================================================================%
+\subsection{\texttt{which}関数}
+
+\verb|which|コマンドの概要は，以下の通りである．
+\begin{description}
+  \item[機能]
+    実行されるファイルの場所を表示
+  \item[形式]
+    \verb|which| (コマンド名)
+  \item[使用例]
+    \begin{verbatim}
+
+
+$ history 5
+ 478  sort test2.txt
+ 479  edu-platex report2_09501502.tex
+ 480  cd p1/file2
+ 481  edu-platex report2_09501502.tex
+ 482  history 5
+$ which ls
+alias ls='ls --color=auto'
+	/usr/bin/ls
+
+    \end{verbatim}
+\end{description}
+
+%==================================================================%
+\subsection{\texttt{ps}関数}
+
+\verb|ps|コマンドの概要は，以下の通りである．
+\begin{description}
+  \item[機能]
+    動作しているプロセスの確認
+  \item[形式]
+    \verb|ps| \verb|(option)|
+  \item[オプション]
+    オプションは下記の通りである．
+    \begin{itemize}
+      \item \verb|-l|：  プロセスの状態なども表示する．
+      \item \verb|-u|：  より詳細な情報を表示する．
+    \end{itemize}
+  \item[使用例]
+    \begin{verbatim}
+
+$ ps -l
+F S   UID   PID  PPID  C PRI  NI ADDR SZ WCHAN  TTY          TIME CMD
+4 R  3302 10931 28219  0  80   0 - 38296 -      pts/0    00:00:00 ps
+0 S  3302 28219 28209  0  80   0 - 28751 do_wai pts/0    00:00:00 bash
+
+    \end{verbatim}
+\end{description}
+
+%==================================================================%
+\subsection{\texttt{＾Z}}
+
+\verb|＾Z|コマンドの概要は，以下の通りである．
+\begin{description}
+  \item[機能]
+    フォアグラウンドのジョブを中断
+  \item[形式]
+    \verb|＾Z| 
+
+\end{description}
+
+%==================================================================%
+\subsection{\texttt{bg}関数}
+
+\verb|bg|コマンドの概要は，以下の通りである．
+\begin{description}
+  \item[機能]
+    ジョブをバックグラウンドで実行
+  \item[形式]
+    \verb|bg| (番号)
+  \item[使用例]
+    \begin{verbatim}
+
+$ bg %1
+bash: bg: ジョブ 1 はすでにバックグラウンドで動作しています
+
+    \end{verbatim}
+\end{description}
+
+%==================================================================%
+\subsection{\texttt{＆}}
+
+\verb|&|コマンドの概要は，以下の通りである．
+\begin{description}
+  \item[機能]
+    バックグラウンドでジョブを実行
+  \item[形式]
+    (コマンド) \verb|&|
+
+\end{description}
+
+%==================================================================%
+\subsection{\texttt{kill}関数}
+
+\verb|kill|コマンドの概要は，以下の通りである．
+\begin{description}
+  \item[機能]
+    ジョブの終了
+  \item[形式]
+    \verb|kill| (番号)
+  \item[使用例]
+    \begin{verbatim}
+
+$ jobs
+[1]+  実行中               emacs &
+$ kill %1
+
+    \end{verbatim}
+\end{description}
+
+≪考察≫
+この章で様々なプログラムの起動や終了，強制終了の仕方を学ぶことが出来た．
+今までWindowsの気分で，emacsなどで＾Zの取り消し動作を行おうとするとウインドウが消えていたが，今回の講義でようやく理解する事が出来た．
+学修したからには，今後マウスを使わずに出来るところはターミナル上から実行したい．
+
+
+
+\vspace{\baselineskip}
+\section{aliasの使用} %5
+
+\begin{description}
+ \item [機能]
+  コマンドの別名を登録する
+ \item [形式]
+  \verb|alias| (登録名)='登録するコマンドを入力'
+ \item [オプション]
+   オプションは下記の通りである．
+    \begin{itemize}
+      \item \verb|-p|：  登録内容を書式で出力する．
+    \end{itemize}
+ \item [実行例]
+
+以下では，「open」というコマンドで”test.txt”というファイルを開くことが出来るようにする．
+  \begin{verbatim}
+
+$ alias open='cat test.txt'
+$ open
+Desktop
+Documents
+Downloads
+Maildir
+p1
+public_html
+test.txt
+No1
+No2
+No3
+No4
+No5
+No6
+file1
+file2
+
+  \end{verbatim}
+
+\end{description}
+
+≪考察≫
+私がこの機能を使って便利だと思ったのは，ディレクトリで一つ上の階層に戻るとき\verb|$cd ..|と打つのが面倒だと以前から思っていたのに対し，今回から\verb|$b|と一文字のアルファベットで定義して実行可能になったという点である．他にも使用している際によく使うと感じたコマンドがあれば，まず使用されてないかを確認してから割り当てていくのも良いなと思った．
+
+
+
+\section{考察} %6
+今回の講義を踏まえ，全体的にLinux操作が向上した．具体的には，コマンドで実行したものの出力を様々なコマンドに繋いでいったり，コマンド履歴を表示させたりすることが出来るようになった．今回一番便利だと思ったのがalias機能で，オプションをデフォルトで有効化したり，よく使うコマンドを短縮させたりすることが可能となるため，これから重宝することになると思う．後藤教授が紹介してくださったSLコマンドは，エンジニアの心を癒してくれる素晴らしい機能だと思ったが，なぜか私の環境では有効化出来なかった．
+
+
+
+\section{まとめ} %7
+本レポートでは，ターミナルでのファイルの読み込み・書き出し，簡単なC言語の実行，ジョブの実行や処理，alias　をターミナル上で行う方法について学修したものを報告した．今回学修したコマンドは大体実行できるようになったが，資料の「その他のコマンド」についてはまだ知らないものがあるので，調べながら知識を増やしていきたい．
+
+
+
+\end{document}

@@ -1,0 +1,23 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "shell",
+            "label": "gcc build active file",
+            "command": "/usr/bin/gcc",
+            "args": [
+                "${fileBasename}",
+                "-o",
+                "${fileBasenameNoExtension}.out",
+                "-lm",
+                "-ansi",
+                "-pedantic",
+                "-Wall"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+    ]
+}
