@@ -1,11 +1,13 @@
 #include <stdio.h>
 
-swap(int x, int y) {
+void swap(int x, int y) {
    int tmp;
 
    tmp = x;
    x = y;
    y = tmp;
+
+   printf("x = %d\ny = %d", x, y);
 }
 
 int main(void) {

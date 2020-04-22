@@ -3,6 +3,6 @@
 *.blg
 *.dvi
 *.log
-*.synctex.gz
 *.out
+*.synctex.gz
 .DS_STORE
