@@ -37,7 +37,7 @@ int get_line(char *line) {
 }
 
 int main(void) {
-    int i, count = 1, max = 6;
+    int i, count = 1, max = 5;
     char line[1024] = {0};
     char *ret[80] = {0};
     char sep = ',';
