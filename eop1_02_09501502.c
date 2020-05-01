@@ -41,6 +41,8 @@ int get_line(char *line) {
     if (fgets(line, 1024, stdin) == NULL) {
         return 0;
     } else {
+        subst(line, ',', '\0');
+        // subst(line, '\n', 'a');
         return 1;
     }
     // while (fgets(line, 1024, fp) != NULL) {
@@ -49,11 +51,11 @@ int get_line(char *line) {
 }
 
 int main(void) {
-    // int i, max = 5;
+    int i, max = 5;
     // char s[] = "5100046,The Bridge,1845-11-2,14 Seafield Road Longman Inverness,SEN Unit 2.0 Open";
     // subst(s, ',', '\0');
-    // char *ret[5] = {0};
-    // char sep = ',';
+    char *ret[5] = {0};
+    char sep = ',';
 
     // printf("element: %d\n", split(s, ret, sep, max));
 
@@ -64,6 +66,10 @@ int main(void) {
     char line[1024] = {0};
 
     while (get_line(line)) {
-        puts(line);
+        split(line, ret, sep, max);
+        for (i = 0; i < max; i++) {
+            printf("ret[%d] = '%s'\n", i, ret[i]);
+        }
+        // puts(line);
     }
 }

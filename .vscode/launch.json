@@ -8,7 +8,8 @@
         "program": "${fileDirname}/${fileBasenameNoExtension}.out",
         "args": [],
         "cwd": "${workspaceFolder}",
-        "preLaunchTask": "gcc build active file"
+        "preLaunchTask": "gcc build active file",
+        "stdio": ["${fileDirname}/sample2.csv", null, null]
       }
     ]
   }
