@@ -27,7 +27,7 @@ int split(char *str, char *ret[], char sep, int max) {
 }
 
 int get_line(char *line) {
-    if (fgets(line, 1026, stdin) == NULL || strlen(line) >1024) {
+    if (fgets(line, 1026, stdin) == NULL || strlen(line) >1024 || *line == '\n') {
         return 0;
     } else {
         subst(line, '\n', '\0');
