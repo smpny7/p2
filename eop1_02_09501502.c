@@ -6,7 +6,6 @@ int subst(char *str, char c1, char c2) {
     char *p;
 
     p = str;
-
     while (*p != '\0') {
         if (*p == c1) {
         *p = c2;
@@ -14,7 +13,6 @@ int subst(char *str, char c1, char c2) {
         }
         p++;
     }
-
     return diff;
 }
 
@@ -29,47 +27,29 @@ int split(char *str, char *ret[], char sep, int max) {
 }
 
 int get_line(char *line) {
-    // if (*line == 0) {
-    //     FILE *fp;
-    //     fp = fopen("./sample.csv", "r");
-    //     if(fp == NULL) {
-    //         printf("Could not open.\n");
-    //         return -1;
-    //     }
-    // }
-    // fgets(line, 1024, stdin);
     if (fgets(line, 1024, stdin) == NULL) {
         return 0;
     } else {
         subst(line, ',', '\0');
-        // subst(line, '\n', 'a');
+        // printf("%d", strlen(line));
+        // line += 1024;
+        // *line = 'A';
         return 1;
     }
-    // while (fgets(line, 1024, fp) != NULL) {
-    //     puts(line);
-    // }
 }
 
 int main(void) {
-    int i, max = 5;
-    // char s[] = "5100046,The Bridge,1845-11-2,14 Seafield Road Longman Inverness,SEN Unit 2.0 Open";
-    // subst(s, ',', '\0');
+    int i, count = 1, max = 5;
+    char line[1024] = {0};
     char *ret[5] = {0};
     char sep = ',';
 
-    // printf("element: %d\n", split(s, ret, sep, max));
-
-    // for (i = 0; i < max; i++) {
-    //     printf("ret[%d] = '%s'\n", i, ret[i]);
-    // }
-
-    char line[1024] = {0};
-
     while (get_line(line)) {
+        printf("Line%d\n", count++);
         split(line, ret, sep, max);
         for (i = 0; i < max; i++) {
-            printf("ret[%d] = '%s'\n", i, ret[i]);
+            subst(ret[i], '\n', '\0');
+            printf(" >ret[%d] = '%s'\n", i, ret[i]);
         }
-        // puts(line);
     }
 }
