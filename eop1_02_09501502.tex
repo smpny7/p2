@@ -30,7 +30,7 @@
 
 % ToDo: レポート課題等の指示に従って適切に書き換える
 \date{出題日: 2020年04月30日 \\
-      提出日: 2020年05月01日 \\
+      提出日: 2020年05月05日 \\
       締切日: 2020年05月13日 \\}  % 注：最後の\\は不要に見えるが必要．
 
 %%======== 本文 ====================================================%%
@@ -81,7 +81,7 @@
 %
 \begin{description}
   \item[課題1] 文字列操作の基礎：\verb|subst|関数と\verb|split|関数の実装
-  \item[課題3] 標準入力の・・・（\textbf{サンプルのため，省略}）
+  \item[課題3] 標準入力の取得と構文解析
   %追記する場合は，本文の記述と矛盾しないように注意すること．
 \end{description}
 
@@ -195,16 +195,22 @@
 % - 以降の段落で，最初の段落で示した，各関数等に関する詳細を説明する．
 
 まず，汎用的な文字列操作関数として，
-\verb|subst()|関数を3-18行目で宣言し， % この行は適切な書き方の例
-\verb|main()|関数を20-27行目に記述している．   % この行は不適切な書き方の例
-また，これらの関数で利用するために，\verb|stdio.h|のヘッダファイルを読み込んでいる．
+\verb|subst()|関数を4-17行目で宣言し， % この行は適切な書き方の例
+\verb|main()|関数を39-52行目に記述している．   % この行は不適切な書き方の例
+また，これらの関数で利用するために，\verb|stdio.h|，\verb|string.h|のヘッダファイルを読み込んでいる．
 
 \verb|subst(STR, C1, C2)|関数は，
 \verb|STR|が指す文字列中の，文字\verb|C1|を文字\verb|C2|に置き換える．
 % プログラム中では，xxx関数の中で，入力文字列中の末尾に付く改行文字を
 % ヌル文字で置き換えるために使用している．
-プログラム中では，\verb|main()|関数の中で，\verb|ABCDE|の文字列の中から，
-文字\verb|A|を文字\verb|B|置き換えるために，この関数を呼び出している．
+プログラム中では，\verb|get_line()|関数の中で，
+文字\verb|\n|，\verb|,|を終端文字\verb|\0|置き換えるために，この関数を呼び出している．
+この関数では，文字\verb|C1|を文字\verb|C2|に置き換えた回数を返り値とする．
+
+\verb|split(STR, RET, SEP, MAX)|関数では，
+\verb|STR|が指す文字列を，最大\verb|MAX|個まで文字\verb|SEP|の箇所で区切り，配列\verb|RET|に格納していく．
+プログラム中では，\verb|get_line()|関数で取得した1行を，カンマで区切りで配列に格納する際に呼び出される．
+この関数では，配列に分割された個数を返り値とする．
 
 % \verb|split(STR, ...)|関数は，・・・（※サンプルのため，いろいろと省略）
 
@@ -212,23 +218,25 @@
 \subsection{構造体や配列を用いた名簿データの定義}
 %--------------------------------------------------------------------%
 
-本名簿管理プログラムでは，構造体の配列を名簿データとして扱う．
-18--27行目で，\verb|date|構造体を定義し，
-29--48行目で，\verb|profile|構造体を定義している．
-この・・・・が，名簿データ1つに相当する．
-そして，xxx行目の\verb|xxxxx|変数で，全名簿データを管理し，
-xxx行目の\verb|xxxxx|変数で，名簿データの個数を管理する．
+% 本名簿管理プログラムでは，構造体の配列を名簿データとして扱う．
+% 18--27行目で，\verb|date|構造体を定義し，
+% 29--48行目で，\verb|profile|構造体を定義している．
+% この・・・・が，名簿データ1つに相当する．
+% そして，xxx行目の\verb|xxxxx|変数で，全名簿データを管理し，
+% xxx行目の\verb|xxxxx|変数で，名簿データの個数を管理する．
 
-\verb|date|構造体の定義にあたっては，・・・（以降，サンプルのため，省略）
+% \verb|date|構造体の定義にあたっては，・・・（以降，サンプルのため，省略）
 
-・・・（サンプルのため，省略）
+% ・・・（サンプルのため，省略）
 
 %--------------------------------------------------------------------%
-\subsection{標準入力の・・・（\textbf{サンプルのため，省略}）}
+\subsection{標準入力の取得と構文解析}
 %--------------------------------------------------------------------%
 
-・・・（サンプルのため，省略）
-
+\verb|get_line(LINE)|関数は，
+標準入力で読み込まれた名簿データを1行ずつ取り出し，\verb|LINE|に代入する．
+読み込む行がない場合，文字列が1024文字を超えてバッファオーバーランをする場合，
+ユーザが改行コードを入力した場合に返り値\verb|0|を返す．
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{プログラムの使用法と実行結果} \label{sec:4}
@@ -268,45 +276,71 @@ MacOS Catalina 10.15.4におけるターミナルのプロンプトである．
 %%     その {...} の前後に空白行を入れ，段落を変えるようにすること．
 %%     なお，行先頭がコメントから始まる行は空白行とは扱われない．
 
-% Hide
-% 次に，プログラムを実行する．
-% 以下の実行例は，プログラム実行中の・・・を模擬するため，
-% ・・・を・・・により与えることで，実行する例を示している．
-% 通常の利用においては，・・・（略）
+次に，プログラムを実行する．
+以下の実行例は，プログラム実行中のデータの入力を模擬するため，
+CSVファイルを標準入力により与えることで，実行する例を示している．
+通常の利用においては，\verb|%R file|によりデータを読み込む．
 
-% {\fontsize{10pt}{11pt} \selectfont
-%  \begin{verbatim}
-%    $ ./program1 < csvdata.csv
-%  \end{verbatim}
-% }
+{\fontsize{10pt}{11pt} \selectfont
+ \begin{verbatim}
+   $ ./eop_01_09501502.out < csvdata.csv
+ \end{verbatim}
+}
 
-% プログラムの出力結果として，CSVデータの各項目が読みやすい形式で出力される．
-% 例えば，下記の \verb|cvsdata.csv| に対して，
+プログラムの出力結果として，CSVデータの各項目が読みやすい形式で出力される．
+例えば，下記の \verb|cvsdata.csv| に対して，
 
-% {\fontsize{10pt}{11pt} \selectfont
-%  \begin{verbatim}
-%   0,Takahashi Kazuyuki,1977-04-27,3,Saitama,184,78
-%   10,Honma Mitsuru,1972-08-25,2,Hokkaidou,180,78
-%   %S3
-%   %P0
-%  \end{verbatim}
-% }
+{\fontsize{10pt}{11pt} \selectfont
+ \begin{verbatim}
+  5100046,The Bridge,1845-11-2,14 Seafield Road Longman Inverness,SEN Unit 2.0 Open
+  5100127,Bower Primary School,1908-1-19,Bowermadden Bower Caithness,01955 641225 Pri...
+  5100224,Canisbay Primary School,1928-7-5,Canisbay Wick,01955 611337 Primary 56 3.5 Open
+  5100321,Castletown Primary School,1913-11-4,Castletown Thurso,01847 821256 01847 82...
+  5100429,Crossroads Primary School,1893-2-24,Dunnet Thurso,01847 851629 01847 851629 ...
+ \end{verbatim}
+}
 
 \noindent % noindentとはここでは段落を変えない（一字下げをしない）というコマンド．
 以下のような出力が得られる．
 
 {\fontsize{10pt}{11pt} \selectfont
  \begin{verbatim}
-    文字列: ABCDE
-    置換文字: A -> B
-
-    実行結果: BBCDE
-    差分: 1
+  Line1
+  >ret[0] = '5100046'
+  >ret[1] = 'The Bridge'
+  >ret[2] = '1845-11-2'
+  >ret[3] = '14 Seafield Road Longman Inverness'
+  >ret[4] = 'SEN Unit 2.0 Open'
+ Line2
+  >ret[0] = '5100127'
+  >ret[1] = 'Bower Primary School'
+  >ret[2] = '1908-1-19'
+  >ret[3] = 'Bowermadden Bower Caithness'
+  >ret[4] = '01955 641225 Primary 25 2.6 Open'
+ Line3
+  >ret[0] = '5100224'
+  >ret[1] = 'Canisbay Primary School'
+  >ret[2] = '1928-7-5'
+  >ret[3] = 'Canisbay Wick'
+  >ret[4] = '01955 611337 Primary 56 3.5 Open'
+ Line4
+  >ret[0] = '5100321'
+  >ret[1] = 'Castletown Primary School'
+  >ret[2] = '1913-11-4'
+  >ret[3] = 'Castletown Thurso'
+  >ret[4] = '01847 821256 01847 821256 Primary 137 8.5 Open'
+ Line5
+  >ret[0] = '5100429'
+  >ret[1] = 'Crossroads Primary School'
+  >ret[2] = '1893-2-24'
+  >ret[3] = 'Dunnet Thurso'
+  >ret[4] = '01847 851629 01847 851629 Primary 29 2.4 Open'
  \end{verbatim}
 }
 
-% Hide
-% まず，入力データについて説明する．
+まず，入力データについて説明する．
+このCSVファイルには5件のデータを保存しており，
+それぞれの項目はカンマで区切られている．
 % 入力中の最初の2行で，2つのCSVデータを登録している．
 % CSVデータは，表1で示したように，7つの項目からなる．
 
@@ -319,11 +353,8 @@ MacOS Catalina 10.15.4におけるターミナルのプロンプトである．
 
 % （※サンプルのため省略）
 
-今回のプログラムにはユーザによる入力はないので，出力結果について説明する．
-1 $\cdot$ 2行目について，予め登録しておいた文字列\verb|ABCDE|の中から，
-文字\verb|A|の文字を\verb|B|に置換するプログラムであることを示す．
-3行目実行結果は置換後の文字列を表し，4行目には置換が行われた回数を表示している．
-
+また出力結果について，\verb|Line*|はCSVファイルの行数を表し，
+\verb|ret[*]|は配列の番号とその中に格納している文字列を表している．
 
 %以下の4行は提出レポートでは不要なため消すこと．
 % \textbf{\small ※執筆上の注意：良くないレポートの書き方例を2つ挙げる．\\
@@ -349,15 +380,17 @@ MacOS Catalina 10.15.4におけるターミナルのプロンプトである．
 \begin{enumerate}
 \setlength{\parskip}{2pt} \setlength{\itemsep}{2pt}
     \item 文字列操作の基礎：\texttt{subst}関数と\texttt{split}関数の実装
-    \item 標準入力の・・・（\textbf{サンプルのため，省略}）
-    \item ・・・（\textbf{サンプルのため，省略}）
+    \item 標準入力の取得と構文解析
+    % \item ・・・（\textbf{サンプルのため，省略}）
 \end{enumerate}
 
 %--------------------------------------------------------------------%
 \subsection{「文字列操作の基礎：\texttt{subst}関数と\texttt{split}関数の実装」に関する考察}
 %--------------------------------------------------------------------%
 
-ここでは\verb|subst|関数についてのみ考察を行う．練習問題の解答例を見てみると，
+\subsubsection{「\texttt{subst}関数」に関する考察}
+
+ここでは\verb|subst|関数について考察を行う．練習問題の解答例を見てみると，
 \verb|main|関数内で複数の文字列を変換できるようにループさせており，
 また配列に保存した複数の文字を置換した結果も出力できるようにしてある．
 このことから，最終的に完成するプログラムでは，配列に保存された文字列を複数個
@@ -366,16 +399,24 @@ MacOS Catalina 10.15.4におけるターミナルのプロンプトである．
 また，\verb|for|文で囲まれた部分に着目すると，
 他の言語での\verb|foreach|文に似たような動作をしていることがわかった．
 
+\subsubsection{「\texttt{split}関数」に関する考察}
+
+次に，\verb|split|関数についての考察を行う．
+今回工夫したところは，カンマを全て終端文字に置き換えて\verb|split|関数に渡すことで，
+文字列の先頭にポインタを合わせることで一気に文字列をコピーできることである．
+その後23行目で，ポインタを文字数+1(終端文字)移動させることで，次の文字列の文頭にポインタを移動している．
+
 %--------------------------------------------------------------------%
-\subsection{「標準入力の・・・（\textbf{サンプルのため，省略}）」に関する考察}
+\subsection{「標準入力の取得と構文解析」に関する考察}
 %--------------------------------------------------------------------%
 
-(※サンプルのため中略)
+\subsubsection{「\texttt{get\_line}関数」に関する考察}
 
-\subsubsection{「・・・（\textbf{サンプルのため，省略}）」に関する考察}
-
-(※サンプルのため省略)
-
+\verb|get_line|関数についての考察を行う．
+今回重要なポイントとなってくるところは，\verb|fgets|の最大文字数を1024ではなく1026に設定したところである．
+まず改行文字が格納されるので，1024文字に+1してある．
+また1024文字以上であることを確認するために，文字を1文字多く取得しそこに文字があるかで返り値を変えている．
+しかし，\verb|strlen|関数は終端文字をカウントしないので，\verb|strlen|関数の値が1025文字以上を含まないようにしている．
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -403,15 +444,15 @@ MacOS Catalina 10.15.4におけるターミナルのプロンプトである．
 %   - fontsize          フォントサイズ指定
 %   - baselinestretch   行間の大きさを比率で指定．デフォルトは 1.0．
 \begin{Verbatim}[numbers=left, xleftmargin=10mm, numbersep=6pt,
-                    fontsize=\small, baselinestretch=0.8]
+  fontsize=\small, baselinestretch=0.8]
 #include <stdio.h>
+#include <string.h>
 
 int subst(char *str, char c1, char c2) {
     int diff = 0;
     char *p;
 
     p = str;
-
     while (*p != '\0') {
         if (*p == c1) {
             *p = c2;
@@ -419,18 +460,44 @@ int subst(char *str, char c1, char c2) {
         }
         p++;
     }
-
     return diff;
 }
 
-int main(void) {
-    char c1 = 'A';
-    char c2 = 'B';
-    char s[80] = "ABCDE";
-
-    printf("文字列: %s\n置換文字: %c -> %c\n\n", s, c1, c2);
-    printf("実行結果: %s\n差分: %d\n", s, subst(s, c1, c2));
+int split(char *str, char *ret[], char sep, int max) {
+    int i, count = 0;
+    for (i=0; i<max; i++) {
+        ret[i] = str;
+        str += strlen(str)+1;
+        count++;
+    }
+    return count;
 }
+
+int get_line(char *line) {
+    if (fgets(line, 1026, stdin) == NULL || strlen(line) >1024 || *line == '\n') {
+        return 0;
+    } else {
+        subst(line, '\n', '\0');
+        subst(line, ',', '\0');
+        return 1;
+    }
+}
+
+int main(void) {
+    int i, count = 1, max = 5;
+    char line[1024] = {0};
+    char *ret[80] = {0};
+    char sep = ',';
+
+    while (get_line(line)) {
+        printf("Line%d\n", count++);
+        split(line, ret, sep, max);
+        for (i = 0; i < max; i++) {
+            printf(" >ret[%d] = '%s'\n", i, ret[i]);
+        }
+    }
+}
+
 \end{Verbatim}
 
 % 以下の3行は提出用のレポートでは必ず消すこと．
