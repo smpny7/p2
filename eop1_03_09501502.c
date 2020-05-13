@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #define MAX_LINE_LEN 1024
@@ -100,7 +101,7 @@ void parse_line(char *line) {
     }
 }
 
-int main() {
+int main(void) {
     char line[MAX_LINE_LEN + 1];
     while (get_line(line)) {
         parse_line(line);

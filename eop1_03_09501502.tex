@@ -1,0 +1,574 @@
+% ファイル先頭から\begin{document}までの内容（プレアンブル）については，
+% 基本的に { } の中を書き換えるだけでよい．
+\documentclass[autodetect-engine,dvi=dvipdfmx,ja=standard,
+               a4j,11pt]{bxjsarticle}
+
+%%======== プレアンブル ============================================%%
+% 用紙設定：指示があれば，適切な余白に設定しなおす
+\RequirePackage{geometry}
+\geometry{reset,a4paper}
+\geometry{hmargin=25truemm,top=25truemm,bottom=25truemm,footskip=10truemm}
+%\geometry{showframe} % 本文の"枠"を確認したければ，コメントアウト
+
+% 設定：図の挿入
+% http://www.edu.cs.okayama-u.ac.jp/info/tool_guide/tex.html#graphicx
+\usepackage{graphicx}
+
+% 設定：ソースコードの挿入
+% http://www.edu.cs.okayama-u.ac.jp/info/tool_guide/tex.html#fancyvrb
+\usepackage{fancyvrb}
+\renewcommand{\theFancyVerbLine}{\texttt{\footnotesize{\arabic{FancyVerbLine}:}}}
+
+%%======== レポートタイトル等 ======================================%%
+% ToDo: 提出要領に従って，適切なタイトル・サブタイトルを設定する
+\title{プログラミング演習1 \\
+       第2回レポート}
+
+% ToDo: 自分自身の氏名と学生番号に書き換える
+\author{氏名: 池田 海斗 (IKEDA, Kaito) \\
+        学生番号: 09501502}
+
+% ToDo: レポート課題等の指示に従って適切に書き換える
+\date{出題日: 2020年05月13日 \\
+      提出日: 2020年05月13日 \\
+      締切日: 2020年05月20日 \\}  % 注：最後の\\は不要に見えるが必要．
+
+%%======== 本文 ====================================================%%
+\begin{document}
+\maketitle
+% 目次つきの表紙ページにする場合はコメントを外す
+%{\footnotesize \tableofcontents \newpage}
+
+%% 本文は以下に書く．課題に応じて適切な章立てを構成すること．
+%% 章＝\section，節＝\subsection，項＝\subsubsection である．
+% 以下の7行は提出用のレポートでは必ず消すこと
+% \textbf{\small※執筆上の注意：本書は空想上の課題に対するレポートの
+%     執筆例である．章の構成と書くべき内容の参考として提示するもの
+%     であるため，課題内容やプログラムの仕様などは，
+%     実際の演習課題の指示に従って適切にまとめ直す必要がある．
+%     文や文の一部を「・・・」や「??」によって省略している箇所があるが，
+%     これに穴埋めをするだけで，レポートが完成するわけではない．
+%     なお，サンプルと同じ書き出しで文章を書く必要もない．}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{概要} \label{sec:1}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 以下の4行は提出用のレポートでは必ず消すこと
+% \textbf{\small※執筆上の注意：概要は多すぎず少なすぎずが重要である．
+%     特に，次の3点について，執筆者の取り組みの概略が読者（＝教員）に
+%     伝わるようにしよう．(1) このレポートで取り組んだ課題の内容，
+%     (2) 実験等によって得られた結果，(3) 結果に対しておこなった考察．\\}
+
+本演習では，名簿管理機能を有するプログラムを，C言語で作成する．
+このプログラムは，標準入力から「ID, 氏名, 誕生日, 住所, 備考」からなる
+コンマ区切り形式（CSV形式）の名簿データを受け付けて，それらをメモリ中に登録する機能を持つ．
+ただし，\%で始まる入力行はコマンド入力と解釈し，登録してあるデータを表示したり整列したりする機能も持つ．
+
+本レポートでは，演習中に取り組んだ課題として，
+以下の課題1から課題6についての内容を報告する．
+%
+\begin{description}
+  \item[課題1] 文字列操作の基礎：\verb|subst|関数と\verb|split|関数の実装
+  \item[課題2] 構造体や配列を用いた名簿データの定義
+  \item[課題3] 標準入力の取得と構文解析
+  \item[課題4] CSVデータ登録処理の実装
+  \item[課題5] コマンド中継処理の実装
+  \item[課題6] コマンドの実装：\verb|%P|コマンド
+  %追記する場合は，本文の記述と矛盾しないように注意すること．
+\end{description}
+%
+また，取り組んだ課題のうち，特に以下の課題については，詳細な考察を行った．
+%
+\begin{description}
+  \item[課題1] 文字列操作の基礎：\verb|subst|関数と\verb|split|関数の実装
+  \item[課題3] 標準入力の取得と構文解析
+  %追記する場合は，本文の記述と矛盾しないように注意すること．
+\end{description}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{プログラムの作成方針} \label{sec:2}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 以下の4行は提出用のレポートでは必ず消すこと
+\textbf{\small※執筆上の注意：追加仕様については，書かなくても良い．
+    書く場合は，次節の説明などでも，その仕様を参照しながら書くとよい．\\}
+
+本演習で作成したプログラムが満たすべき要件と仕様として，
+「(1) 基本要件」と「(2) 基本仕様」を示す．
+
+\subsubsection*{(1) 基本要件}
+
+\begin{enumerate}
+  \setlength{\parskip}{0em} \setlength{\itemsep}{0.25em}  % <-- この一行は項目間の調整
+    \item プログラムは，その実行中，少なくとも10,000件の名簿データをメモリ中に保持できるようにすること．
+    \item 名簿データは，・・・・
+    \item プログラムとしての動作や名簿データの管理のために，・・・
+    \begin{enumerate} \setlength{\parskip}{0em} \setlength{\itemsep}{0.25em}
+        \item プログラムの正常な終了
+        \item 登録された・・・
+        % サンプルのため省略
+    \end{enumerate}
+    \item 標準入力からのユーザ入力を通して，，，      % サンプルのため省略
+\end{enumerate}
+
+\subsubsection*{(2) 基本仕様}
+
+\begin{enumerate}
+  \setlength{\parskip}{0em} \setlength{\itemsep}{0.25em}  % <-- この一行は項目間の調整
+    \item 名簿データは，コンマ区切りの文字列（\textbf{CSV入力}と呼ぶ）で表されるものとし，%
+          図\ref{fig:csvdata}に示したようなテキストデータを処理できるようにする．%
+          %CSV入力の詳細は，\ref{sec:sepc_csv}節に示す．  % <-- この1文は，レポートでは不要
+    \item コマンドは，\%で始まる文字列（\textbf{コマンド入力}と呼ぶ）とし，表\ref{tab:commands}にあげたコマンドをすべて実装する
+    \item 1つの名簿データは，C言語の構造体 (\texttt{struct}) を用いて，・・・   % サンプルのため省略
+    % サンプルのため省略．仕様書の footnote は書かなくてよい．
+\end{enumerate}
+
+%========================= EXAMPLE CSV ================================%
+\begin{figure}[b]
+\centering % この1行はbegin～endの中を中央寄せにする，というコマンド
+% Verbatim environment
+% プリアンブルで \usepackage{fancyvrb} が必要．
+%   - frame         枠で囲う．single なら，四角で囲われる
+%   - xleftmargin   枠の左の余白
+%   - xrightmargin  枠の右の余白
+%   - gobble        先頭n文字を無視．インデントを無視したい場合に利用する．
+%   - fontsize      フォントサイズ指定
+%   - numbers       行番号を表示．left なら左に表示．
+%   - firstnumber   最初の行番号を指定
+\begin{Verbatim}[frame=single, xleftmargin=5mm, xrightmargin=5mm, gobble=4,
+                 fontsize=\small, numbers=left, firstnumber=1]
+    5100046,The Bridge,1845-11-2,14 Seafield Road Longman Inverness,SEN Unit 2.0 Open
+    5100127,Bower Primary School,1908-1-19,Bowermadden Bower Caithness,01955 641225 ...
+    5100224,Canisbay Primary School,1928-7-5,Canisbay Wick,01955 611337 Primary 56 3...
+    5100321,Castletown Primary School,1913-11-4,Castletown Thurso,01847 821256 01847...
+\end{Verbatim}
+    \caption{名簿データのCSV入力形式の例．1行におさまらないデータは...で省略した．}
+    \label{fig:csvdata}
+\end{figure}
+%========================= EXAMPLE CSV ================================%
+
+%========================= COMMAND LIST ================================%
+\begin{table}[b]  %表の位置は原則として t または b．h や H は使わない．
+\centering % この1行はbegin～endの中を中央寄せにする，というコマンド
+    \caption{実装するコマンド}
+    \label{tab:commands}
+    \begin{tabular}{|l|ll|l|}
+    \hline
+    \textbf{コマンド} & \textbf{意味} &        & \textbf{備考} \\
+    \hline\hline
+    \verb|%Q|   & 終了                & (Quit)  & \\
+    \hline
+    \verb|%P n| & 先頭から$n$件表示   & (Print) & $n$が$0$ $\to$ 全件表示，        \\
+                &                     &         & $n$が負 $\to$ 後ろから$-n$件表示 \\
+    \hline
+    *****       &（サンプルのため     & 省略）    & \\
+    \hline
+    \end{tabular}
+\end{table}
+%========================= COMMAND LIST ================================%
+
+% 以下の2行は提出用のレポートでは必ず消すこと
+\textbf{\small※執筆上の注意：繰り返すが，本書は空想上の課題に対するレポートの
+    執筆例である．書くべき内容としては，課題書等を読んだうえで適切に執筆すること\\}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{プログラムの説明} \label{sec:3}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 以下の6行は提出用のレポートでは必ず消すこと
+% \textbf{\small ※執筆上の注意：変数や数値は$\backslash$verbや\$\$
+%     で囲って，適切な書体で記述することを忘れずに．
+%     なお，このサンプルでは``わざと''一部の処理を省略している．
+%     見た目の違いを確認して，自分のレポートでは処理を忘れないようにしよう．
+%     また，この章はこのレポートサンプルの2章に基づいて書かれているが，
+%     そもそも2章が架空の講義内容に基づいて書かれている点に注意すること．\\}
+
+プログラムリストは\ref{sec:7}章に添付している．プログラムは全部で27行からなる．
+以下では，\ref{sec:1}節の課題ごとに，プログラムの主な構造について説明する．
+
+%--------------------------------------------------------------------%
+\subsection{文字列操作の基礎：\texttt{subst}関数と\texttt{split}関数の実装}
+%--------------------------------------------------------------------%
+% Tips:
+% - subsectionなどでは verbが使えない．texttt を使うとよい．
+% - 最初の段落で，この節で説明する関数等の名前や場所などを説明する．
+% - 以降の段落で，最初の段落で示した，各関数等に関する詳細を説明する．
+
+まず，汎用的な文字列操作関数として，
+\verb|subst()|関数を4-17行目で宣言し， % この行は適切な書き方の例
+\verb|main()|関数を39-52行目に記述している．   % この行は不適切な書き方の例
+また，これらの関数で利用するために，\verb|stdio.h|，\verb|stdlib.h|，\verb|string.h|のヘッダファイルを読み込んでいる．
+
+\verb|subst(STR, C1, C2)|関数は，
+\verb|STR|が指す文字列中の，文字\verb|C1|を文字\verb|C2|に置き換える．
+% プログラム中では，xxx関数の中で，入力文字列中の末尾に付く改行文字を
+% ヌル文字で置き換えるために使用している．
+プログラム中では，\verb|get_line()|関数の中で，
+文字\verb|\n|，\verb|,|を終端文字\verb|\0|置き換えるために，この関数を呼び出している．
+この関数では，文字\verb|C1|を文字\verb|C2|に置き換えた回数を返り値とする．
+
+\verb|split(STR, RET, SEP, MAX)|関数では，
+\verb|STR|が指す文字列を，最大\verb|MAX|個まで文字\verb|SEP|の箇所で区切り，配列\verb|RET|に格納していく．
+プログラム中では，\verb|get_line()|関数で取得した1行を，カンマで区切りで配列に格納する際に呼び出される．
+この関数では，配列に分割された個数を返り値とする．
+
+% \verb|split(STR, ...)|関数は，・・・（※サンプルのため，いろいろと省略）
+
+%--------------------------------------------------------------------%
+\subsection{構造体や配列を用いた名簿データの定義}
+%--------------------------------------------------------------------%
+
+% 本名簿管理プログラムでは，構造体の配列を名簿データとして扱う．
+% 18--27行目で，\verb|date|構造体を定義し，
+% 29--48行目で，\verb|profile|構造体を定義している．
+% この・・・・が，名簿データ1つに相当する．
+% そして，xxx行目の\verb|xxxxx|変数で，全名簿データを管理し，
+% xxx行目の\verb|xxxxx|変数で，名簿データの個数を管理する．
+
+% \verb|date|構造体の定義にあたっては，・・・（以降，サンプルのため，省略）
+
+% ・・・（サンプルのため，省略）
+
+%--------------------------------------------------------------------%
+\subsection{標準入力の取得と構文解析}
+%--------------------------------------------------------------------%
+
+\verb|get_line(LINE)|関数は，
+標準入力で読み込まれた名簿データを1行ずつ取り出し，\verb|LINE|に代入する．
+読み込む行がない場合，文字列が1024文字を超えてバッファオーバーランをする場合，
+ユーザが改行コードを入力した場合に返り値\verb|0|を返す．
+
+\verb|parse_line(LINE)|関数では，
+\verb|get_line(LINE)|関数で読み込まれた1行がコマンドか入力データであるかで条件分岐を行う．
+コマンドの場合，コマンド名と引数に分けてその値を\verb|exec_command(CMD, PARAM)|関数に引き渡し，
+入力データであった場合は\verb|new_profile(LINE)|関数で表示を行う．
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{プログラムの使用法と実行結果} \label{sec:4}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 提出するレポートでは以下6行は必ず消すこと
+% \textbf{\small ※執筆上の注意：この節はプログラムの使用法を説明す
+%     る節である．最低限，起動の方法，入力の形式と方法，出力の読み方
+%     を入れること．当然，実装したコマンドすべてを説明すべきであるが，
+%     このサンプルのように説明に使う実行例が1つである必要はない．
+%     適宜，subsectionなどを用いて見やすく整理するとよい．
+%     なお，本学科の演習室では Red Hat Linux は利用していない．\\}
+
+本プログラムは名簿データを管理するためのプログラムである．
+CSV形式のデータと \% で始まるコマンドを標準入力から受け付け，
+処理結果を標準出力に出力する．
+入力形式の詳細については，\ref{sec:2}節で説明した．
+
+% 実行結果を得るために利用した，実行環境のOSを必ず書くこと．
+プログラムは，MacOS Catalina 10.15.4 で動作を確認しているが，
+一般的な UNIX で動作することを意図している．
+なお，以降の実行例における，行頭の\verb|%|記号は，
+MacOS Catalina 10.15.4におけるターミナルのプロンプトである．
+
+まず，\verb|gcc|でコンパイルすることで，プログラムの実行ファイルを生成する．
+ここで，\verb|-Wall|とは警告オプションを全て有効にするためのオプションであり，
+\verb|-o|とは実行ファイルの名前を指定するオプションである．
+これらのオプションをつけることで，コードの視認性を高めたり無駄なコードを省くことができ，
+他のソースコードの実行ファイルとの識別が容易である．
+
+{\fontsize{10pt}{11pt} \selectfont
+ \begin{verbatim}
+   % gcc -Wall -o eop_03_09501502 eop_03_09501502.c
+ \end{verbatim}
+}
+%% 注：行送りの変更は"指定箇所を含む段落”に効果があらわれる．
+%%     fontsizeコマンドを用いて，行送りを変える場合は，
+%%     その {...} の前後に空白行を入れ，段落を変えるようにすること．
+%%     なお，行先頭がコメントから始まる行は空白行とは扱われない．
+
+次に，プログラムを実行する．
+以下の実行例は，プログラム実行中のデータの入力を模擬するため，
+CSVファイルを標準入力により与えることで，実行する例を示している．
+通常の利用においては，\verb|%R file|によりデータを読み込む．
+
+{\fontsize{10pt}{11pt} \selectfont
+ \begin{verbatim}
+   $ ./eop_03_09501502.out < csvdata.csv
+ \end{verbatim}
+}
+
+プログラムの出力結果として，CSVデータの各項目が読みやすい形式で出力される．
+例えば，下記の \verb|cvsdata.csv| に対して，
+
+{\fontsize{10pt}{11pt} \selectfont
+ \begin{verbatim}
+  5100046,The Bridge,1845-11-2,14 Seafield Road Longman Inverness,SEN Unit 2.0 Open
+  %P contoso
+  5100224,Canisbay Primary School,1928-7-5,Canisbay Wick,01955 611337 Primary 56 3.5 Open
+  %C
+  %Q
+ \end{verbatim}
+}
+
+\noindent % noindentとはここでは段落を変えない（一字下げをしない）というコマンド．
+以下のような出力が得られる．
+
+{\fontsize{10pt}{11pt} \selectfont
+ \begin{verbatim}
+   >ret[0] = '5100046'
+   >ret[1] = 'The Bridge'
+   >ret[2] = '1845-11-2'
+   >ret[3] = '14 Seafield Road Longman Inverness'
+   >ret[4] = 'SEN Unit 2.0 Open'
+  %P command is invoked with arg: 'contoso'
+   >ret[0] = '5100224'
+   >ret[1] = 'Canisbay Primary School'
+   >ret[2] = '1928-7-5'
+   >ret[3] = 'Canisbay Wick'
+   >ret[4] = '01955 611337 Primary 56 3.5 Open'
+  %C command is invoked with no arg
+ \end{verbatim}
+}
+
+まず，入力データについて説明する．
+コマンドは\verb|%P|, \verb|%C|, \verb|%Q|の3つを記述している．
+また，このCSVファイルには2件のデータを保存しており，
+それぞれの項目はカンマで区切られている．
+% 入力中の最初の2行で，2つのCSVデータを登録している．
+% CSVデータは，表1で示したように，7つの項目からなる．
+
+% 注：上1行の「表1」の部分は，\refを用いて適切に参照すること．
+
+% 3行目の\%S3 は，これまでの入力データを3番目の項目（生年月日）で
+% ソートすることを示している．
+% 4行目の\%P0 は，入力した項目の全ての項目 ($1$--$7$) を
+% 表示することを示している．
+
+% （※サンプルのため省略）
+
+また出力結果について，\verb|ret[*]|は配列の番号とその中に格納している文字列を表している．
+
+%以下の4行は提出レポートでは不要なため消すこと．
+% \textbf{\small ※執筆上の注意：良くないレポートの書き方例を2つ挙げる．\\
+%     (1) 入力の説明が無いため，何をしたのかがわからない．\\
+%     (2) 出力結果だけが書いてあり，それが「想定（仕様）通り」なのかどうか，
+%         を述べていない．\\}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{考察} \label{sec:5}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%以下の5行は提出レポートでは不要なため消すこと．
+% \textbf{\small ※執筆上の注意：考察課題を中心にまとめる．
+%     あくまで「作成したプログラムとその実行結果から考察できること」を，
+%     主に求めている．単なる感想で終わるような内容を書いてはいけない．\\}
+
+\ref{sec:3}章のプログラムの説明，および，\ref{sec:4}章の使用法と実行結果から，
+演習課題として作成したプログラムが，
+\ref{sec:1}章で述べた基本要件と基本仕様のいずれも満たしていることを示した．
+ここでは，個別の課題のうち，以下の3つの項目について，考察を述べる．
+% 注：\ref コマンドを用いて適切に参照すること．
+
+\begin{enumerate}
+\setlength{\parskip}{2pt} \setlength{\itemsep}{2pt}
+    \item 文字列操作の基礎：\texttt{subst}関数と\texttt{split}関数の実装
+    \item 標準入力の取得と構文解析
+    % \item ・・・（\textbf{サンプルのため，省略}）
+\end{enumerate}
+
+%--------------------------------------------------------------------%
+\subsection{「文字列操作の基礎：\texttt{subst}関数と\texttt{split}関数の実装」に関する考察}
+%--------------------------------------------------------------------%
+
+\subsubsection{「\texttt{subst}関数」に関する考察}
+
+ここでは\verb|subst|関数について考察を行う．練習問題の解答例を見てみると，
+\verb|main|関数内で複数の文字列を変換できるようにループさせており，
+また配列に保存した複数の文字を置換した結果も出力できるようにしてある．
+このことから，最終的に完成するプログラムでは，配列に保存された文字列を複数個
+\verb|subst|関数にかけるのではないかと考察できる．
+
+また，\verb|for|文で囲まれた部分に着目すると，
+他の言語での\verb|foreach|文に似たような動作をしていることがわかった．
+
+\subsubsection{「\texttt{split}関数」に関する考察}
+
+次に，\verb|split|関数についての考察を行う．
+今回工夫したところは，カンマを全て終端文字に置き換えて\verb|split|関数に渡すことで，
+文字列の先頭にポインタを合わせることで一気に文字列をコピーできることである．
+その後23行目で，ポインタを文字数+1(終端文字)移動させることで，次の文字列の文頭にポインタを移動している．
+
+%--------------------------------------------------------------------%
+\subsection{「標準入力の取得と構文解析」に関する考察}
+%--------------------------------------------------------------------%
+
+\subsubsection{「\texttt{get\_line}関数」に関する考察}
+
+\verb|get_line|関数についての考察を行う．
+今回重要なポイントとなってくるところは，\verb|fgets|の最大文字数を1024ではなく1026に設定したところである．
+まず改行文字が格納されるので，1024文字に+1してある．
+また1024文字以上であることを確認するために，文字を1文字多く取得しそこに文字があるかで返り値を変えている．
+しかし，\verb|strlen|関数は終端文字をカウントしないので，\verb|strlen|関数の値が1025文字以上を含まないようにしている．
+
+\subsubsection{「\texttt{parse\_line}関数」に関する考察}
+
+\verb|parse_line|関数についての考察を行う．
+まずコマンドか否かの判別は，文字頭の値が\verb|%|で始まるかどうかで行っている．
+これは，データ入力の場合文字列の始めは\verb|[0-9]|で始まるので，上記の条件に含まれることはないからである．
+96行目では，ポインタの4文字目以降からヌル終端文字までを配列に格納している．
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{感想} \label{sec:6}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+(※サンプルのため省略)
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{作成したプログラム} \label{sec:7}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%以下の注意書きは提出レポートでは不要なため消すこと．
+% \textbf{\small ※執筆上の注意：はみ出さないように注意．
+%     また，??章のような状態でレポートを提出しないように注意すること．\\}
+
+作成したプログラムを以下に添付する．
+なお，\ref{sec:1}章に示した課題については，
+\ref{sec:4}章で示したようにすべて正常に動作したことを付記しておく．
+
+% Verbatim environment
+% プリアンブルで \usepackage{fancyvrb} が必要．
+%   - numbers           行番号を表示．left なら左に表示．
+%   - xleftmargin       枠の左の余白．行番号表示用に余白を与えたい．
+%   - numbersep         行番号と枠の間隙 (gap)．デフォルトは 12 pt．
+%   - fontsize          フォントサイズ指定
+%   - baselinestretch   行間の大きさを比率で指定．デフォルトは 1.0．
+\begin{Verbatim}[numbers=left, xleftmargin=10mm, numbersep=6pt,
+  fontsize=\small, baselinestretch=0.8]
+#include <stdio.h>
+#include <string.h>
+
+#define MAX_LINE_LEN 1024
+
+void cmd_quit(void) {
+    exit(0);
+}
+
+void cmd_check(char cmd) {
+    fprintf(stderr, "%%%c command is invoked with no arg\n", cmd);
+}
+
+void cmd_print(char cmd, char *param) {
+    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
+}
+
+void cmd_read(char cmd, char *param) {
+    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
+}
+
+void cmd_write(char cmd, char *param) {
+    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
+}
+
+void cmd_find(char cmd, char *param) {
+    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
+}
+
+void cmd_sort(char cmd, char *param) {
+    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
+}
+
+void exec_command(char cmd, char *param) {
+    switch (cmd) {
+        case 'Q': cmd_quit();   break;
+        case 'C': cmd_check(cmd);  break;
+        case 'P': cmd_print(cmd, param);  break;
+        case 'R': cmd_read(cmd, param);   break;
+        case 'W': cmd_write(cmd, param);  break;
+        case 'F': cmd_find(cmd, param);   break;
+        case 'S': cmd_sort(cmd, param);   break;
+        default:
+        printf("Unregistered Command Is Entered.\n");
+    }
+}
+
+int subst(char *str, char c1, char c2) {
+    int diff = 0;
+    char *p;
+
+    p = str;
+    while (*p != '\0') {
+        if (*p == c1) {
+            *p = c2;
+            diff++;
+        }
+        p++;
+    }
+    return diff;
+}
+
+int split(char *str, char *ret[], char sep, int max) {
+    int i, count = 0;
+    subst(str, sep, '\0');
+    for (i=0; i<max; i++) {
+        ret[i] = str;
+        str += strlen(str)+1;
+        count++;
+    }
+    return count;
+}
+
+int get_line(char *line) {
+    if (fgets(line, MAX_LINE_LEN + 1, stdin) == NULL || strlen(line) > MAX_LINE_LEN || *line == '\n') {
+        return 0;
+    } else {
+        subst(line, '\n', '\0');
+        return 1;
+    }
+}
+
+void new_profile(char *line) {
+    int i, max = 5;
+    char *ret[80] = {0}, sep = ',';
+    split(line, ret, sep, max);
+    for (i = 0; i < max; i++) {
+        printf(" >ret[%d] = '%s'\n", i, ret[i]);
+    }
+}
+
+void parse_line(char *line) {
+    char cmd, param[80] = {0};
+    if (*line == '%') {
+        cmd = *(line+1);
+        strcpy(param, line+3);
+        exec_command(cmd, param);
+    } else {
+        new_profile(line);
+    }
+}
+
+int main(void) {
+    char line[MAX_LINE_LEN + 1];
+    while (get_line(line)) {
+        parse_line(line);
+    }
+    return 0;
+}
+
+\end{Verbatim}
+
+% 以下の3行は提出用のレポートでは必ず消すこと．
+% \textbf{\small ※執筆上の注意：余白部分に文字がはみ出していないか，よく確認する．
+%     例えば，\LaTeX によるコンパイル時のWarningメッセージを確認しよう．
+%     \texttt{Overfull hbox}が出ていたら，はみ出している場所があるはずである．}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 参考文献
+%   実際に，参考にした書籍等の奥付などを見て書くこと．
+%   本文で引用する際は，\cite{book:algodata}のように書けばよい．
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{thebibliography}{99}
+  \bibitem{book:algodata} 平田富雄，アルゴリズムとデータ構造，森北出版，1990.
+  \bibitem{book:label2} 著者名，書名，出版社，発行年.
+  \bibitem{www:label3} WWWページタイトル，URL，アクセス日.
+\end{thebibliography}
+%以下の注意書きは提出レポートでは不要なため消すこと．
+\textbf{\small ※執筆上の注意：
+      これらは書き方の例である．実際に，参考にした書籍等を見て書くこと．\\}
+
+%--------------------------------------------------------------------%
+%% 本文はここより上に書く（\begin{document}～\end{document}が本文である）
+\end{document}
