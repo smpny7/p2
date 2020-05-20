@@ -15,7 +15,7 @@ struct profile {
     char name[70];
     struct date birthday;
     char address[70];
-    char note[];
+    char note[80];
 };
 
 int profile_data_nitems = 0;
@@ -114,13 +114,6 @@ void new_profile(struct profile *profile_data_store, char *line) {
 
     strcpy(profile_data_store->address, ret[3]);
     strcpy(profile_data_store->note, ret[4]);
-    printf("%d\n", profile_data_store->id);
-    printf("%s\n", profile_data_store->name);
-    printf("%d\n", profile_data_store->birthday.y);
-    printf("%d\n", profile_data_store->birthday.m);
-    printf("%d\n", profile_data_store->birthday.d);
-    printf("%s\n", profile_data_store->address);
-    printf("%s\n", profile_data_store->note);
 }
 
 void parse_line(char *line) {
