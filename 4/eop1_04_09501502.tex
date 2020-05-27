@@ -1,0 +1,551 @@
+\documentclass[autodetect-engine,dvi=dvipdfmx,ja=standard,
+               a4j,11pt]{bxjsarticle}
+
+%%======== プレアンブル ============================================%%
+\RequirePackage{geometry}
+\geometry{reset,a4paper}
+\geometry{hmargin=25truemm,top=25truemm,bottom=25truemm,footskip=10truemm}
+% \geometry{showframe} % はみ出し確認用
+
+\usepackage{graphicx}
+
+\usepackage{fancyvrb}
+% \renewcommand{\theFancyVerbLine}{\texttt{\footnotesize{\arabic{FancyVerbLine}:}}}
+
+%%======== レポートタイトル等 ======================================%%
+\title{プログラミング演習1 \\
+       第4回レポート}
+
+\author{氏名: 池田 海斗 (IKEDA, Kaito) \\
+        学生番号: 09501502}
+
+\date{出題日: 2020年05月20日 \\
+      提出日: 2020年05月24日 \\
+      締切日: 2020年05月27日 \\}
+
+%%======== 本文 ====================================================%%
+\begin{document}
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{概要} \label{sec:1}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+本演習では，C言語を用いて名簿管理プログラムの制作を行う．
+このプログラムではコマンド入力によるデータの読み込み・書き出しを行ったり，整列・検索を行うことができる．
+また，標準入力からコンマで区切られた文字列を入力しデータの登録を行うことができる．
+
+本レポートでは，演習中に取り組んだ課題として，
+以下の課題1から課題6についての内容を報告する．
+
+\begin{description}
+  \item[課題1] 文字列操作の基礎：\verb|subst|関数と\verb|split|関数の実装
+  \item[課題2] 構造体や配列を用いた名簿データの定義
+  \item[課題3] 標準入力の取得と構文解析
+  \item[課題4] CSVデータ登録処理の実装
+  \item[課題5] コマンド中継処理の実装
+  \item[課題6] コマンドの実装：\verb|%P|コマンド
+\end{description}
+
+また，取り組んだ課題のうち，特に以下の課題については，詳細な考察を行った．
+
+\begin{description}
+  \item[課題1] 文字列操作の基礎：\verb|subst|関数と\verb|split|関数の実装
+  \item[課題2] 構造体や配列を用いた名簿データの定義
+  \item[課題3] 標準入力の取得と構文解析
+\end{description}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{プログラムの作成方針} \label{sec:2}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+本演習で作成したプログラムが満たすべき要件と仕様として，
+「(1) 基本要件」と「(2) 基本仕様」を示す．
+
+\subsubsection*{(1) 基本要件}
+
+\begin{enumerate}
+  \setlength{\parskip}{0em} \setlength{\itemsep}{0.25em}
+    \item プログラムは，その実行中，少なくとも10,000件の名簿データをメモリ中に保持できるようにすること．
+    \item 名簿データは，「ID, 氏名, 誕生日, 住所, 備考」を，1つのデータとして扱えるようにすること．
+    \item プログラムとしての動作や名簿データの管理のために，以下の機能を持つコマンドを実装すること．
+    \begin{enumerate} \setlength{\parskip}{0em} \setlength{\itemsep}{0.25em}
+        \item プログラムの正常な終了
+        \item 登録された名簿データのデータ数表示
+        \item 名簿データの全数表示，および，部分表示
+        \item 名簿データのファイルへの保存，および，ファイルからの復元
+        \item 名簿データの検索と表示
+        \item 名簿データの整列
+    \end{enumerate}
+    \item 標準入力からのユーザ入力を通して，データ登録やデータ管理等の操作を可能とすること．
+    \item 標準出力には，コマンドの実行結果のみを出力すること．
+\end{enumerate}
+
+\subsubsection*{(2) 基本仕様}
+
+\begin{enumerate}
+  \setlength{\parskip}{0em} \setlength{\itemsep}{0.25em}
+    \item 名簿データは，コンマ区切りの文字列（\textbf{CSV入力}と呼ぶ）で表されるものとし，
+          図\ref{fig:csvdata}に示したようなテキストデータを処理できるようにする．
+    \item コマンドは，\%で始まる文字列（\textbf{コマンド入力}と呼ぶ）とし，
+          表\ref{tab:commands}にあげたコマンドをすべて実装する．
+    \item 1つの名簿データは，C言語の構造体 (\texttt{struct}) を用いて，
+          構造を持ったデータとしてプログラム中に定義し，利用する．
+    \item 全名簿データは，``何らかのデータ構造''を用いて，メモリ中に保持できるようにする．
+    \item コマンドの実行結果以外の出力は，標準エラー出力に出力する．
+\end{enumerate}
+
+%========================= EXAMPLE CSV ================================%
+\begin{figure}[b]
+\centering
+\begin{Verbatim}[frame=single, xleftmargin=5mm, xrightmargin=5mm, gobble=4,
+                 fontsize=\small, numbers=left, firstnumber=1]
+    5100046,The Bridge,1845-11-2,14 Seafield Road Longman Inverness,SEN Unit 2.0 Open
+    5100127,Bower Primary School,1908-1-19,Bowermadden Bower Caithness,01955 641225 ...
+    5100224,Canisbay Primary School,1928-7-5,Canisbay Wick,01955 611337 Primary 56 3...
+    5100321,Castletown Primary School,1913-11-4,Castletown Thurso,01847 821256 01847...
+\end{Verbatim}
+    \caption{名簿データのCSV入力形式の例．1行におさまらないデータは...で省略した．}
+    \label{fig:csvdata}
+\end{figure}
+%========================= EXAMPLE CSV ================================%
+
+%========================= COMMAND LIST ================================%
+\begin{table}[b]
+\centering
+    \caption{実装するコマンド}
+    \label{tab:commands}
+    \begin{tabular}{|l|ll|l|}
+    \hline
+    \textbf{コマンド} & \textbf{意味} & & \textbf{備考} \\
+    \hline\hline
+    \verb|%Q| & 終了 & (Quit) & \\
+    \hline
+    \verb|%C| & 登録内容のチェック & (Check) & 1行目に登録数を必ず表示 \\
+    \hline
+    \verb|%P n| & 先頭から$n$件表示 & (Print) & $n$が$0$ $\to$ 全件表示， \\
+                & & & $n$が負 $\to$ 後ろから$-n$件表示 \\
+    \hline
+    \verb|%R file| & $file$から読込み & (Read) & \\
+    \hline
+    \verb|%W file| & $file$への書出し & (Write) & \\
+    \hline
+    \verb|%F word| & 検索結果を表示 & (Find) & \verb|%P|と同じ形式で表示 \\
+    \hline
+    \verb|%S n| & $CSV$の$n$番目の項目で整列 & (Sort) & 表示はしない \\
+    \hline
+    \end{tabular}
+\end{table}
+%========================= COMMAND LIST ================================%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{プログラムの説明} \label{sec:3}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+プログラムリストは\ref{sec:7}章に添付している．プログラムは全部で138行からなる．
+以下では，\ref{sec:1}節の課題ごとに，プログラムの主な構造について説明する．
+
+%--------------------------------------------------------------------%
+\subsection{文字列操作の基礎：\texttt{subst}関数と\texttt{split}関数の実装}
+%--------------------------------------------------------------------%
+
+まず，汎用的な文字列操作関数として，
+\verb|subst()|関数を66--79行目で宣言し，
+\verb|main()|関数を130--136行目に記述している．
+また，これらの関数で利用するために，\verb|stdio.h|，\verb|stdlib.h|，\verb|string.h|のヘッダファイルを読み込んでいる．
+
+\verb|subst(STR, C1, C2)|関数は，
+\verb|STR|が指す文字列中の，文字\verb|C1|を文字\verb|C2|に置き換える．
+プログラム中では，\verb|get_line()|関数と\verb|split()|関数の中で，
+文字``\verb|\n|''，``\verb|,|''を終端文字``\verb|\0|''置き換えるために，この関数を呼び出している．
+この関数では，文字\verb|C1|を文字\verb|C2|に置き換えた回数を返り値とする．
+
+\verb|split(STR, RET, SEP, MAX)|関数では，
+\verb|STR|が指す文字列を，最大\verb|MAX|個まで文字\verb|SEP|の箇所で区切り，配列\verb|RET|に格納していく．
+プログラム中では，\verb|get_line()|関数で取得した1行を，カンマで区切りで配列に格納する際に呼び出される．
+また，ハイフン区切りで入力される生年月日のデータを，年・月・日に分けて配列に格納する際にも用いる．
+この関数では，配列に分割された個数を返り値とする．
+
+%--------------------------------------------------------------------%
+\subsection{構造体や配列を用いた名簿データの定義}
+%--------------------------------------------------------------------%
+
+本プログラムでは，構造体の配列に名簿データを格納していく．
+7--11行目で，\verb|date|構造体を定義し，
+13--19行目で，\verb|profile|構造体を定義している．
+ID, 氏名, 誕生日, 住所, 備考の5つの組み合わせで1つの名簿データとなる．
+そして，21行目の\verb|profile_data_store|変数で全名簿データを管理し，
+22行目の\verb|profile_data_nitems|変数で，名簿データの個数を管理する．
+名簿データの誕生日の箇所にあたっては\verb|date|構造体を用い，年,月,日を別々に保存しておく．
+
+%--------------------------------------------------------------------%
+\subsection{標準入力の取得と構文解析}
+%--------------------------------------------------------------------%
+
+\verb|get_line(LINE)|関数は，
+標準入力で読み込まれた名簿データを1行ずつ取り出し，\verb|LINE|に代入する．
+読み込む行がない場合，文字列が1024文字を超えてバッファオーバーランをする場合，
+ユーザが改行コードを入力した場合に返り値\verb|0|を返す．
+
+\verb|parse_line(LINE)|関数では，
+\verb|get_line(LINE)|関数で読み込まれた1行がコマンドか入力データであるかで条件分岐を行う．
+コマンドの場合，コマンド名と引数に分けてその値を\verb|exec_command(CMD, PARAM)|関数に引き渡し，
+入力データであった場合は\verb|new_profile(PROFILE_DATA_STORE, LINE)|関数で登録を行う．
+
+%--------------------------------------------------------------------%
+\subsection{CSVデータ登録処理の実装}
+%--------------------------------------------------------------------%
+
+\verb|new_profile(PROFILE_DATA_STORE, LINE)|関数内では，
+グローバル変数\verb|profile_data_store|の任意の配列番号のポインタを受け取り，
+そこに\verb|profile_data_nitems|番目の要素としてデータを保存する．
+また誕生日に関しては，\verb|split|関数を用いて年・月・日に細分化しデータを格納する．
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{プログラムの使用法と実行結果} \label{sec:4}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%--------------------------------------------------------------------%
+\subsection{プログラムの概要}
+%--------------------------------------------------------------------%
+
+本プログラムは名簿データを管理するためのプログラムである．
+コマンドを入力する際には，\%で始まる英字を標準入力に打ち込み，引数で詳細な指示を行う．
+コマンドの詳細は\ref{sec:2}節に記述してある．
+また標準入力からのデータ入力も可能としている．
+
+%--------------------------------------------------------------------%
+\subsection{実行環境}
+%--------------------------------------------------------------------%
+
+プログラムは，MacOS Catalina 10.15.4 で動作を確認しているが，
+一般的な UNIX で動作することを意図している．
+なお，以降の実行例における，行頭の\verb|%|記号は，
+MacOS Catalina 10.15.4におけるターミナルのプロンプトである．
+
+%--------------------------------------------------------------------%
+\subsection{コンパイル方法}
+%--------------------------------------------------------------------%
+
+まず，\verb|gcc|でコンパイルすることで，プログラムの実行ファイルを生成する．
+ここで，\verb|-Wall|とは警告オプションを全て有効にするためのオプションであり，
+\verb|-o|とは実行ファイルの名前を指定するオプションである．
+これらのオプションをつけることで，コードの視認性を高めたり無駄なコードを省くことができ，
+他のソースコードの実行ファイルとの識別が容易である．
+
+{\fontsize{10pt}{11pt} \selectfont
+ \begin{verbatim}
+   % gcc -Wall -o eop_04_09501502 eop_04_09501502.c
+ \end{verbatim}
+}
+
+%--------------------------------------------------------------------%
+\subsection{実行方法}
+%--------------------------------------------------------------------%
+
+次に，プログラムを実行する．
+以下の実行例は，プログラム実行中のデータの入力を模擬するため，
+CSVファイルを標準入力により与えることで，実行する例を示している．
+通常の利用においては，\verb|%R file|によりデータを読み込む．
+
+{\fontsize{10pt}{11pt} \selectfont
+ \begin{verbatim}
+   $ ./eop_04_09501502.out < stdin.csv
+ \end{verbatim}
+}
+
+%--------------------------------------------------------------------%
+\subsection{出力結果}
+%--------------------------------------------------------------------%
+
+プログラムの出力結果として，CSVデータの各項目が読みやすい形式で出力される．
+例えば，下記の \verb|stdin.csv| に対して，
+
+{\fontsize{10pt}{11pt} \selectfont
+ \begin{verbatim}
+  5100046,The Bridge,1845-11-2,14 Seafield Road Longman Inverness,SEN Unit 2.0 Open
+  %P contoso
+  5100224,Canisbay Primary School,1928-7-5,Canisbay Wick,01955 611337 Primary 56 3.5 Open
+  %C
+  %Q
+ \end{verbatim}
+}
+
+\noindent
+以下のような出力が得られる．
+
+{\fontsize{10pt}{11pt} \selectfont
+ \begin{verbatim}
+　%P command is invoked with arg: 'contoso'
+　%C command is invoked with no arg
+ \end{verbatim}
+}
+
+まず，入力データについて説明する．
+コマンドは\verb|%P|, \verb|%C|, \verb|%Q|の3つを記述している．
+また，このCSVファイルには2件のデータを保存しており，
+それぞれの項目はカンマで区切られている．
+\%Qコマンドはプログラムの終了を意味している．
+
+また今回はデータの登録のみをバックグラウンドで行っている．
+出力結果については，コマンド名とその引数を表示させている．
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{考察} \label{sec:5}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\ref{sec:3}章のプログラムの説明，および，\ref{sec:4}章の使用法と実行結果から，
+演習課題として作成したプログラムが，
+\ref{sec:1}章で述べた基本要件と基本仕様のいずれも満たしていることを示した．
+ここでは，個別の課題のうち，以下の3つの項目について，考察を述べる．
+
+\begin{enumerate}
+\setlength{\parskip}{2pt} \setlength{\itemsep}{2pt}
+    \item 文字列操作の基礎：\texttt{subst}関数と\texttt{split}関数の実装
+    \item 構造体や配列を用いた名簿データの定義
+    \item 標準入力の取得と構文解析
+\end{enumerate}
+
+%--------------------------------------------------------------------%
+\subsection{「文字列操作の基礎：\texttt{subst}関数と\texttt{split}関数の実装」に関する考察}
+%--------------------------------------------------------------------%
+
+\subsubsection{「\texttt{subst}関数」に関する考察}
+
+ここでは\verb|subst|関数について考察を行う．練習問題の解答例を見てみると，
+\verb|main|関数内で複数の文字列を変換できるようにループさせており，
+また配列に保存した複数の文字を置換した結果も出力できるようにしてある．
+このことから，最終的に完成するプログラムでは，配列に保存された文字列を複数個
+\verb|subst|関数にかけるのではないかと考察できる．
+
+また，\verb|for|文で囲まれた部分に着目すると，
+他の言語での\verb|foreach|文に似たような動作をしていることがわかった．
+
+\subsubsection{「\texttt{split}関数」に関する考察}
+
+次に，\verb|split|関数についての考察を行う．
+今回工夫したところは，カンマを全て終端文字に置き換えて\verb|split|関数に渡すことで，
+文字列の先頭にポインタを合わせることで一気に文字列をコピーできることである．
+その後23行目で，ポインタを文字数+1(終端文字)移動させることで，次の文字列の文頭にポインタを移動している．
+
+%--------------------------------------------------------------------%
+\subsection{「構造体や配列を用いた名簿データの定義」に関する考察}
+%--------------------------------------------------------------------%
+
+構造体\verb|date|・\verb|profile|についての考察を行う．
+構造体\verb|date|について，年・月・日の3つを\verb|int|型で保存してある．
+また構造体\verb|profile|内では，IDを\verb|int|型，
+名前・住所・備考を\verb|char|型で保存してある．
+誕生日については，構造体\verb|date|で\verb|birthday|というメンバ変数を用いて格納してある．
+
+%--------------------------------------------------------------------%
+\subsection{「標準入力の取得と構文解析」に関する考察}
+%--------------------------------------------------------------------%
+
+\subsubsection{「\texttt{get\_line}関数」に関する考察}
+
+\verb|get_line|関数についての考察を行う．
+今回重要なポイントとなってくるところは，\verb|fgets|の最大文字数を1024ではなく1026に設定したところである．
+まず改行文字が格納されるので，1024文字に+1してある．
+また1024文字以上であることを確認するために，文字を1文字多く取得しそこに文字があるかで返り値を変えている．
+しかし，\verb|strlen|関数は終端文字をカウントしないので，\verb|strlen|関数の値が1025文字以上を含まないようにしている．
+
+\subsubsection{「\texttt{parse\_line}関数」に関する考察}
+
+\verb|parse_line|関数についての考察を行う．
+まずコマンドか否かの判別は，文字頭の値が\verb|%|で始まるかどうかで行っている．
+これは，データ入力の場合文字列の始めは\verb|[0-9]|で始まるので，上記の条件に含まれることはないからである．
+96行目では，ポインタの4文字目以降からヌル終端文字までを配列に格納している．
+
+%--------------------------------------------------------------------%
+\subsection{「CSVデータ登録処理の実装」に関する考察}
+%--------------------------------------------------------------------%
+
+\verb|new_profile|関数についての考察を行う．
+今回この関数を作成するにあたって一番苦戦したところは，\verb|atoi()|関数の存在を知ることであった．
+配列の要素に1桁ずつの値が入っているので，それぞれに$10^n$をかけて和を求める関数を最初は制作していた．
+その後C言語関数リファレンスで該当する関数を探し，ようやく\verb|atoi()|関数を発見した．
+また，誕生日の年・月・日を区切る処理も\verb|split|関数を再利用した．
+
+%--------------------------------------------------------------------%
+\subsection{「コマンド中継処理の実装」に関する考察}
+%--------------------------------------------------------------------%
+
+\verb|exec_command|関数についての考察を行う．
+この関数の場合，\verb|if|文の条件分岐よりも\verb|swich|文を使う方が短いコードで書けるので採用した．
+ポインタでパラメータを渡すことで，複数文字の入力にも対応している．
+また想定外の入力に対しても，処理を実行せずにエラー文を返す処理を挟んでいる．
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \section{感想} \label{sec:6}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{作成したプログラム} \label{sec:7}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+作成したプログラムを以下に添付する．
+なお，\ref{sec:1}章に示した課題については，
+\ref{sec:4}章で示したようにすべて正常に動作したことを付記しておく．
+
+\begin{Verbatim}[numbers=left, xleftmargin=10mm, numbersep=6pt,
+  fontsize=\small, baselinestretch=0.8]
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_LINE_LEN 1024
+
+struct date {
+    int y;
+    int m;
+    int d;
+};
+
+struct profile {
+    int id;
+    char name[70];
+    struct date birthday;
+    char address[70];
+    char note[80];
+};
+
+int profile_data_nitems = 0;
+struct profile profile_data_store[10000];
+
+void cmd_quit(void) {
+    exit(0);
+}
+
+void cmd_check(char cmd) {
+    fprintf(stderr, "%%%c command is invoked with no arg\n", cmd);
+}
+
+void cmd_print(char cmd, char *param) {
+    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
+}
+
+void cmd_read(char cmd, char *param) {
+    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
+}
+
+void cmd_write(char cmd, char *param) {
+    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
+}
+
+void cmd_find(char cmd, char *param) {
+    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
+}
+
+void cmd_sort(char cmd, char *param) {
+    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
+}
+
+void exec_command(char cmd, char *param) {
+    switch (cmd) {
+        case 'Q': cmd_quit();   break;
+        case 'C': cmd_check(cmd);  break;
+        case 'P': cmd_print(cmd, param);  break;
+        case 'R': cmd_read(cmd, param);   break;
+        case 'W': cmd_write(cmd, param);  break;
+        case 'F': cmd_find(cmd, param);   break;
+        case 'S': cmd_sort(cmd, param);   break;
+        default:
+        printf("Unregistered Command Is Entered.\n");
+    }
+}
+
+int subst(char *str, char c1, char c2) {
+    int diff = 0;
+    char *p;
+
+    p = str;
+    while (*p != '\0') {
+        if (*p == c1) {
+            *p = c2;
+            diff++;
+        }
+        p++;
+    }
+    return diff;
+}
+
+int split(char *str, char *ret[], char sep, int max) {
+    int i, count = 0;
+    subst(str, sep, '\0');
+    for (i=0; i<max; i++) {
+        ret[i] = str;
+        str += strlen(str)+1;
+        count++;
+    }
+    return count;
+}
+
+int get_line(char *line) {
+    if (fgets(line, MAX_LINE_LEN + 1, stdin) == NULL || strlen(line) > MAX_LINE_LEN
+                                                                        || *line == '\n') {
+        return 0;
+    } else {
+        subst(line, '\n', '\0');
+        return 1;
+    }
+}
+
+void new_profile(struct profile *profile_data_store, char *line) {
+    int max_line = 5, max_date = 3;
+    char *ret[80] = {0}, *date[80] = {0}, sep_line = ',', sep_date = '-';
+
+    split(line, ret, sep_line, max_line);
+    split(ret[2], date, sep_date, max_date);
+
+    profile_data_store->id = atoi(ret[0]);
+    strcpy(profile_data_store->name, ret[1]);
+
+    profile_data_store->birthday.y = atoi(date[0]);
+    profile_data_store->birthday.m = atoi(date[1]);
+    profile_data_store->birthday.d = atoi(date[2]);
+
+    strcpy(profile_data_store->address, ret[3]);
+    strcpy(profile_data_store->note, ret[4]);
+}
+
+void parse_line(char *line) {
+    char cmd, param[80] = {0};
+    if (*line == '%') {
+        cmd = *(line+1);
+        strcpy(param, line+3);
+        exec_command(cmd, param);
+    } else {
+        new_profile(&profile_data_store[profile_data_nitems++], line);
+    }
+}
+
+int main(void) {
+    char line[MAX_LINE_LEN + 1];
+    while (get_line(line)) {
+        parse_line(line);
+    }
+    return 0;
+}
+
+\end{Verbatim}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 参考文献
+%   実際に，参考にした書籍等の奥付などを見て書くこと．
+%   本文で引用する際は，\cite{book:algodata}のように書けばよい．
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{thebibliography}{99}
+  \bibitem{book:algodata} 平田富雄，アルゴリズムとデータ構造，森北出版，1990.
+  \bibitem{web:atoi} C言語のatoiで出来ること, https://arma-search.jp/article/clanguage-atoi, 2020/05/20.
+\end{thebibliography}
+
+%--------------------------------------------------------------------%
+\end{document}
