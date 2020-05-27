@@ -30,21 +30,16 @@ void cmd_quit(void)
 
 void cmd_check(char cmd)
 {
-    int total = 0;
-    while (profile_data_store[total].id != 0)
-        total++;
-    printf("%d profile(s)\n", total);
+    printf("%d profile(s)\n", profile_data_nitems);
 }
 
 void cmd_print(char cmd, char *param)
 {
-    int count, total = 0, num = atoi(param);
-    while (profile_data_store[total].id != 0)
-        total++;
+    int count, num = atoi(param);
     if (num == 0)
     {
         count = 0;
-        while (count < total)
+        while (count < profile_data_nitems)
         {
             printf("Id    : %d\n", profile_data_store[count].id);
             printf("Name  : %s\n", profile_data_store[count].name);
@@ -56,8 +51,8 @@ void cmd_print(char cmd, char *param)
     }
     else if (num > 0)
     {
-        if (num > total)
-            num = total;
+        if (num > profile_data_nitems)
+            num = profile_data_nitems;
         count = 0;
         while (count < num)
         {
@@ -71,10 +66,10 @@ void cmd_print(char cmd, char *param)
     }
     else if (num < 0)
     {
-        if (num < -total)
-            num = -total;
-        count = total + num;
-        while (count < total)
+        if (num < -profile_data_nitems)
+            num = -profile_data_nitems;
+        count = profile_data_nitems + num;
+        while (count < profile_data_nitems)
         {
             printf("Id    : %d\n", profile_data_store[count].id);
             printf("Name  : %s\n", profile_data_store[count].name);
