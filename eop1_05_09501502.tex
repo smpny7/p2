@@ -14,14 +14,14 @@
 
 %%======== レポートタイトル等 ======================================%%
 \title{プログラミング演習1 \\
-       第4回レポート}
+       第5回レポート}
 
 \author{氏名: 池田 海斗 (IKEDA, Kaito) \\
         学生番号: 09501502}
 
-\date{出題日: 2020年05月20日 \\
-      提出日: 2020年05月24日 \\
-      締切日: 2020年05月27日 \\}
+\date{出題日: 2020年05月27日 \\
+      提出日: 2020年05月27日 \\
+      締切日: 2020年06月03日 \\}
 
 %%======== 本文 ====================================================%%
 \begin{document}
@@ -203,6 +203,25 @@ ID, 氏名, 誕生日, 住所, 備考の5つの組み合わせで1つの名簿�
 そこに\verb|profile_data_nitems|番目の要素としてデータを保存する．
 また誕生日に関しては，\verb|split|関数を用いて年・月・日に細分化しデータを格納する．
 
+%--------------------------------------------------------------------%
+\subsection{コマンド中継処理の実装}
+%--------------------------------------------------------------------%
+
+\verb|exec_command(CMD, PARAM)|関数では，
+コマンド文字と引数を受け取りそれによって関数を呼び出す，
+案内所のような役割を行っている．
+一致するコマンドが見つからない場合，エラー文を出力し処理は行わないようになっている．
+
+%--------------------------------------------------------------------%
+\subsection{コマンドの実装：\texttt{\%P}コマンド}
+%--------------------------------------------------------------------%
+
+\verb|cmd_print(CMD, PARAM)|関数内では，
+入力された引数が0, 正, 負であるかによって条件分岐される．
+また，登録されている要素数の絶対値より大きい引数が入力された場合，
+要素数分の処理のみ実行する．
+また，出力のフォーマットは\verb|db_sample|と同じように揃えている．
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{プログラムの使用法と実行結果} \label{sec:4}
@@ -238,7 +257,7 @@ MacOS Catalina 10.15.4におけるターミナルのプロンプトである．
 
 {\fontsize{10pt}{11pt} \selectfont
  \begin{verbatim}
-   % gcc -Wall -o eop_04_09501502 eop_04_09501502.c
+   % gcc -Wall -o eop_05_09501502 eop_05_09501502.c
  \end{verbatim}
 }
 
@@ -253,7 +272,7 @@ CSVファイルを標準入力により与えることで，実行する例を�
 
 {\fontsize{10pt}{11pt} \selectfont
  \begin{verbatim}
-   $ ./eop_04_09501502.out < stdin.csv
+   $ ./eop_05_09501502.out < stdin.csv
  \end{verbatim}
 }
 
@@ -261,7 +280,142 @@ CSVファイルを標準入力により与えることで，実行する例を�
 \subsection{出力結果}
 %--------------------------------------------------------------------%
 
-プログラムの出力結果として，CSVデータの各項目が読みやすい形式で出力される．
+%---------------------------------------------------------------%
+\subsubsection{第1回 \texttt{subst}関数}
+%---------------------------------------------------------------%
+
+今回は標準入力は使用しない．
+第\ref{code:1}節に記述してあるプログラムを実行すると，以下のような出力が得られる．
+
+{\fontsize{10pt}{11pt} \selectfont
+ \begin{verbatim}
+    文字列: ABCDE
+    置換文字: A -> B
+
+    実行結果: BBCDE
+    差分: 1
+ \end{verbatim}
+}
+
+今回のプログラムにはユーザによる入力はないので，出力結果について説明する．
+1 $\cdot$ 2行目について，予め登録しておいた文字列\verb|ABCDE|の中から，
+文字\verb|A|の文字を\verb|B|に置換するプログラムであることを示す．
+3行目実行結果は置換後の文字列を表し，4行目には置換が行われた回数を表示している．
+
+%---------------------------------------------------------------%
+\subsubsection{第2回 \texttt{split}関数と\texttt{get\_line}関数}
+%---------------------------------------------------------------%
+
+第\ref{code:2}節に記述してあるプログラムを実行すると，
+プログラムの出力結果としてCSVデータの各項目が読みやすい形式で出力される．
+例えば，下記の \verb|cvsdata.csv| に対して，
+
+{\fontsize{10pt}{11pt} \selectfont
+ \begin{verbatim}
+  5100046,The Bridge,1845-11-2,14 Seafield Road Longman Inverness,SEN Unit 2.0 Open
+  5100127,Bower Primary School,1908-1-19,Bowermadden Bower Caithness,01955 641225 Pri...
+  5100224,Canisbay Primary School,1928-7-5,Canisbay Wick,01955 611337 Primary 56 3.5 Open
+  5100321,Castletown Primary School,1913-11-4,Castletown Thurso,01847 821256 01847 82...
+  5100429,Crossroads Primary School,1893-2-24,Dunnet Thurso,01847 851629 01847 851629 ...
+ \end{verbatim}
+}
+
+\noindent
+以下のような出力が得られる．
+
+{\fontsize{10pt}{11pt} \selectfont
+ \begin{verbatim}
+  Line1
+  >ret[0] = '5100046'
+  >ret[1] = 'The Bridge'
+  >ret[2] = '1845-11-2'
+  >ret[3] = '14 Seafield Road Longman Inverness'
+  >ret[4] = 'SEN Unit 2.0 Open'
+ Line2
+  >ret[0] = '5100127'
+  >ret[1] = 'Bower Primary School'
+  >ret[2] = '1908-1-19'
+  >ret[3] = 'Bowermadden Bower Caithness'
+  >ret[4] = '01955 641225 Primary 25 2.6 Open'
+ Line3
+  >ret[0] = '5100224'
+  >ret[1] = 'Canisbay Primary School'
+  >ret[2] = '1928-7-5'
+  >ret[3] = 'Canisbay Wick'
+  >ret[4] = '01955 611337 Primary 56 3.5 Open'
+ Line4
+  >ret[0] = '5100321'
+  >ret[1] = 'Castletown Primary School'
+  >ret[2] = '1913-11-4'
+  >ret[3] = 'Castletown Thurso'
+  >ret[4] = '01847 821256 01847 821256 Primary 137 8.5 Open'
+ Line5
+  >ret[0] = '5100429'
+  >ret[1] = 'Crossroads Primary School'
+  >ret[2] = '1893-2-24'
+  >ret[3] = 'Dunnet Thurso'
+  >ret[4] = '01847 851629 01847 851629 Primary 29 2.4 Open'
+ \end{verbatim}
+}
+
+まず，入力データについて説明する．
+このCSVファイルには5件のデータを保存しており，
+それぞれの項目はカンマで区切られている．
+
+また出力結果について，\verb|Line*|はCSVファイルの行数を表し，
+\verb|ret[*]|は配列の番号とその中に格納している文字列を表している．
+
+%---------------------------------------------------------------%
+\subsubsection{第3回 \texttt{parse\_line}関数}
+%---------------------------------------------------------------%
+
+第\ref{code:3}節に記述してあるプログラムを実行すると，
+プログラムの出力結果としてCSVデータの各項目が読みやすい形式で出力される．
+例えば，下記の \verb|cvsdata.csv| に対して，
+
+{\fontsize{10pt}{11pt} \selectfont
+ \begin{verbatim}
+  5100046,The Bridge,1845-11-2,14 Seafield Road Longman Inverness,SEN Unit 2.0 Open
+  %P contoso
+  5100224,Canisbay Primary School,1928-7-5,Canisbay Wick,01955 611337 Primary 56 3.5 Open
+  %C
+  %Q
+ \end{verbatim}
+}
+
+\noindent
+以下のような出力が得られる．
+
+{\fontsize{10pt}{11pt} \selectfont
+ \begin{verbatim}
+   >ret[0] = '5100046'
+   >ret[1] = 'The Bridge'
+   >ret[2] = '1845-11-2'
+   >ret[3] = '14 Seafield Road Longman Inverness'
+   >ret[4] = 'SEN Unit 2.0 Open'
+  %P command is invoked with arg: 'contoso'
+   >ret[0] = '5100224'
+   >ret[1] = 'Canisbay Primary School'
+   >ret[2] = '1928-7-5'
+   >ret[3] = 'Canisbay Wick'
+   >ret[4] = '01955 611337 Primary 56 3.5 Open'
+  %C command is invoked with no arg
+ \end{verbatim}
+}
+
+まず，入力データについて説明する．
+コマンドは\verb|%P|, \verb|%C|, \verb|%Q|の3つを記述している．
+また，このCSVファイルには2件のデータを保存しており，
+それぞれの項目はカンマで区切られている．
+
+また出力結果について，\verb|ret[*]|は配列の番号とその中に格納している文字列を表している．
+
+%---------------------------------------------------------------%
+\subsubsection{第4回 \texttt{new\_profile}関数}
+%---------------------------------------------------------------%
+
+第\ref{code:4}節に記述してあるプログラムを実行すると，
+プログラムの出力結果としてCSVデータの各項目が読みやすい形式で出力される．
 例えば，下記の \verb|stdin.csv| に対して，
 
 {\fontsize{10pt}{11pt} \selectfont
@@ -292,6 +446,84 @@ CSVファイルを標準入力により与えることで，実行する例を�
 
 また今回はデータの登録のみをバックグラウンドで行っている．
 出力結果については，コマンド名とその引数を表示させている．
+
+%---------------------------------------------------------------%
+\subsubsection{第5回 \texttt{\%C \%P}コマンド}
+%---------------------------------------------------------------%
+
+第\ref{code:5}節に記述してあるプログラムを実行すると，
+プログラムの出力結果としてCSVデータの各項目が読みやすい形式で出力される．
+例えば，下記の \verb|stdin.csv| に対して，
+
+{\fontsize{10pt}{11pt} \selectfont
+ \begin{verbatim}
+  5100046,The Bridge,1845-11-2,14 Seafield Road Longman Inverness,SEN Unit 2.0 Open
+  5100224,Canisbay Primary School,1928-7-5,Canisbay Wick,01955 611337 Primary 56 3.5 Open
+  %P 0
+  %P 2
+  %P -3
+  %C
+  %Q
+ \end{verbatim}
+}
+
+\noindent
+以下のような出力が得られる．
+
+{\fontsize{10pt}{11pt} \selectfont
+ \begin{verbatim}
+  Id    : 5100046
+  Name  : The Bridge
+  Birth : 1845-11-02
+  Addr. : 14 Seafield Road Longman Inverness
+  Comm. : SEN Unit 2.0 Open
+
+  Id    : 5100224
+  Name  : Canisbay Primary School
+  Birth : 1928-07-05
+  Addr. : Canisbay Wick
+  Comm. : 01955 611337 Primary 56 3.5 Open
+
+
+  Id    : 5100046
+  Name  : The Bridge
+  Birth : 1845-11-02
+  Addr. : 14 Seafield Road Longman Inverness
+  Comm. : SEN Unit 2.0 Open
+
+  Id    : 5100224
+  Name  : Canisbay Primary School
+  Birth : 1928-07-05
+  Addr. : Canisbay Wick
+  Comm. : 01955 611337 Primary 56 3.5 Open
+
+
+  Id    : 5100046
+  Name  : The Bridge
+  Birth : 1845-11-02
+  Addr. : 14 Seafield Road Longman Inverness
+  Comm. : SEN Unit 2.0 Open
+
+  Id    : 5100224
+  Name  : Canisbay Primary School
+  Birth : 1928-07-05
+  Addr. : Canisbay Wick
+  Comm. : 01955 611337 Primary 56 3.5 Open
+
+  2 profile(s)
+ \end{verbatim}
+}
+
+まず，入力データについて説明する．
+コマンドは\verb|%P|, \verb|%C|, \verb|%Q|の3つを記述している．
+また，このCSVファイルには2件のデータを保存しており，
+それぞれの項目はカンマで区切られている．
+出力結果については，コマンド名とその引数を表示させている．
+
+\verb|%Q|コマンドはプログラムの終了を意味している．
+\verb|%P|コマンドでは，引数が0の場合・引数が要素数と同じ場合・引数の絶対値が要素数よりも多い場合の
+3通りを実行している．
+また\verb|%C|コマンドを実行すると，要素数が表示される．
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -349,9 +581,8 @@ CSVファイルを標準入力により与えることで，実行する例を�
 \subsubsection{「\texttt{get\_line}関数」に関する考察}
 
 \verb|get_line|関数についての考察を行う．
-今回重要なポイントとなってくるところは，\verb|fgets|の最大文字数を1024ではなく1026に設定したところである．
-まず改行文字が格納されるので，1024文字に+1してある．
-また1024文字以上であることを確認するために，文字を1文字多く取得しそこに文字があるかで返り値を変えている．
+今回重要なポイントとなってくるところは，\verb|fgets|の最大文字数を1024ではなく1025に設定したところである．
+1024文字以上であることを確認するために，文字を1文字多く取得しそこに文字があるかで返り値を変えている．
 しかし，\verb|strlen|関数は終端文字をカウントしないので，\verb|strlen|関数の値が1025文字以上を含まないようにしている．
 
 \subsubsection{「\texttt{parse\_line}関数」に関する考察}
@@ -380,6 +611,18 @@ CSVファイルを標準入力により与えることで，実行する例を�
 ポインタでパラメータを渡すことで，複数文字の入力にも対応している．
 また想定外の入力に対しても，処理を実行せずにエラー文を返す処理を挟んでいる．
 
+%--------------------------------------------------------------------%
+\subsection{コマンドの実装：\texttt{\%P}コマンド}
+%--------------------------------------------------------------------%
+
+\verb|cmd_print(CMD, PARAM)|関数についての考察を行う．
+まず，\verb|atoi()|関数で引数を\verb|int|型に変換する．
+引数が0の場合，正の場合，負の場合で条件分岐を行う．
+また，引数の絶対値が要素数よりも大きい場合は，要素数を用いて処理を行う．
+今回考慮するべきは，引数が入力されていない場合や数字以外が入力された場合であり，
+\verb|atoi()|関数ではそのような値に$0$という値を返すため
+\verb|db_sample|の仕様通りになる．
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \section{感想} \label{sec:6}
@@ -394,8 +637,227 @@ CSVファイルを標準入力により与えることで，実行する例を�
 なお，\ref{sec:1}章に示した課題については，
 \ref{sec:4}章で示したようにすべて正常に動作したことを付記しておく．
 
+%---------------------------------------------------------------%
+\subsection{第1回 \texttt{subst}関数} \label{code:1}
+%---------------------------------------------------------------%
+
 \begin{Verbatim}[numbers=left, xleftmargin=10mm, numbersep=6pt,
-  fontsize=\small, baselinestretch=0.8]
+    fontsize=\small, baselinestretch=0.8]
+#include <stdio.h>
+
+int subst(char *str, char c1, char c2) {
+  int diff = 0;
+  char *p;
+
+  p = str;
+
+  while (*p != '\0') {
+    if (*p == c1) {
+      *p = c2;
+      diff++;
+    }
+    p++;
+  }
+
+  return diff;
+}
+
+int main(void) {
+  char c1 = 'A';
+  char c2 = 'B';
+  char s[80] = "ABCDE";
+
+  printf("文字列: %s\n置換文字: %c -> %c\n\n", s, c1, c2);
+  printf("実行結果: %s\n差分: %d\n", s, subst(s, c1, c2));
+}
+
+\end{Verbatim}
+
+%---------------------------------------------------------------%
+\subsection{第2回 \texttt{split}関数と\texttt{get\_line}関数} \label{code:2}
+%---------------------------------------------------------------%
+
+\begin{Verbatim}[numbers=left, xleftmargin=10mm, numbersep=6pt,
+    fontsize=\small, baselinestretch=0.8]
+#include <stdio.h>
+#include <string.h>
+
+int subst(char *str, char c1, char c2) {
+    int diff = 0;
+    char *p;
+
+    p = str;
+    while (*p != '\0') {
+        if (*p == c1) {
+            *p = c2;
+            diff++;
+        }
+        p++;
+    }
+    return diff;
+}
+
+int split(char *str, char *ret[], char sep, int max) {
+    int i, count = 0;
+    for (i=0; i<max; i++) {
+        ret[i] = str;
+        str += strlen(str)+1;
+        count++;
+    }
+    return count;
+}
+
+int get_line(char *line) {
+    if (fgets(line, 1026, stdin) == NULL || strlen(line) >1024 || *line == '\n') {
+        return 0;
+    } else {
+        subst(line, '\n', '\0');
+        subst(line, ',', '\0');
+        return 1;
+    }
+}
+
+int main(void) {
+    int i, count = 1, max = 5;
+    char line[1024] = {0};
+    char *ret[80] = {0};
+    char sep = ',';
+
+    while (get_line(line)) {
+        printf("Line%d\n", count++);
+        split(line, ret, sep, max);
+        for (i = 0; i < max; i++) {
+            printf(" >ret[%d] = '%s'\n", i, ret[i]);
+        }
+    }
+}
+
+\end{Verbatim}
+
+%---------------------------------------------------------------%
+\subsection{第3回 \texttt{parse\_line}関数} \label{code:3}
+%---------------------------------------------------------------%
+
+\begin{Verbatim}[numbers=left, xleftmargin=10mm, numbersep=6pt,
+    fontsize=\small, baselinestretch=0.8]
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_LINE_LEN 1024
+
+void cmd_quit(void) {
+    exit(0);
+}
+
+void cmd_check(char cmd) {
+    fprintf(stderr, "%%%c command is invoked with no arg\n", cmd);
+}
+
+void cmd_print(char cmd, char *param) {
+    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
+}
+
+void cmd_read(char cmd, char *param) {
+    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
+}
+
+void cmd_write(char cmd, char *param) {
+    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
+}
+
+void cmd_find(char cmd, char *param) {
+    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
+}
+
+void cmd_sort(char cmd, char *param) {
+    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
+}
+
+void exec_command(char cmd, char *param) {
+    switch (cmd) {
+        case 'Q': cmd_quit();   break;
+        case 'C': cmd_check(cmd);  break;
+        case 'P': cmd_print(cmd, param);  break;
+        case 'R': cmd_read(cmd, param);   break;
+        case 'W': cmd_write(cmd, param);  break;
+        case 'F': cmd_find(cmd, param);   break;
+        case 'S': cmd_sort(cmd, param);   break;
+        default:
+        printf("Unregistered Command Is Entered.\n");
+    }
+}
+
+int subst(char *str, char c1, char c2) {
+    int diff = 0;
+    char *p;
+
+    p = str;
+    while (*p != '\0') {
+        if (*p == c1) {
+            *p = c2;
+            diff++;
+        }
+        p++;
+    }
+    return diff;
+}
+
+int split(char *str, char *ret[], char sep, int max) {
+    int i, count = 0;
+    subst(str, sep, '\0');
+    for (i=0; i<max; i++) {
+        ret[i] = str;
+        str += strlen(str)+1;
+        count++;
+    }
+    return count;
+}
+
+int get_line(char *line) {
+    if (fgets(line, MAX_LINE_LEN + 1, stdin) == NULL || strlen(line) > MAX_LINE_LEN || *line == '\n') {
+        return 0;
+    } else {
+        subst(line, '\n', '\0');
+        return 1;
+    }
+}
+
+void new_profile(char *line) {
+    int i, max = 5;
+    char *ret[80] = {0}, sep = ',';
+    split(line, ret, sep, max);
+    for (i = 0; i < max; i++) {
+        printf(" >ret[%d] = '%s'\n", i, ret[i]);
+    }
+}
+
+void parse_line(char *line) {
+    char cmd, param[80] = {0};
+    if (*line == '%') {
+        cmd = *(line+1);
+        strcpy(param, line+3);
+        exec_command(cmd, param);
+    } else {
+        new_profile(line);
+    }
+}
+
+int main(void) {
+    char line[MAX_LINE_LEN + 1];
+    while (get_line(line)) {
+        parse_line(line);
+    }
+    return 0;
+}
+\end{Verbatim}
+
+%---------------------------------------------------------------%
+\subsection{第4回 \texttt{new\_profile}関数} \label{code:4}
+%---------------------------------------------------------------%
+
+\begin{Verbatim}[numbers=left, xleftmargin=10mm, numbersep=6pt,
+    fontsize=\small, baselinestretch=0.8]
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -488,8 +950,7 @@ int split(char *str, char *ret[], char sep, int max) {
 }
 
 int get_line(char *line) {
-    if (fgets(line, MAX_LINE_LEN + 1, stdin) == NULL || strlen(line) > MAX_LINE_LEN
-                                                                        || *line == '\n') {
+    if (fgets(line, MAX_LINE_LEN + 1, stdin) == NULL || strlen(line) > MAX_LINE_LEN || *line == '\n') {
         return 0;
     } else {
         subst(line, '\n', '\0');
@@ -529,6 +990,235 @@ void parse_line(char *line) {
 int main(void) {
     char line[MAX_LINE_LEN + 1];
     while (get_line(line)) {
+        parse_line(line);
+    }
+    return 0;
+}
+
+\end{Verbatim}
+
+%---------------------------------------------------------------%
+\subsection{第5回 \texttt{\%C \%P}コマンド} \label{code:5}
+%---------------------------------------------------------------%
+
+\begin{Verbatim}[numbers=left, xleftmargin=10mm, numbersep=6pt,
+    fontsize=\small, baselinestretch=0.8]
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_LINE_LEN 1024
+
+struct date
+{
+    int y;
+    int m;
+    int d;
+};
+
+struct profile
+{
+    int id;
+    char name[70];
+    struct date birthday;
+    char address[70];
+    char note[80];
+};
+
+int profile_data_nitems = 0;
+struct profile profile_data_store[10000];
+
+void cmd_quit(void)
+{
+    exit(0);
+}
+
+void cmd_check(char cmd)
+{
+    printf("%d profile(s)\n", profile_data_nitems);
+}
+
+void cmd_print(char cmd, char *param)
+{
+    int count, num = atoi(param);
+    if (num == 0) // 引数が0の場合
+    {
+        count = 0;
+        while (count < profile_data_nitems)
+        {
+            printf("Id    : %d\n", profile_data_store[count].id);
+            printf("Name  : %s\n", profile_data_store[count].name);
+            printf("Birth : %04d-%02d-%02d\n", profile_data_store[count].birthday.y, profile_data_store[count].birthday.m, profile_data_store[count].birthday.d);
+            printf("Addr. : %s\n", profile_data_store[count].address);
+            printf("Comm. : %s\n\n", profile_data_store[count].note);
+            count++;
+        }
+    }
+    else if (num > 0) // 引数が正の場合
+    {
+        if (num > profile_data_nitems) // 要素数よりも大きい値が入力された場合
+            num = profile_data_nitems;
+        count = 0;
+        while (count < num)
+        {
+            printf("Id    : %d\n", profile_data_store[count].id);
+            printf("Name  : %s\n", profile_data_store[count].name);
+            printf("Birth : %04d-%02d-%02d\n", profile_data_store[count].birthday.y, profile_data_store[count].birthday.m, profile_data_store[count].birthday.d);
+            printf("Addr. : %s\n", profile_data_store[count].address);
+            printf("Comm. : %s\n\n", profile_data_store[count].note);
+            count++;
+        }
+    }
+    else if (num < 0) // 引数が負の場合
+    {
+        if (num < -profile_data_nitems) // 要素数よりも大きい値が入力された場合
+            num = -profile_data_nitems;
+        count = profile_data_nitems + num;
+        while (count < profile_data_nitems)
+        {
+            printf("Id    : %d\n", profile_data_store[count].id);
+            printf("Name  : %s\n", profile_data_store[count].name);
+            printf("Birth : %04d-%02d-%02d\n", profile_data_store[count].birthday.y, profile_data_store[count].birthday.m, profile_data_store[count].birthday.d);
+            printf("Addr. : %s\n", profile_data_store[count].address);
+            printf("Comm. : %s\n\n", profile_data_store[count].note);
+            count++;
+        }
+    }
+}
+
+void cmd_read(char cmd, char *param)
+{
+    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
+}
+
+void cmd_write(char cmd, char *param)
+{
+    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
+}
+
+void cmd_find(char cmd, char *param)
+{
+    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
+}
+
+void cmd_sort(char cmd, char *param)
+{
+    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
+}
+
+void exec_command(char cmd, char *param)
+{
+    switch (cmd)
+    {
+    case 'Q':
+        cmd_quit();
+        break;
+    case 'C':
+        cmd_check(cmd);
+        break;
+    case 'P':
+        cmd_print(cmd, param);
+        break;
+    case 'R':
+        cmd_read(cmd, param);
+        break;
+    case 'W':
+        cmd_write(cmd, param);
+        break;
+    case 'F':
+        cmd_find(cmd, param);
+        break;
+    case 'S':
+        cmd_sort(cmd, param);
+        break;
+    default:
+        printf("Unregistered Command Is Entered.\n");
+    }
+}
+
+int subst(char *str, char c1, char c2)
+{
+    int diff = 0;
+    char *p;
+
+    p = str; // 文字の先頭にポインタをあわせる
+    while (*p != '\0')
+    {
+        if (*p == c1)
+        {
+            *p = c2;
+            diff++;
+        }
+        p++;
+    }
+    return diff;
+}
+
+int split(char *str, char *ret[], char sep, int max)
+{
+    int i, count = 0;
+    subst(str, sep, '\0'); // カンマをNULL終端に置き換え
+    for (i = 0; i < max; i++)
+    {
+        ret[i] = str;
+        str += strlen(str) + 1;
+        count++;
+    }
+    return count;
+}
+
+int get_line(char *line)
+{
+    if (fgets(line, MAX_LINE_LEN + 1, stdin) == NULL || strlen(line) > MAX_LINE_LEN || *line == '\n')
+    {
+        return 0;
+    }
+    else
+    {
+        subst(line, '\n', '\0');
+        return 1;
+    }
+}
+
+void new_profile(struct profile *profile_data_store, char *line)
+{
+    int max_line = 5, max_date = 3;
+    char *ret[80] = {0}, *date[80] = {0}, sep_line = ',', sep_date = '-';
+
+    split(line, ret, sep_line, max_line);
+    split(ret[2], date, sep_date, max_date);
+
+    profile_data_store->id = atoi(ret[0]);
+    strcpy(profile_data_store->name, ret[1]);
+
+    profile_data_store->birthday.y = atoi(date[0]);
+    profile_data_store->birthday.m = atoi(date[1]);
+    profile_data_store->birthday.d = atoi(date[2]);
+
+    strcpy(profile_data_store->address, ret[3]);
+    strcpy(profile_data_store->note, ret[4]);
+}
+
+void parse_line(char *line)
+{
+    char cmd, param[80] = {0};
+    if (*line == '%')
+    {
+        cmd = *(line + 1);
+        strcpy(param, line + 3);
+        exec_command(cmd, param);
+    }
+    else
+    {
+        new_profile(&profile_data_store[profile_data_nitems++], line);
+    }
+}
+
+int main(void)
+{
+    char line[MAX_LINE_LEN + 1];
+    while (get_line(line))
+    {
         parse_line(line);
     }
     return 0;

@@ -36,7 +36,7 @@ void cmd_check(char cmd)
 void cmd_print(char cmd, char *param)
 {
     int count, num = atoi(param);
-    if (num == 0)
+    if (num == 0) // 引数が0の場合
     {
         count = 0;
         while (count < profile_data_nitems)
@@ -49,9 +49,9 @@ void cmd_print(char cmd, char *param)
             count++;
         }
     }
-    else if (num > 0)
+    else if (num > 0) // 引数が正の場合
     {
-        if (num > profile_data_nitems)
+        if (num > profile_data_nitems) // 要素数よりも大きい値が入力された場合
             num = profile_data_nitems;
         count = 0;
         while (count < num)
@@ -64,9 +64,9 @@ void cmd_print(char cmd, char *param)
             count++;
         }
     }
-    else if (num < 0)
+    else if (num < 0) // 引数が負の場合
     {
-        if (num < -profile_data_nitems)
+        if (num < -profile_data_nitems) // 要素数よりも大きい値が入力された場合
             num = -profile_data_nitems;
         count = profile_data_nitems + num;
         while (count < profile_data_nitems)
@@ -136,7 +136,7 @@ int subst(char *str, char c1, char c2)
     int diff = 0;
     char *p;
 
-    p = str;
+    p = str; // 文字の先頭にポインタをあわせる
     while (*p != '\0')
     {
         if (*p == c1)
@@ -152,7 +152,7 @@ int subst(char *str, char c1, char c2)
 int split(char *str, char *ret[], char sep, int max)
 {
     int i, count = 0;
-    subst(str, sep, '\0');
+    subst(str, sep, '\0'); // カンマをNULL終端に置き換え
     for (i = 0; i < max; i++)
     {
         ret[i] = str;
