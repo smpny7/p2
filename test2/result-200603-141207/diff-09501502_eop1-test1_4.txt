@@ -1,0 +1,60 @@
+Id    : 8600228							Id    : 8600228
+Name  : Busby Primary School					Name  : Busby Primary School
+Birth : 1816-01-21						Birth : 1816-01-21
+Addr. : Church Road Clarkston					Addr. : Church Road Clarkston
+Comm. : 0141-644-1866 0141 6441868 Primary 169 12.5 Open	Comm. : 0141-644-1866 0141 6441868 Primary 169 12.5 Open
+
+Id    : 5422825							Id    : 5422825
+Name  : Gateside Primary School					Name  : Gateside Primary School
+Birth : 1993-07-01						Birth : 1993-07-01
+Addr. : Main Road Gateside Cupar				Addr. : Main Road Gateside Cupar
+Comm. : 01337 860427 Primary 16 1.4 Open			Comm. : 01337 860427 Primary 16 1.4 Open
+
+Id    : 8445044							Id    : 8445044
+Name  : Duntarvie Pre-School Assessment Centre			Name  : Duntarvie Pre-School Assessment Centre
+Birth : 1945-09-01						Birth : 1945-09-01
+Addr. : c/o Cadder Primary School 60 Herma Street Glasgow	Addr. : c/o Cadder Primary School 60 Herma Street Glasgow
+Comm. : 0141 9463835 Special 1.0 Open				Comm. : 0141 9463835 Special 1.0 Open
+
+Id    : 5946123							Id    : 5946123
+Name  : Carrutherstown School					Name  : Carrutherstown School
+Birth : 1907-07-27						Birth : 1907-07-27
+Addr. : Carrutherstown Dumfries					Addr. : Carrutherstown Dumfries
+Comm. : 01387 840644 Primary 43 2.3 Open			Comm. : 01387 840644 Primary 43 2.3 Open
+
+Id    : 8235732							Id    : 8235732
+Name  : Belmont Academy						Name  : Belmont Academy
+Birth : 1940-09-24						Birth : 1940-09-24
+Addr. : Belmont Road Ayr					Addr. : Belmont Road Ayr
+Comm. : 01292 281733/4 01292 611113 Secondary 1205 77.0 Open	Comm. : 01292 281733/4 01292 611113 Secondary 1205 77.0 Open
+
+Id    : 5946123							Id    : 5946123
+Name  : Carrutherstown School					Name  : Carrutherstown School
+Birth : 1907-07-27						Birth : 1907-07-27
+Addr. : Carrutherstown Dumfries					Addr. : Carrutherstown Dumfries
+Comm. : 01387 840644 Primary 43 2.3 Open			Comm. : 01387 840644 Primary 43 2.3 Open
+
+Id    : 8235732							Id    : 8235732
+Name  : Belmont Academy						Name  : Belmont Academy
+Birth : 1940-09-24						Birth : 1940-09-24
+Addr. : Belmont Road Ayr					Addr. : Belmont Road Ayr
+Comm. : 01292 281733/4 01292 611113 Secondary 1205 77.0 Open	Comm. : 01292 281733/4 01292 611113 Secondary 1205 77.0 Open
+
+Id    : 8445044							Id    : 8445044
+Name  : Duntarvie Pre-School Assessment Centre			Name  : Duntarvie Pre-School Assessment Centre
+Birth : 1945-09-01						Birth : 1945-09-01
+Addr. : c/o Cadder Primary School 60 Herma Street Glasgow	Addr. : c/o Cadder Primary School 60 Herma Street Glasgow
+Comm. : 0141 9463835 Special 1.0 Open				Comm. : 0141 9463835 Special 1.0 Open
+
+Id    : 5946123							Id    : 5946123
+Name  : Carrutherstown School					Name  : Carrutherstown School
+Birth : 1907-07-27						Birth : 1907-07-27
+Addr. : Carrutherstown Dumfries					Addr. : Carrutherstown Dumfries
+Comm. : 01387 840644 Primary 43 2.3 Open			Comm. : 01387 840644 Primary 43 2.3 Open
+
+Id    : 8235732							Id    : 8235732
+Name  : Belmont Academy						Name  : Belmont Academy
+Birth : 1940-09-24						Birth : 1940-09-24
+Addr. : Belmont Road Ayr					Addr. : Belmont Road Ayr
+Comm. : 01292 281733/4 01292 611113 Secondary 1205 77.0 Open	Comm. : 01292 281733/4 01292 611113 Secondary 1205 77.0 Open
+

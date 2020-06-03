@@ -1,0 +1,9 @@
+8600228,Busby Primary School,1816-1-21,Church Road Clarkston,0141-644-1866 0141 6441868 Primary 169 12.5 Open
+5422825,Gateside Primary School,1993-7-1,Main Road Gateside Cupar,01337 860427 Primary 16 1.4 Open
+8445044,Duntarvie Pre-School Assessment Centre,1945-9-1,c/o Cadder Primary School 60 Herma Street Glasgow,0141 9463835 Special 1.0 Open
+5946123,Carrutherstown School,1907-7-27,Carrutherstown Dumfries,01387 840644 Primary 43 2.3 Open
+8235732,Belmont Academy,1940-9-24,Belmont Road Ayr,01292 281733/4 01292 611113 Secondary 1205 77.0 Open
+%P 0
+%P -2
+%P -3
+%Q

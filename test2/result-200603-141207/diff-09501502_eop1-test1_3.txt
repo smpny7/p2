@@ -1,0 +1,60 @@
+Id    : 5946328							Id    : 5946328
+Name  : Eastriggs School					Name  : Eastriggs School
+Birth : 1954-09-01						Birth : 1954-09-01
+Addr. : Annan Road Eastriggs Annan				Addr. : Annan Road Eastriggs Annan
+Comm. : 01461 40301 01461 40016 Primary 181 9.4 Open		Comm. : 01461 40301 01461 40016 Primary 181 9.4 Open
+
+Id    : 5327229							Id    : 5327229
+Name  : Rosebank Primary School					Name  : Rosebank Primary School
+Birth : 1823-05-07						Birth : 1823-05-07
+Addr. : Rosebank Road Dundee					Addr. : Rosebank Road Dundee
+Comm. : 01382 435301 01382 435303 Primary 154 11.3 Open		Comm. : 01382 435301 01382 435303 Primary 154 11.3 Open
+
+Id    : 5282039							Id    : 5282039
+Name  : Robert Gordon's College					Name  : Robert Gordon's College
+Birth : 1833-08-15						Birth : 1833-08-15
+Addr. : Schoolhill Aberdeen					Addr. : Schoolhill Aberdeen
+Comm. : 01224 646346 01224 630301 Primary 411 27.3 Secondary 	Comm. : 01224 646346 01224 630301 Primary 411 27.3 Secondary 
+
+Id    : 5349427							Id    : 5349427
+Name  : Struan Primary School					Name  : Struan Primary School
+Birth : 1865-05-18						Birth : 1865-05-18
+Addr. : Calvine Pitlochry					Addr. : Calvine Pitlochry
+Comm. : 01796 483239 01796 483318 Primary 17 1.2 Open		Comm. : 01796 483239 01796 483318 Primary 17 1.2 Open
+
+Id    : 5229227							Id    : 5229227
+Name  : Rayne North School					Name  : Rayne North School
+Birth : 1907-10-04						Birth : 1907-10-04
+Addr. : Meikle Wartle Inverurie Aberdeenshire			Addr. : Meikle Wartle Inverurie Aberdeenshire
+Comm. : 01464 851218 01464 851598 Primary 39 2.3 Open		Comm. : 01464 851218 01464 851598 Primary 39 2.3 Open
+
+Id    : 5946328							Id    : 5946328
+Name  : Eastriggs School					Name  : Eastriggs School
+Birth : 1954-09-01						Birth : 1954-09-01
+Addr. : Annan Road Eastriggs Annan				Addr. : Annan Road Eastriggs Annan
+Comm. : 01461 40301 01461 40016 Primary 181 9.4 Open		Comm. : 01461 40301 01461 40016 Primary 181 9.4 Open
+
+Id    : 5327229							Id    : 5327229
+Name  : Rosebank Primary School					Name  : Rosebank Primary School
+Birth : 1823-05-07						Birth : 1823-05-07
+Addr. : Rosebank Road Dundee					Addr. : Rosebank Road Dundee
+Comm. : 01382 435301 01382 435303 Primary 154 11.3 Open		Comm. : 01382 435301 01382 435303 Primary 154 11.3 Open
+
+Id    : 5946328							Id    : 5946328
+Name  : Eastriggs School					Name  : Eastriggs School
+Birth : 1954-09-01						Birth : 1954-09-01
+Addr. : Annan Road Eastriggs Annan				Addr. : Annan Road Eastriggs Annan
+Comm. : 01461 40301 01461 40016 Primary 181 9.4 Open		Comm. : 01461 40301 01461 40016 Primary 181 9.4 Open
+
+Id    : 5327229							Id    : 5327229
+Name  : Rosebank Primary School					Name  : Rosebank Primary School
+Birth : 1823-05-07						Birth : 1823-05-07
+Addr. : Rosebank Road Dundee					Addr. : Rosebank Road Dundee
+Comm. : 01382 435301 01382 435303 Primary 154 11.3 Open		Comm. : 01382 435301 01382 435303 Primary 154 11.3 Open
+
+Id    : 5282039							Id    : 5282039
+Name  : Robert Gordon's College					Name  : Robert Gordon's College
+Birth : 1833-08-15						Birth : 1833-08-15
+Addr. : Schoolhill Aberdeen					Addr. : Schoolhill Aberdeen
+Comm. : 01224 646346 01224 630301 Primary 411 27.3 Secondary 	Comm. : 01224 646346 01224 630301 Primary 411 27.3 Secondary 
+

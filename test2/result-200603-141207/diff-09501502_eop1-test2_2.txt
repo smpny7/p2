@@ -1,0 +1,84 @@
+Id    : 5146038							Id    : 5146038
+Name  : Kingussie High School					Name  : Kingussie High School
+Birth : 1869-08-01						Birth : 1869-08-01
+Addr. : Ruthven Road Kingussie					Addr. : Ruthven Road Kingussie
+Comm. : 01540 661475 01540 661123 Secondary 382 37.2 Integrat	Comm. : 01540 661475 01540 661123 Secondary 382 37.2 Integrat
+
+Id    : 8430721							Id    : 8430721
+Name  : Victoria Primary School					Name  : Victoria Primary School
+Birth : 1963-05-13						Birth : 1963-05-13
+Addr. : 67 Batson Street Govanhill Glasgow			Addr. : 67 Batson Street Govanhill Glasgow
+Comm. : 0141 4232759 0141 433 2724 Primary 130 8.6 Open		Comm. : 0141 4232759 0141 433 2724 Primary 130 8.6 Open
+
+Id    : 5127823							Id    : 5127823
+Name  : Broadford Primary School				Name  : Broadford Primary School
+Birth : 1838-06-16						Birth : 1838-06-16
+Addr. : Broadford Isle Of Skye					Addr. : Broadford Isle Of Skye
+Comm. : 01471 822453 01471 822378 Primary 83 6.8 Open		Comm. : 01471 822453 01471 822378 Primary 83 6.8 Open
+
+Id    : 8109524							Id    : 8109524
+Name  : Tayvallich Primary School				Name  : Tayvallich Primary School
+Birth : 1896-12-22						Birth : 1896-12-22
+Addr. : Tayvallich Lochgilphead Argyll				Addr. : Tayvallich Lochgilphead Argyll
+Comm. : 01546 870220 01546 870220 Primary 25 1.9 Open		Comm. : 01546 870220 01546 870220 Primary 25 1.9 Open
+
+Id    : 8241023							Id    : 8241023
+Name  : Logan Primary School					Name  : Logan Primary School
+Birth : 1927-05-12						Birth : 1927-05-12
+Addr. : Logangate Terrace Cumnock				Addr. : Logangate Terrace Cumnock
+Comm. : 01290 421916 01290 425583 Primary 129 8.0 Open		Comm. : 01290 421916 01290 425583 Primary 129 8.0 Open
+
+Id    : 5146038							Id    : 5146038
+Name  : Kingussie High School					Name  : Kingussie High School
+Birth : 1869-08-01						Birth : 1869-08-01
+Addr. : Ruthven Road Kingussie					Addr. : Ruthven Road Kingussie
+Comm. : 01540 661475 01540 661123 Secondary 382 37.2 Integrat	Comm. : 01540 661475 01540 661123 Secondary 382 37.2 Integrat
+
+Id    : 8430721							Id    : 8430721
+Name  : Victoria Primary School					Name  : Victoria Primary School
+Birth : 1963-05-13						Birth : 1963-05-13
+Addr. : 67 Batson Street Govanhill Glasgow			Addr. : 67 Batson Street Govanhill Glasgow
+Comm. : 0141 4232759 0141 433 2724 Primary 130 8.6 Open		Comm. : 0141 4232759 0141 433 2724 Primary 130 8.6 Open
+
+Id    : 5127823							Id    : 5127823
+Name  : Broadford Primary School				Name  : Broadford Primary School
+Birth : 1838-06-16						Birth : 1838-06-16
+Addr. : Broadford Isle Of Skye					Addr. : Broadford Isle Of Skye
+Comm. : 01471 822453 01471 822378 Primary 83 6.8 Open		Comm. : 01471 822453 01471 822378 Primary 83 6.8 Open
+
+Id    : 8109524							Id    : 8109524
+Name  : Tayvallich Primary School				Name  : Tayvallich Primary School
+Birth : 1896-12-22						Birth : 1896-12-22
+Addr. : Tayvallich Lochgilphead Argyll				Addr. : Tayvallich Lochgilphead Argyll
+Comm. : 01546 870220 01546 870220 Primary 25 1.9 Open		Comm. : 01546 870220 01546 870220 Primary 25 1.9 Open
+
+Id    : 8241023							Id    : 8241023
+Name  : Logan Primary School					Name  : Logan Primary School
+Birth : 1927-05-12						Birth : 1927-05-12
+Addr. : Logangate Terrace Cumnock				Addr. : Logangate Terrace Cumnock
+Comm. : 01290 421916 01290 425583 Primary 129 8.0 Open		Comm. : 01290 421916 01290 425583 Primary 129 8.0 Open
+
+Id    : 5146038							Id    : 5146038
+Name  : Kingussie High School					Name  : Kingussie High School
+Birth : 1869-08-01						Birth : 1869-08-01
+Addr. : Ruthven Road Kingussie					Addr. : Ruthven Road Kingussie
+Comm. : 01540 661475 01540 661123 Secondary 382 37.2 Integrat	Comm. : 01540 661475 01540 661123 Secondary 382 37.2 Integrat
+
+Id    : 8430721							Id    : 8430721
+Name  : Victoria Primary School					Name  : Victoria Primary School
+Birth : 1963-05-13						Birth : 1963-05-13
+Addr. : 67 Batson Street Govanhill Glasgow			Addr. : 67 Batson Street Govanhill Glasgow
+Comm. : 0141 4232759 0141 433 2724 Primary 130 8.6 Open		Comm. : 0141 4232759 0141 433 2724 Primary 130 8.6 Open
+
+Id    : 5127823							Id    : 5127823
+Name  : Broadford Primary School				Name  : Broadford Primary School
+Birth : 1838-06-16						Birth : 1838-06-16
+Addr. : Broadford Isle Of Skye					Addr. : Broadford Isle Of Skye
+Comm. : 01471 822453 01471 822378 Primary 83 6.8 Open		Comm. : 01471 822453 01471 822378 Primary 83 6.8 Open
+
+Id    : 8109524							Id    : 8109524
+Name  : Tayvallich Primary School				Name  : Tayvallich Primary School
+Birth : 1896-12-22						Birth : 1896-12-22
+Addr. : Tayvallich Lochgilphead Argyll				Addr. : Tayvallich Lochgilphead Argyll
+Comm. : 01546 870220 01546 870220 Primary 25 1.9 Open		Comm. : 01546 870220 01546 870220 Primary 25 1.9 Open
+

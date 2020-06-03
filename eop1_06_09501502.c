@@ -17,7 +17,7 @@ struct profile
     char name[70];
     struct date birthday;
     char address[70];
-    char note[80];
+    char note[1024];
 };
 
 int profile_data_nitems = 0;
@@ -127,7 +127,7 @@ void exec_command(char cmd, char *param)
         cmd_sort(cmd, param);
         break;
     default:
-        printf("Unregistered Command Is Entered.\n");
+        break;
     }
 }
 
@@ -151,14 +151,19 @@ int subst(char *str, char c1, char c2)
 
 int split(char *str, char *ret[], char sep, int max)
 {
-    int i, count = 0;
-    subst(str, sep, '\0'); // カンマをNULL終端に置き換え
-    for (i = 0; i < max; i++)
+    int count = 0;
+    ret[count++] = str; // ret0番目に格納
+
+    while (*str && count < max) // 文字があるかつmax値より小さいとき
     {
-        ret[i] = str;
-        str += strlen(str) + 1;
-        count++;
+        if (*str == sep) // 文字がカンマだったとき
+        {
+            *str = '\0';            // NULL終端に置き換え
+            ret[count++] = str + 1; // 次の文頭以降の文字を配列に格納
+        }
+        str++;
     }
+
     return count;
 }
 

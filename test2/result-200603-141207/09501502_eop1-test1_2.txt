@@ -1,0 +1,10 @@
+5480744,Hillside School,1864-7-13,Hillside Aberdour Fife,01383 860731 01383 860929 Special 29 9.1 Open
+6101623,Urafirth Primary School,1941-8-7,Heylor Shetland,01806 503282 01806 503294 Primary 25 3.2 Open
+5426537,Madras College,1868-3-16,South Street St Andrews,01334 412500 01334 412555 Secondary 1748 131.4 Integrated SEN Unit Open
+5740320,Avonbridge Primary School,1955-9-7,Main Street Avonbridge Falkirk,01324 861247 01324 861384 Primary 56 4.7 Open
+5510031,Broxburn Academy,1967-12-21,Cardross Road Broxburn,01506 852521 01506 856211 Secondary 870 74.1 Open
+%C
+%Q
+8681139,Cedars School of Excellence,1967-11-3,Lothian Road Greenock,01475 631074 Primary 20 3.1 Secondary 11 2.6 Open
+%C
+%Q

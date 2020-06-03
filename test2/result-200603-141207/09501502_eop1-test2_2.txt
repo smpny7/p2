@@ -1,0 +1,9 @@
+8241023,Logan Primary School,1927-5-12,Logangate Terrace Cumnock,01290 421916 01290 425583 Primary 129 8.0 Open
+5146038,Kingussie High School,1869-8-1,Ruthven Road Kingussie,01540 661475 01540 661123 Secondary 382 37.2 Integrated SEN Unit Open
+8430721,Victoria Primary School,1963-5-13,67 Batson Street Govanhill Glasgow,0141 4232759 0141 433 2724 Primary 130 8.6 Open
+5127823,Broadford Primary School,1838-6-16,Broadford Isle Of Skye,01471 822453 01471 822378 Primary 83 6.8 Open
+8109524,Tayvallich Primary School,1896-12-22,Tayvallich Lochgilphead Argyll,01546 870220 01546 870220 Primary 25 1.9 Open
+%P -4
+%P -5
+%P -6
+%Q

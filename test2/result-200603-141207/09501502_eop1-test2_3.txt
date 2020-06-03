@@ -1,0 +1,16 @@
+5600529,Kingsland Primary School,1925-10-26,Rosetta Road Peebles,01721 720025 01721 724387 Primary 335 16.7 Open
+8130329,St Andrew's Primary School,1927-11-10,Bellevue Rothesay Isle Of Bute,01700 503123 01700 505486 Primary 89 6.5 Open
+5225922,Auchterellon School,1910-11-16,Millwood Road Ellon Aberdeenshire,01358 720863 01385 723746 Primary 399 18.0 Integrated SEN Unit Open
+6102824,Uyeasound Primary School,1910-9-8,Uyeasound Unst,01957 755217 01957 755310 Primary 10 1.6 Open
+5347327,Balhousie Primary School,1826-4-17,Dunkeld Road Perth,01738 624046 01738 634582 Primary 90 6.0 Open
+%P 0
+%P 6
+%P -6
+8681139,Cedars School of Excellence,1967-11-3,Lothian Road Greenock,01475 631074 Primary 20 3.1 Secondary 11 2.6 Open
+%P 5
+%P 6
+%P 7
+%P -5
+%P -6
+%P -7
+%Q
