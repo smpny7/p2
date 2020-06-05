@@ -41,15 +41,17 @@ int subst(char *str, char c1, char c2)
  */
 int split(char *str, char *ret[], char sep, int max)
 {
-    int count = 0;
-    ret[count++] = str; // ret0番目に格納
+    int count = 1;
+    ret[0] = str;
 
-    while (*str && count < max) // 文字があるかつmax値より小さいとき
+    while (*str)
     {
-        if (*str == sep) // 文字がカンマだったとき
+        if (count >= max) // 規定値よりも多い時
+            break;
+        if (*str == sep)
         {
             *str = '\0'; // NULL終端に置き換え
-            ret[count++] = str + 1; // 次の文頭以降の文字を配列に格納
+            ret[count++] = str + 1;
         }
         str++;
     }
