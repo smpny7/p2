@@ -88,13 +88,16 @@ void cmd_print(char cmd, char *param)
 void cmd_read(char cmd, char *param)
 {
     char line[MAX_LINE_LEN + 1];
-    if (fp = fopen(param, "r"))
+    fp = fopen(param, "r");
+    if (fp != NULL)
     {
         while (get_line(line))
         {
             parse_line(line);
         }
-    } else {
+    }
+    else
+    {
         fprintf(stderr, "Enterd file cannot be opened.\n");
     }
     fclose(fp);
@@ -102,7 +105,20 @@ void cmd_read(char cmd, char *param)
 
 void cmd_write(char cmd, char *param)
 {
-    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
+    int i;
+    fp = fopen(param, "w");
+    if (fp != NULL)
+    {
+        for (i = 0; i < profile_data_nitems; i++)
+        {
+            fprintf(fp, "%d,%s,%04d-%02d-%02d,%s,%s\n", profile_data_store[i].id, profile_data_store[i].name, profile_data_store[i].birthday.y, profile_data_store[i].birthday.m, profile_data_store[i].birthday.d, profile_data_store[i].address, profile_data_store[i].note);
+        }
+    }
+    else
+    {
+        fprintf(stderr, "Enterd file cannot be opened.\n");
+    }
+    fclose(fp);
 }
 
 void cmd_find(char cmd, char *param)
@@ -184,28 +200,12 @@ int split(char *str, char *ret[], char sep, int max)
     return count;
 }
 
-// int get_line(char *line)
-// {
-//     if (fgets(line, MAX_LINE_LEN + 1, stdin) == NULL || strlen(line) > MAX_LINE_LEN || *line == '\n')
-//     {
-//         return 0;
-//     }
-//     else
-//     {
-//         subst(line, '\n', '\0');
-//         return 1;
-//     }
-// }
-
 int get_line(char *line)
 {
-    if (fp != NULL)
+    if (fp != NULL && fgets(line, MAX_LINE_LEN + 1, fp) != NULL)
     {
-        if (fgets(line, MAX_LINE_LEN + 1, fp) != NULL)
-        {
-            subst(line, '\n', '\0');
-            return 1;
-        }
+        subst(line, '\n', '\0');
+        return 1;
     }
     if (fgets(line, MAX_LINE_LEN + 1, stdin) == NULL || strlen(line) > MAX_LINE_LEN || *line == '\n')
     {
@@ -255,11 +255,6 @@ void parse_line(char *line)
 int main(void)
 {
     char line[MAX_LINE_LEN + 1];
-    // FILE *fp;
-    // fp = fopen("stdin2.csv", "r");
-    // while(fgets(line, MAX_LINE_LEN + 1, fp)) {
-    //     parse_line(line);
-    // }
     while (get_line(line))
     {
         parse_line(line);
