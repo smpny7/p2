@@ -207,7 +207,7 @@ int get_line(char *line)
         subst(line, '\n', '\0');
         return 1;
     }
-    if (fgets(line, MAX_LINE_LEN + 1, stdin) == NULL || strlen(line) > MAX_LINE_LEN || *line == '\n')
+    if (fgets(line, MAX_LINE_LEN + 1, stdin) == NULL)
     {
         return 0;
     }
@@ -218,10 +218,14 @@ int get_line(char *line)
     }
 }
 
-void new_profile(struct profile *profile_data_store, char *line)
+int new_profile(struct profile *profile_data_store, char *line)
 {
     int max_line = 5, max_date = 3;
     char *ret[80] = {0}, *date[80] = {0}, sep_line = ',', sep_date = '-';
+
+    if (split(line, ret, sep_line, max_line) != 5) {
+        return -1;
+    }
 
     split(line, ret, sep_line, max_line);
     split(ret[2], date, sep_date, max_date);
@@ -235,16 +239,14 @@ void new_profile(struct profile *profile_data_store, char *line)
 
     strcpy(profile_data_store->address, ret[3]);
     strcpy(profile_data_store->note, ret[4]);
+    return 0;
 }
 
 void parse_line(char *line)
 {
-    char cmd, param[80] = {0};
     if (*line == '%')
     {
-        cmd = *(line + 1);
-        strcpy(param, line + 3);
-        exec_command(cmd, param);
+        exec_command(line[1], &line[3]);
     }
     else
     {
