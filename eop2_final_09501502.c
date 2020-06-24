@@ -123,7 +123,29 @@ void cmd_write(char cmd, char *param)
 
 void cmd_find(char cmd, char *param)
 {
-    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
+    int i;
+    char id_tmp[9];
+    char birthday_tmp[11];
+    struct profile *p;
+    for (i = 0; i < profile_data_nitems; i++)
+    {
+        p = &profile_data_store[i];
+        sprintf(id_tmp, "%d", p->id);
+        sprintf(birthday_tmp, "%04d-%02d-%02d", p->birthday.y, p->birthday.m, p->birthday.d);
+        if (
+            strcmp(id_tmp, param) == 0 ||
+            strcmp(p->name, param) == 0 ||
+            strcmp(birthday_tmp, param) == 0 ||
+            strcmp(p->address, param) == 0 ||
+            strcmp(p->note, param) == 0)
+        {
+            printf("Id    : %d\n", profile_data_store[i].id);
+            printf("Name  : %s\n", profile_data_store[i].name);
+            printf("Birth : %04d-%02d-%02d\n", profile_data_store[i].birthday.y, profile_data_store[i].birthday.m, profile_data_store[i].birthday.d);
+            printf("Addr. : %s\n", profile_data_store[i].address);
+            printf("Comm. : %s\n\n", profile_data_store[i].note);
+        }
+    }
 }
 
 void cmd_sort(char cmd, char *param)
@@ -223,7 +245,8 @@ int new_profile(struct profile *profile_data_store, char *line)
     int max_line = 5, max_date = 3;
     char *ret[80] = {0}, *date[80] = {0}, sep_line = ',', sep_date = '-';
 
-    if (split(line, ret, sep_line, max_line) != 5) {
+    if (split(line, ret, sep_line, max_line) != 5)
+    {
         return -1;
     }
 
