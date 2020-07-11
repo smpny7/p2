@@ -27,6 +27,137 @@ FILE *fp;
 int get_line(char *line);
 void parse_line(char *line);
 
+void swap(struct profile *a, struct profile *b)
+{
+    struct profile tmp;
+
+    tmp = *a;
+    *a = *b;
+    *b = tmp;
+}
+
+void quicksort_id(int low, int high)
+{
+    if (low < high)
+    {
+        int mid = (low + high) / 2;
+        int x = profile_data_store[mid].id;
+        int i = low;
+        int j = high;
+        while (i <= j)
+        {
+            while (profile_data_store[i].id < x)
+                i += 1;
+            while (profile_data_store[j].id > x)
+                j -= 1;
+            if (i <= j)
+                swap(&profile_data_store[i++], &profile_data_store[j--]);
+        }
+        quicksort_id(low, j);
+        quicksort_id(i, high);
+    }
+}
+
+void quicksort_name(int low, int high)
+{
+    if (low < high)
+    {
+        int mid = (low + high) / 2;
+        char x[70];
+        strcpy(x, profile_data_store[mid].name);
+        int i = low;
+        int j = high;
+        while (i <= j)
+        {
+            while (strcmp(profile_data_store[i].name, x) < 0)
+                i += 1;
+            while (strcmp(profile_data_store[j].name, x) > 0)
+                j -= 1;
+            if (i <= j)
+                swap(&profile_data_store[i++], &profile_data_store[j--]);
+        }
+        quicksort_name(low, j);
+        quicksort_name(i, high);
+    }
+}
+
+void quicksort_address(int low, int high)
+{
+    if (low < high)
+    {
+        int mid = (low + high) / 2;
+        char x[70];
+        strcpy(x, profile_data_store[mid].address);
+        int i = low;
+        int j = high;
+        while (i <= j)
+        {
+            while (strcmp(profile_data_store[i].address, x) < 0)
+                i += 1;
+            while (strcmp(profile_data_store[j].address, x) > 0)
+                j -= 1;
+            if (i <= j)
+                swap(&profile_data_store[i++], &profile_data_store[j--]);
+        }
+        quicksort_address(low, j);
+        quicksort_address(i, high);
+    }
+}
+
+void quicksort_note(int low, int high)
+{
+    if (low < high)
+    {
+        int mid = (low + high) / 2;
+        char x[1024];
+        strcpy(x, profile_data_store[mid].note);
+        int i = low;
+        int j = high;
+        while (i <= j)
+        {
+            while (strcmp(profile_data_store[i].note, x) < 0)
+                i += 1;
+            while (strcmp(profile_data_store[j].note, x) > 0)
+                j -= 1;
+            if (i <= j)
+                swap(&profile_data_store[i++], &profile_data_store[j--]);
+        }
+        quicksort_note(low, j);
+        quicksort_note(i, high);
+    }
+}
+
+int compare_date(struct date *d1, struct date *d2)
+{
+    if (d1->y != d2->y)
+        return d1->y - d2->y;
+    if (d1->m != d2->m)
+        return d1->m - d2->m;
+    return d1->d - d2->d;
+}
+
+void quicksort_birthday(int low, int high)
+{
+    if (low < high)
+    {
+        int mid = (low + high) / 2;
+        struct date x = profile_data_store[mid].birthday;
+        int i = low;
+        int j = high;
+        while (i <= j)
+        {
+            while (compare_date(&profile_data_store[i].birthday, &x) < 0)
+                i += 1;
+            while (compare_date(&profile_data_store[j].birthday, &x) > 0)
+                j -= 1;
+            if (i <= j)
+                swap(&profile_data_store[i++], &profile_data_store[j--]);
+        }
+        quicksort_birthday(low, j);
+        quicksort_birthday(i, high);
+    }
+}
+
 void cmd_quit(void)
 {
     exit(0);
@@ -150,7 +281,26 @@ void cmd_find(char cmd, char *param)
 
 void cmd_sort(char cmd, char *param)
 {
-    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
+    switch (atoi(param))
+    {
+    case 1:
+        quicksort_id(0, profile_data_nitems - 1);
+        break;
+    case 2:
+        quicksort_name(0, profile_data_nitems - 1);
+        break;
+    case 3:
+        quicksort_birthday(0, profile_data_nitems - 1);
+        break;
+    case 4:
+        quicksort_address(0, profile_data_nitems - 1);
+        break;
+    case 5:
+        quicksort_note(0, profile_data_nitems - 1);
+        break;
+    default:
+        break;
+    }
 }
 
 void exec_command(char cmd, char *param)
