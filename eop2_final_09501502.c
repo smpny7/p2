@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #define MAX_LINE_LEN 1024
 
@@ -62,11 +63,12 @@ void quicksort_name(int low, int high)
 {
     if (low < high)
     {
-        int mid = (low + high) / 2;
+        int mid, i, j;
         char x[70];
+        mid = (low + high) / 2;
         strcpy(x, profile_data_store[mid].name);
-        int i = low;
-        int j = high;
+        i = low;
+        j = high;
         while (i <= j)
         {
             while (strcmp(profile_data_store[i].name, x) < 0)
@@ -78,52 +80,6 @@ void quicksort_name(int low, int high)
         }
         quicksort_name(low, j);
         quicksort_name(i, high);
-    }
-}
-
-void quicksort_address(int low, int high)
-{
-    if (low < high)
-    {
-        int mid = (low + high) / 2;
-        char x[70];
-        strcpy(x, profile_data_store[mid].address);
-        int i = low;
-        int j = high;
-        while (i <= j)
-        {
-            while (strcmp(profile_data_store[i].address, x) < 0)
-                i += 1;
-            while (strcmp(profile_data_store[j].address, x) > 0)
-                j -= 1;
-            if (i <= j)
-                swap(&profile_data_store[i++], &profile_data_store[j--]);
-        }
-        quicksort_address(low, j);
-        quicksort_address(i, high);
-    }
-}
-
-void quicksort_note(int low, int high)
-{
-    if (low < high)
-    {
-        int mid = (low + high) / 2;
-        char x[1024];
-        strcpy(x, profile_data_store[mid].note);
-        int i = low;
-        int j = high;
-        while (i <= j)
-        {
-            while (strcmp(profile_data_store[i].note, x) < 0)
-                i += 1;
-            while (strcmp(profile_data_store[j].note, x) > 0)
-                j -= 1;
-            if (i <= j)
-                swap(&profile_data_store[i++], &profile_data_store[j--]);
-        }
-        quicksort_note(low, j);
-        quicksort_note(i, high);
     }
 }
 
@@ -156,6 +112,87 @@ void quicksort_birthday(int low, int high)
         quicksort_birthday(low, j);
         quicksort_birthday(i, high);
     }
+}
+
+void quicksort_address(int low, int high)
+{
+    if (low < high)
+    {
+        int mid, i, j;
+        char x[70];
+        mid = (low + high) / 2;
+        strcpy(x, profile_data_store[mid].address);
+        i = low;
+        j = high;
+        while (i <= j)
+        {
+            while (strcmp(profile_data_store[i].address, x) < 0)
+                i += 1;
+            while (strcmp(profile_data_store[j].address, x) > 0)
+                j -= 1;
+            if (i <= j)
+                swap(&profile_data_store[i++], &profile_data_store[j--]);
+        }
+        quicksort_address(low, j);
+        quicksort_address(i, high);
+    }
+}
+
+void quicksort_note(int low, int high)
+{
+    if (low < high)
+    {
+        int mid, i, j;
+        char x[1024];
+        mid = (low + high) / 2;
+        strcpy(x, profile_data_store[mid].note);
+        i = low;
+        j = high;
+        while (i <= j)
+        {
+            while (strcmp(profile_data_store[i].note, x) < 0)
+                i += 1;
+            while (strcmp(profile_data_store[j].note, x) > 0)
+                j -= 1;
+            if (i <= j)
+                swap(&profile_data_store[i++], &profile_data_store[j--]);
+        }
+        quicksort_note(low, j);
+        quicksort_note(i, high);
+    }
+}
+
+void upper(char *string)
+{
+    while (*string)
+    {
+        *string = toupper(*string);
+        string++;
+    }
+}
+
+int match(char *string, char *find)
+{
+    int i;
+    char *string_tmp, *find_tmp;
+
+    string_tmp = string;
+    find_tmp = find;
+
+    for (i = 0; i <= strlen(string); i++)
+    {
+        if (!*find_tmp)
+            return 1;
+        if (*string_tmp == *find && *string_tmp != *find_tmp)
+            if (match(string_tmp, find))
+                return 1;
+        if (*string_tmp == *find_tmp)
+            find_tmp++;
+        else
+            find_tmp = find;
+        string_tmp++;
+    }
+    return 0;
 }
 
 void cmd_quit(void)
@@ -303,6 +340,34 @@ void cmd_sort(char cmd, char *param)
     }
 }
 
+void cmd_match(char cmd, char *param)
+{
+    int i;
+    for (i = 0; i < profile_data_nitems; i++)
+    {
+        char string[4][1024];
+        char find[1024];
+
+        sprintf(string[0], "%d, %s, %d-%d-%d, %s, %s\n", profile_data_store[i].id, profile_data_store[i].name, profile_data_store[i].birthday.y, profile_data_store[i].birthday.m, profile_data_store[i].birthday.d, profile_data_store[i].address, profile_data_store[i].note);
+        sprintf(string[1], "%d, %s, %d-%02d-%02d, %s, %s\n", profile_data_store[i].id, profile_data_store[i].name, profile_data_store[i].birthday.y, profile_data_store[i].birthday.m, profile_data_store[i].birthday.d, profile_data_store[i].address, profile_data_store[i].note);
+
+        strcpy(find, param);
+
+        upper(string[0]);
+        upper(string[1]);
+        upper(find);
+
+        if (match(string[0], find) || match(string[1], find))
+        {
+            printf("Id    : %d\n", profile_data_store[i].id);
+            printf("Name  : %s\n", profile_data_store[i].name);
+            printf("Birth : %04d-%02d-%02d\n", profile_data_store[i].birthday.y, profile_data_store[i].birthday.m, profile_data_store[i].birthday.d);
+            printf("Addr. : %s\n", profile_data_store[i].address);
+            printf("Comm. : %s\n\n", profile_data_store[i].note);
+        }
+    }
+}
+
 void exec_command(char cmd, char *param)
 {
     switch (cmd)
@@ -327,6 +392,9 @@ void exec_command(char cmd, char *param)
         break;
     case 'S':
         cmd_sort(cmd, param);
+        break;
+    case 'M':
+        cmd_match(cmd, param);
         break;
     default:
         fprintf(stderr, "Unregistered Command Is Entered.\n");
