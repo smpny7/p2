@@ -3,8 +3,14 @@
 #include <string.h>
 #include <ctype.h>
 
-#define MAX_LINE_LEN 1024
+#define MAX_LINE_LEN 1024 /* Maximum characters per line */
 
+/*
+Overview: Structure for specifying date.
+@type: {int} y - Year.
+@type: {int} m - Month.
+@type: {int} d - Day.
+*/
 struct date
 {
     int y;
@@ -12,6 +18,14 @@ struct date
     int d;
 };
 
+/*
+Overview: Structure for specifying user profiles.
+@type: {int} id - ID.
+@type: {char} name - Name.
+@type: {struct date} birthday - Birthday.
+@type: {char} address - Address.
+@type: {char} note - Others.
+*/
 struct profile
 {
     int id;
@@ -21,6 +35,11 @@ struct profile
     char note[1024];
 };
 
+/*
+@type: {int} profile_data_nitems - Total number of registered items.
+@type: {struct profile} profile_data_store[] - For storing registered data.
+@type: {FILE *} fp - Pointer for writing/reading.
+*/
 int profile_data_nitems = 0;
 struct profile profile_data_store[10000];
 FILE *fp;
@@ -28,15 +47,27 @@ FILE *fp;
 int get_line(char *line);
 void parse_line(char *line);
 
-void swap(struct profile *a, struct profile *b)
+/*
+Overview: Swap elements in profile_data_store array.
+@argument: {struct profile*} source - Replacement source.
+@argument: {struct profile*} destination - Replace destination.
+@return: No return
+*/
+void swap(struct profile *source, struct profile *destination)
 {
     struct profile tmp;
 
-    tmp = *a;
-    *a = *b;
-    *b = tmp;
+    tmp = *source;
+    *source = *destination;
+    *destination = tmp;
 }
 
+/*
+Overview: Quick sort profile_data_store array by id column.
+@argument: {int} low - Left edge of quick sort.
+@argument: {int} high - Right edge of quick sort.
+@return: No return
+*/
 void quicksort_id(int low, int high)
 {
     if (low < high)
@@ -59,6 +90,12 @@ void quicksort_id(int low, int high)
     }
 }
 
+/*
+Overview: Quick sort profile_data_store array by name column.
+@argument: {int} low - Left edge of quick sort.
+@argument: {int} high - Right edge of quick sort.
+@return: No return
+*/
 void quicksort_name(int low, int high)
 {
     if (low < high)
@@ -83,6 +120,12 @@ void quicksort_name(int low, int high)
     }
 }
 
+/*
+Overview: Compares two dates and returns the difference.
+@argument: {struct date *} d1 - Date1.
+@argument: {struct date *} d2 - Date2.
+@return: {int} (Date1 - Date2) - Positive or negative or zero.
+*/
 int compare_date(struct date *d1, struct date *d2)
 {
     if (d1->y != d2->y)
@@ -92,6 +135,12 @@ int compare_date(struct date *d1, struct date *d2)
     return d1->d - d2->d;
 }
 
+/*
+Overview: Quick sort profile_data_store array by birthday column.
+@argument: {int} low - Left edge of quick sort.
+@argument: {int} high - Right edge of quick sort.
+@return: No return
+*/
 void quicksort_birthday(int low, int high)
 {
     if (low < high)
@@ -114,6 +163,12 @@ void quicksort_birthday(int low, int high)
     }
 }
 
+/*
+Overview: Quick sort profile_data_store array by address column.
+@argument: {int} low - Left edge of quick sort.
+@argument: {int} high - Right edge of quick sort.
+@return: No return
+*/
 void quicksort_address(int low, int high)
 {
     if (low < high)
@@ -138,6 +193,12 @@ void quicksort_address(int low, int high)
     }
 }
 
+/*
+Overview: Quick sort profile_data_store array by note column.
+@argument: {int} low - Left edge of quick sort.
+@argument: {int} high - Right edge of quick sort.
+@return: No return
+*/
 void quicksort_note(int low, int high)
 {
     if (low < high)
@@ -162,6 +223,11 @@ void quicksort_note(int low, int high)
     }
 }
 
+/*
+Overview: Converts lowercase letters to uppercase.
+@argument: {char *} string - The string to convert.
+@return: No return
+*/
 void upper(char *string)
 {
     while (*string)
@@ -171,6 +237,12 @@ void upper(char *string)
     }
 }
 
+/*
+Overview: Search by partial match.
+@argument: {char *} string - string to search.
+@argument: {char *} find - string to find.
+@return: No return
+*/
 int match(char *string, char *find)
 {
     int i;
@@ -195,20 +267,35 @@ int match(char *string, char *find)
     return 0;
 }
 
+/*
+Overview: Exit the program.
+@return: No return
+*/
 void cmd_quit(void)
 {
     exit(0);
 }
 
+/*
+Overview: Output the number of registrations.
+@argument: {char} cmd - Command alphabet.
+@return: No return
+*/
 void cmd_check(char cmd)
 {
     printf("%d profile(s)\n", profile_data_nitems);
 }
 
+/*
+Overview: Output data according to argument.
+@argument: {char} cmd - Command alphabet.
+@argument: {char *} param - Command argument.
+@return: No return
+*/
 void cmd_print(char cmd, char *param)
 {
     int count, num = atoi(param);
-    if (num == 0) // 引数が0の場合
+    if (num == 0)
     {
         count = 0;
         while (count < profile_data_nitems)
@@ -221,9 +308,9 @@ void cmd_print(char cmd, char *param)
             count++;
         }
     }
-    else if (num > 0) // 引数が正の場合
+    else if (num > 0)
     {
-        if (num > profile_data_nitems) // 要素数よりも大きい値が入力された場合
+        if (num > profile_data_nitems)
             num = profile_data_nitems;
         count = 0;
         while (count < num)
@@ -236,9 +323,9 @@ void cmd_print(char cmd, char *param)
             count++;
         }
     }
-    else if (num < 0) // 引数が負の場合
+    else if (num < 0)
     {
-        if (num < -profile_data_nitems) // 要素数よりも大きい値が入力された場合
+        if (num < -profile_data_nitems)
             num = -profile_data_nitems;
         count = profile_data_nitems + num;
         while (count < profile_data_nitems)
@@ -253,6 +340,12 @@ void cmd_print(char cmd, char *param)
     }
 }
 
+/*
+Overview: Read data and register in array.
+@argument: {char} cmd - Command alphabet.
+@argument: {char *} param - Command argument.
+@return: No return
+*/
 void cmd_read(char cmd, char *param)
 {
     char line[MAX_LINE_LEN + 1];
@@ -271,6 +364,12 @@ void cmd_read(char cmd, char *param)
     fclose(fp);
 }
 
+/*
+Overview: Export registered data.
+@argument: {char} cmd - Command alphabet.
+@argument: {char *} param - Command argument.
+@return: No return
+*/
 void cmd_write(char cmd, char *param)
 {
     int i;
@@ -289,6 +388,12 @@ void cmd_write(char cmd, char *param)
     fclose(fp);
 }
 
+/*
+Overview: Search for matching data from registered data and output.
+@argument: {char} cmd - Command alphabet.
+@argument: {char *} param - Command argument.
+@return: No return
+*/
 void cmd_find(char cmd, char *param)
 {
     int i;
@@ -316,6 +421,12 @@ void cmd_find(char cmd, char *param)
     }
 }
 
+/*
+Overview: Specify the column with an argument and sort the registered data.
+@argument: {char} cmd - Command alphabet.
+@argument: {char *} param - Command argument.
+@return: No return
+*/
 void cmd_sort(char cmd, char *param)
 {
     switch (atoi(param))
@@ -340,12 +451,18 @@ void cmd_sort(char cmd, char *param)
     }
 }
 
+/*
+Overview: Output partial match data in array.
+@argument: {char} cmd - Command alphabet.
+@argument: {char *} param - Command argument.
+@return: No return
+*/
 void cmd_match(char cmd, char *param)
 {
     int i;
     for (i = 0; i < profile_data_nitems; i++)
     {
-        char string[4][1024];
+        char string[2][1024];
         char find[1024];
 
         sprintf(string[0], "%d, %s, %d-%d-%d, %s, %s\n", profile_data_store[i].id, profile_data_store[i].name, profile_data_store[i].birthday.y, profile_data_store[i].birthday.m, profile_data_store[i].birthday.d, profile_data_store[i].address, profile_data_store[i].note);
@@ -368,6 +485,12 @@ void cmd_match(char cmd, char *param)
     }
 }
 
+/*
+Overview: Calls functions when the command is input.
+@argument: {char} cmd - Command alphabet.
+@argument: {char *} param - Command argument.
+@return: No return
+*/
 void exec_command(char cmd, char *param)
 {
     switch (cmd)
@@ -402,12 +525,19 @@ void exec_command(char cmd, char *param)
     }
 }
 
+/*
+Overview: Replaces c1 in the string with c2.
+@argument: {char *} str - String.
+@argument: {char} c1 - Replaced.
+@argument: {char} c2 - Replace.
+@return: {int} diff - Number of replacements.
+*/
 int subst(char *str, char c1, char c2)
 {
     int diff = 0;
     char *p;
 
-    p = str; // 文字の先頭にポインタをあわせる
+    p = str;
     while (*p != '\0')
     {
         if (*p == c1)
@@ -420,6 +550,14 @@ int subst(char *str, char c1, char c2)
     return diff;
 }
 
+/*
+Overview: Separate string by the specified number of characters/times.
+@argument: {char *} str - String.
+@argument: {char *} ret[] - Separated string.
+@argument: {char} sep - Delimiter.
+@argument: {int} max - Maximum number to divide.
+@return: Number of divisions
+*/
 int split(char *str, char *ret[], char sep, int max)
 {
     int count = 1;
@@ -427,11 +565,11 @@ int split(char *str, char *ret[], char sep, int max)
 
     while (*str)
     {
-        if (count >= max) // 規定値よりも多い時
+        if (count >= max)
             break;
         if (*str == sep)
         {
-            *str = '\0'; // NULL終端に置き換え
+            *str = '\0';
             ret[count++] = str + 1;
         }
         str++;
@@ -440,6 +578,11 @@ int split(char *str, char *ret[], char sep, int max)
     return count;
 }
 
+/*
+Overview: Get line from file or standard input.
+@argument: {char *} line - Full text.
+@return: Whether there is next line.
+*/
 int get_line(char *line)
 {
     if (fp != NULL && fgets(line, MAX_LINE_LEN + 1, fp) != NULL)
@@ -458,6 +601,12 @@ int get_line(char *line)
     }
 }
 
+/*
+Overview: New data registration.
+@argument: {struct profile *} profile_data_store - Pointer to store the new data.
+@argument: {char *} line - One line to register.
+@return: Successful or not.
+*/
 int new_profile(struct profile *profile_data_store, char *line)
 {
     int max_line = 5, max_date = 3;
@@ -483,6 +632,11 @@ int new_profile(struct profile *profile_data_store, char *line)
     return 0;
 }
 
+/*
+Overview: Check new data registration or command.
+@argument: {char *} line - One line.
+@return: No return
+*/
 void parse_line(char *line)
 {
     if (*line == '%')
@@ -495,6 +649,10 @@ void parse_line(char *line)
     }
 }
 
+/*
+Overview: Main function.
+@return: Successful or not.
+*/
 int main(void)
 {
     char line[MAX_LINE_LEN + 1];
