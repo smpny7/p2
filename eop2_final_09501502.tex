@@ -1,34 +1,25 @@
 \documentclass[autodetect-engine,dvi=dvipdfmx,ja=standard,
                a4j,11pt]{bxjsarticle}
 
-% 2019.6.19 14:00 hara
-
-% 上記の説明ページにおける，レポート”例”について，一部訂正をします．
-% 358行目に以下の1行を追加する．
-
-% なお，下記の実行例の行頭に書かれた「\verb|%|」は，動作確認をしたRed hat Linux 3.2.2-5におけるターミナルのプロンプトである．
-
 %%======== プレアンブル ============================================%%
 \RequirePackage{geometry}
 \geometry{reset,a4paper}
 \geometry{hmargin=25truemm,top=25truemm,bottom=25truemm,footskip=10truemm}
-% \geometry{showframe} % はみ出し確認用
 
 \usepackage{graphicx}
 
 \usepackage{fancyvrb}
-% \renewcommand{\theFancyVerbLine}{\texttt{\footnotesize{\arabic{FancyVerbLine}:}}}
 
 %%======== レポートタイトル等 ======================================%%
-\title{プログラミング演習1 \\
+\title{プログラミング演習2 \\
        期末レポート}
 
 \author{氏名: 池田 海斗 (IKEDA, Kaito) \\
         学生番号: 09501502}
 
 \date{出題日: 2020年04月22日 \\
-      提出日: 2020年06月08日 \\
-      締切日: 2020年06月10日 \\}
+      提出日: 2020年07月21日 \\
+      締切日: 2020年07月29日 \\}
 
 %%======== 本文 ====================================================%%
 \begin{document}
@@ -39,11 +30,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 本演習では，C言語を用いて名簿管理プログラムの制作を行う．
-このプログラムではコマンド入力によるデータの読み込み・書き出しを行ったり，整列・検索を行うことができる．
+このプログラムではコマンド入力によるデータの読み込み$\cdot$書き出しを行ったり，整列$\cdot$検索を行うことができる．
 また，標準入力からコンマで区切られた文字列を入力しデータの登録を行うことができる．
 
 本レポートでは，演習中に取り組んだ課題として，
-以下の課題1から課題6についての内容を報告する．
+以下の課題1から課題10についての内容を報告する．
 
 \begin{description}
   \item[課題1] 文字列操作の基礎：\verb|subst|関数と\verb|split|関数の実装
@@ -52,6 +43,11 @@
   \item[課題4] CSVデータ登録処理の実装
   \item[課題5] コマンド中継処理の実装
   \item[課題6] コマンドの実装：\verb|%P|コマンド
+  \item[課題7] コマンドの実装：\verb|%R|コマンドと\verb|%W|コマンド
+  \item[課題8] コマンドの実装：\verb|%F|コマンド
+  \item[課題9] コマンドの実装：\verb|%S|コマンド
+  \item[課題10] 独自コマンドの実装
+
 \end{description}
 
 また，取り組んだ課題のうち，以下の課題については詳細な考察を行った．
@@ -60,6 +56,9 @@
   \item[課題1] 文字列操作の基礎：\verb|subst|関数と\verb|split|関数の実装
   \item[課題3] 標準入力の取得と構文解析
   \item[課題6] コマンドの実装：\verb|%P|コマンド
+  \item[課題7] コマンドの実装：\verb|%R|コマンドと\verb|%W|コマンド
+  \item[課題9] コマンドの実装：\verb|%S|コマンド
+  \item[課題10] 独自コマンドの実装
 \end{description}
 
 
@@ -81,9 +80,9 @@
         \item プログラムの正常な終了
         \item 登録された名簿データのデータ数表示
         \item 名簿データの全数表示，および，部分表示
-        % \item 名簿データのファイルへの保存，および，ファイルからの復元
-        % \item 名簿データの検索と表示
-        % \item 名簿データの整列
+        \item 名簿データのファイルへの保存，および，ファイルからの復元
+        \item 名簿データの検索と表示
+        \item 名簿データの整列
     \end{enumerate}
     \item 標準入力からのユーザ入力を通して，データ登録やデータ管理等の操作を可能とすること．
     \item 標準出力には，コマンドの実行結果のみを出力すること．
@@ -134,14 +133,14 @@
     \verb|%P n| & 先頭から$n$件表示 & (Print) & $n$が$0$ $\to$ 全件表示， \\
                 & & & $n$が負 $\to$ 後ろから$-n$件表示 \\
     \hline
-    % \verb|%R file| & $file$から読込み & (Read) & \\
-    % \hline
-    % \verb|%W file| & $file$への書出し & (Write) & \\
-    % \hline
-    % \verb|%F word| & 検索結果を表示 & (Find) & \verb|%P|と同じ形式で表示 \\
-    % \hline
-    % \verb|%S n| & $CSV$の$n$番目の項目で整列 & (Sort) & 表示はしない \\
-    % \hline
+    \verb|%R file| & $file$から読込み & (Read) & \\
+    \hline
+    \verb|%W file| & $file$への書出し & (Write) & \\
+    \hline
+    \verb|%F word| & 検索結果を表示 & (Find) & \verb|%P|と同じ形式で表示 \\
+    \hline
+    \verb|%S n| & $CSV$の$n$番目の項目で整列 & (Sort) & 表示はしない \\
+    \hline
     \end{tabular}
 \end{table}
 %========================= COMMAND LIST ================================%
@@ -151,9 +150,8 @@
 \section{プログラムの説明} \label{sec:3}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-プログラムリストは\ref{sec:7}章に添付している．
-その中でも，最終的なプログラムとして\ref{code:6}節を参照しながら説明を行なっていく．
-プログラムは全部で232行からなる．
+プログラムリストは\ref{sec:8}章に添付している．
+プログラムは全部で679行からなる．
 以下では，\ref{sec:1}節の課題ごとに，プログラムの主な構造について説明する．
 
 %--------------------------------------------------------------------%
@@ -161,8 +159,8 @@
 %--------------------------------------------------------------------%
 
 まず，汎用的な文字列操作関数として，
-\verb|subst()|関数を137--153行目で宣言し，
-\verb|split()|関数を155--173行目で宣言している．
+\verb|subst()|関数を549--565行目で宣言し，
+\verb|split()|関数を575--593行目で宣言している．
 また，これらの関数で利用するために，\verb|stdio.h|，\verb|string.h|のヘッダファイルを読み込んでいる．
 
 \verb|subst(STR, C1, C2)|関数は，
@@ -174,7 +172,7 @@
 \verb|split(STR, RET, SEP, MAX)|関数では，
 \verb|STR|が指す文字列を，最大\verb|MAX|個まで文字\verb|SEP|の箇所で区切り，配列\verb|RET|に格納していく．
 プログラム中では，\verb|get_line()|関数で取得した1行を，カンマで区切りで配列に格納する際に呼び出される．
-また，ハイフン区切りで入力される生年月日のデータを，年・月・日に分けて配列に格納する際にも用いる．
+また，ハイフン区切りで入力される生年月日のデータを，年$\cdot$月$\cdot$日に分けて配列に格納する際にも用いる．
 この関数では，配列に分割された個数を返り値とする．
 
 %--------------------------------------------------------------------%
@@ -182,28 +180,28 @@
 %--------------------------------------------------------------------%
 
 本プログラムでは，構造体の配列に名簿データを格納していく．
-7--12行目で，\verb|date|構造体を定義し，
-14--21行目で，\verb|profile|構造体を定義している．
+14--19行目で，\verb|date|構造体を定義し，
+29--36行目で，\verb|profile|構造体を定義している．
 ID, 氏名, 誕生日, 住所, 備考の5つの組み合わせで1つの名簿データとなる．
-名簿データの誕生日の箇所にあたっては\verb|date|構造体を用い，年・月・日を\verb|int|型として別々に保存しておく．
+名簿データの誕生日の箇所については\verb|date|構造体を用い，年$\cdot$月$\cdot$日を\verb|int|型として別々に保存しておく．
 こうすることで，並び替えなどを行う際に効率よく実行ができる．
 
-そして，24行目の\verb|profile_data_store|変数で全名簿データを管理し，
-23行目の\verb|profile_data_nitems|変数で，名簿データの個数を管理している．
+そして，44行目の\verb|profile_data_store|変数で全名簿データを管理し，
+43行目の\verb|profile_data_nitems|変数で，名簿データの個数を管理している．
 
 %--------------------------------------------------------------------%
 \subsection{標準入力の取得と構文解析}
 %--------------------------------------------------------------------%
 
 \verb|get_line(LINE)|関数は，
-標準入力で読み込まれた名簿データを1行ずつ取り出し，\verb|LINE|に代入する．
-読み込む行がない場合，文字列が1024文字を超えてバッファオーバーランをする場合，
-ユーザが改行コードを入力した場合に返り値\verb|0|を返す．
+ファイルポインタが設定されていて，かつ読み込む行がある場合にそのデータを1行ずつ取り出し，
+そうでない場合には標準入力で読み込まれた名簿データを1行ずつ取り出し，\verb|LINE|に格納する．
+読み込む行がない場合や，文字列が1024文字を超える場合に返り値\verb|0|を返す．
 
 \verb|parse_line(LINE)|関数では，
 \verb|get_line(LINE)|関数で読み込まれた1行が，コマンド入力かデータ入力であるか条件分岐を行う．
 コマンドの場合，コマンド名と引数に分けてその値を\verb|exec_command(CMD, PARAM)|関数に引き渡し，
-入力データであった場合は\verb|new_profile(PROFILE_DATA_STORE, LINE)|関数で登録を行う．
+データ入力であった場合は\verb|new_profile(PROFILE_DATA_STORE, LINE)|関数で登録を行う．
 
 %--------------------------------------------------------------------%
 \subsection{CSVデータ登録処理の実装}
@@ -212,10 +210,10 @@ ID, 氏名, 誕生日, 住所, 備考の5つの組み合わせで1つの名簿�
 \verb|new_profile(PROFILE_DATA_STORE, LINE)|関数内では，
 グローバル変数\verb|profile_data_store|の任意の配列番号のポインタを受け取る．
 \verb|split|関数を用いて1行をカンマで5つに区切り，その中の3番目の要素を更にハイフンで3つに区切る．
-そして，それぞれの要素をID・名前・誕生日・住所・備考として，
+そして，それぞれの要素をID$\cdot$名前$\cdot$誕生日$\cdot$住所$\cdot$備考として，
 配列\verb|profile_data_store|の\verb|profile_data_nitems|番目の要素としてデータを保存する．
-誕生日に関しても同様，構造体\verb|date|の型で年・月・日に細分化しデータを格納する．
-また，並び替えを行いやすいように，ID・誕生日に関しては\verb|int|型に変換して保存する．
+誕生日に関しても同様，構造体\verb|date|の型で年$\cdot$月$\cdot$日に細分化しデータを格納する．
+また，並び替えを行いやすいように，ID$\cdot$誕生日に関しては\verb|int|型に変換して保存する．
 
 %--------------------------------------------------------------------%
 \subsection{コマンド中継処理の実装}
@@ -224,7 +222,7 @@ ID, 氏名, 誕生日, 住所, 備考の5つの組み合わせで1つの名簿�
 \verb|exec_command(CMD, PARAM)|関数では，
 コマンド文字と引数を受け取りそれによって関数を呼び出す，
 案内所のような役割を行っている．
-引数はポインタで取得するようにしてある．
+引数は文字列に対応させるため，ポインタで取得するようにしてある．
 また一致するコマンドが見つからない場合，処理は行わないようにしてある．
 
 %--------------------------------------------------------------------%
@@ -239,6 +237,59 @@ ID, 氏名, 誕生日, 住所, 備考の5つの組み合わせで1つの名簿�
 引数が不正な値である場合でも，\verb|atoi()|関数を用いることで
 $0$を入力したのと同様の動作を行うようにしてある．
 これは\verb|db_sample|と同じ仕様である．
+
+%--------------------------------------------------------------------%
+\subsection{コマンドの実装：\texttt{\%R}コマンドと\texttt{\%W}コマンド}
+%--------------------------------------------------------------------%
+
+\verb|cmd_read|関数内では，
+入力された引数名のファイルを開いてデータを読み込む処理を行う．
+またファイル名が不正な値であった場合は，標準エラー出力に書き出すようにしている．
+正常に読み込みが行えた場合には，\verb|get_line()|関数，\verb|parse_line()|関数を呼び出して
+登録$\cdot$コマンド処理を行う．
+
+\verb|cmd_write|関数内では，
+入力された引数名のファイルにデータを保存する処理を行う．
+またファイル名が不正な値であった場合は，標準エラー出力に書き出すようにしている．
+正常に読み込みが行えた場合には，読み込むCSVファイルと同じ形式で
+ID$\cdot$名前$\cdot$誕生日$\cdot$住所$\cdot$備考の組み合わせで1行ずつ書き出す．
+
+%--------------------------------------------------------------------%
+\subsection{コマンドの実装：\texttt{\%F}コマンド}
+%--------------------------------------------------------------------%
+
+\verb|cmd_find|関数では，
+入力された引数と同じ要素を持つデータを出力する．
+データは完璧に入力する必要があり，また日付は\verb|0000-00-00|の形式で入力する必要がある．
+
+また一致するデータを2箇所持っていても出力は1回のみとなり，
+一致するデータは全件表示される．
+
+%--------------------------------------------------------------------%
+\subsection{コマンドの実装：\texttt{\%S}コマンド}
+%--------------------------------------------------------------------%
+
+\verb|cmd_sort(CMD, PARAM)|関数では，
+[名前-1]〜[備考-5]とし引数番目のカラムで並び替えを行う．
+
+\verb|cmd_sort(CMD, PARAM)|関数では，新たに\verb|quicksort_name|関数，
+\verb|quicksort_id|関数，\verb|quicksort_name|関数，
+\verb|quicksort_birthday|関数，\verb|quicksort_address|関数，
+\verb|quicksort_note|関数を用意し，それぞれ再起的に呼び出しクイックソートを行うようにした．
+
+そして\verb|swap|関数では，\verb|profile_data_store[]|内の2データの入れ替えを行い，
+\verb|compare_date|関数では返り値の正の数$\cdot$負の数$\cdot$ゼロで，日付の大小を比較できるようにした．
+
+%--------------------------------------------------------------------%
+\subsection{独自コマンドの実装}
+%--------------------------------------------------------------------%
+
+\verb|cmd_match(STRING, FIND)|関数内では，
+入力された文字列に部分一致するデータを検索して出力する．
+再起的に自身の関数を呼び出し，一致するものが見つかった場合返り値$1$を返す．
+また\verb|upper(STRING)|関数も用意し，ポインタを渡すだけで文字列を大文字に変換できるようにした．
+\verb|upper(STRING)|関数で利用するために，\verb|ctype.h|のヘッダファイルを読み込んでいる．
+入力した文字列をこの関数にかけることで，大文字小文字関係なく探索を行えるようにしている．
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -260,8 +311,8 @@ $0$を入力したのと同様の動作を行うようにしてある．
 
 プログラムは，MacOS Catalina 10.15.4 で動作を確認しているが，
 一般的な UNIX で動作することを意図している．
-なお，以降の実行例における，行頭の\verb|%|記号は，
-MacOS Catalina 10.15.4におけるターミナルのプロンプトである．
+なお，下記の実行例の行頭に書かれた「\verb|%|」は，
+動作確認をしたMacOS Catalina 10.15.6におけるターミナルのプロンプトである．
 
 %--------------------------------------------------------------------%
 \subsection{コンパイル方法}
@@ -275,7 +326,7 @@ MacOS Catalina 10.15.4におけるターミナルのプロンプトである．
 
 {\fontsize{10pt}{11pt} \selectfont
  \begin{verbatim}
-   % gcc -Wall -o eop_06_09501502 eop_06_09501502.c
+   % gcc -Wall -o eop_final_09501502 eop_final_09501502.c
  \end{verbatim}
 }
 
@@ -290,7 +341,7 @@ CSVファイルを標準入力により与えることで，実行する例を�
 
 {\fontsize{10pt}{11pt} \selectfont
  \begin{verbatim}
-   $ ./eop_06_09501502.out < stdin.csv
+   % ./eop_06_09501502.out < stdin.csv
  \end{verbatim}
 }
 
@@ -298,151 +349,30 @@ CSVファイルを標準入力により与えることで，実行する例を�
 \subsection{出力結果}
 %--------------------------------------------------------------------%
 
-%---------------------------------------------------------------%
-\subsubsection{第1回講義 (\texttt{subst}関数)}
-%---------------------------------------------------------------%
-
-今回は標準入力は使用しない．
-第\ref{code:1}節に記述してあるプログラムを実行すると，以下のような出力が得られる．
-
-{\fontsize{10pt}{11pt} \selectfont
- \begin{verbatim}
-    文字列: ABCDE
-    置換文字: A -> B
-
-    実行結果: BBCDE
-    差分: 1
- \end{verbatim}
-}
-
-今回のプログラムにはユーザによる入力はないので，出力結果について説明する．
-1 $\cdot$ 2行目について，予め登録しておいた文字列\verb|ABCDE|の中から，
-文字\verb|A|の文字を\verb|B|に置換するプログラムであることを示す．
-3行目実行結果は置換後の文字列を表し，4行目には置換が行われた回数を表示している．
-
-%---------------------------------------------------------------%
-\subsubsection{第2回講義 (\texttt{split}関数と\texttt{get\_line}関数)}
-%---------------------------------------------------------------%
-
-第\ref{code:2}節に記述してあるプログラムを実行すると，
+第\ref{sec:8}章に記述してあるプログラムを実行すると，
 プログラムの出力結果としてCSVデータの各項目が読みやすい形式で出力される．
-例えば，下記の \verb|cvsdata.csv| に対して，
+例えば，下記の \verb|stdin.csv|，\verb|datastore.csv| に対して，
 
 {\fontsize{10pt}{11pt} \selectfont
  \begin{verbatim}
+  5100224,Canisbay Primary School,1928-7-5,Canisbay Wick,611337 Primary Open
+  5100127,Bower Primary School,1908-1-19,Bowermadden Bower Caithness,641225 Primary Open
+  %P -2
+  %R datastore.csv
   5100046,The Bridge,1845-11-2,14 Seafield Road Longman Inverness,SEN Unit 2.0 Open
-  5100127,Bower Primary School,1908-1-19,Bowermadden Bower Caithness,01955 641225 Pri...
-  5100224,Canisbay Primary School,1928-7-5,Canisbay Wick,01955 611337 Primary 56 3.5 Open
-  5100321,Castletown Primary School,1913-11-4,Castletown Thurso,01847 821256 01847 82...
-  5100429,Crossroads Primary School,1893-2-24,Dunnet Thurso,01847 851629 01847 851629 ...
- \end{verbatim}
-}
-
-\noindent
-以下のような出力が得られる．
-
-{\fontsize{10pt}{11pt} \selectfont
- \begin{verbatim}
-  Line1
-  >ret[0] = '5100046'
-  >ret[1] = 'The Bridge'
-  >ret[2] = '1845-11-2'
-  >ret[3] = '14 Seafield Road Longman Inverness'
-  >ret[4] = 'SEN Unit 2.0 Open'
- Line2
-  >ret[0] = '5100127'
-  >ret[1] = 'Bower Primary School'
-  >ret[2] = '1908-1-19'
-  >ret[3] = 'Bowermadden Bower Caithness'
-  >ret[4] = '01955 641225 Primary 25 2.6 Open'
- Line3
-  >ret[0] = '5100224'
-  >ret[1] = 'Canisbay Primary School'
-  >ret[2] = '1928-7-5'
-  >ret[3] = 'Canisbay Wick'
-  >ret[4] = '01955 611337 Primary 56 3.5 Open'
- Line4
-  >ret[0] = '5100321'
-  >ret[1] = 'Castletown Primary School'
-  >ret[2] = '1913-11-4'
-  >ret[3] = 'Castletown Thurso'
-  >ret[4] = '01847 821256 01847 821256 Primary 137 8.5 Open'
- Line5
-  >ret[0] = '5100429'
-  >ret[1] = 'Crossroads Primary School'
-  >ret[2] = '1893-2-24'
-  >ret[3] = 'Dunnet Thurso'
-  >ret[4] = '01847 851629 01847 851629 Primary 29 2.4 Open'
- \end{verbatim}
-}
-
-まず，入力データについて説明する．
-このCSVファイルには5件のデータを保存しており，
-それぞれの項目はカンマで区切られている．
-
-また出力結果について，\verb|Line*|はCSVファイルの行数を表し，
-\verb|ret[*]|は配列の番号とその中に格納している文字列を表している．
-
-%---------------------------------------------------------------%
-\subsubsection{第3回講義 (\texttt{parse\_line}関数)}
-%---------------------------------------------------------------%
-
-第\ref{code:3}節に記述してあるプログラムを実行すると，
-プログラムの出力結果としてCSVデータの各項目が読みやすい形式で出力される．
-例えば，下記の \verb|cvsdata.csv| に対して，
-
-{\fontsize{10pt}{11pt} \selectfont
- \begin{verbatim}
-  5100046,The Bridge,1845-11-2,14 Seafield Road Longman Inverness,SEN Unit 2.0 Open
-  %P contoso
-  5100224,Canisbay Primary School,1928-7-5,Canisbay Wick,01955 611337 Primary 56 3.5 Open
   %C
+  %S 3
+  %W stdout.csv
+  %F The Bridge
+  %M bridge
   %Q
  \end{verbatim}
 }
 
-\noindent
-以下のような出力が得られる．
-
 {\fontsize{10pt}{11pt} \selectfont
  \begin{verbatim}
-   >ret[0] = '5100046'
-   >ret[1] = 'The Bridge'
-   >ret[2] = '1845-11-2'
-   >ret[3] = '14 Seafield Road Longman Inverness'
-   >ret[4] = 'SEN Unit 2.0 Open'
-  %P command is invoked with arg: 'contoso'
-   >ret[0] = '5100224'
-   >ret[1] = 'Canisbay Primary School'
-   >ret[2] = '1928-7-5'
-   >ret[3] = 'Canisbay Wick'
-   >ret[4] = '01955 611337 Primary 56 3.5 Open'
-  %C command is invoked with no arg
- \end{verbatim}
-}
-
-まず，入力データについて説明する．
-コマンドは\verb|%P|, \verb|%C|, \verb|%Q|の3つを記述している．
-また，このCSVファイルには2件のデータを保存しており，
-それぞれの項目はカンマで区切られている．
-
-また出力結果について，\verb|ret[*]|は配列の番号とその中に格納している文字列を表している．
-
-%---------------------------------------------------------------%
-\subsubsection{第4回講義 (\texttt{new\_profile}関数)}
-%---------------------------------------------------------------%
-
-第\ref{code:4}節に記述してあるプログラムを実行すると，
-プログラムの出力結果としてCSVデータの各項目が読みやすい形式で出力される．
-例えば，下記の \verb|stdin.csv| に対して，
-
-{\fontsize{10pt}{11pt} \selectfont
- \begin{verbatim}
-  5100046,The Bridge,1845-11-2,14 Seafield Road Longman Inverness,SEN Unit 2.0 Open
-  %P contoso
-  5100224,Canisbay Primary School,1928-7-5,Canisbay Wick,01955 611337 Primary 56 3.5 Open
-  %C
-  %Q
+  5100925,Lybster Primary School,1863-7-7,Lybster Wick,721224 Primary Open
+  5100720,Keiss Primary School,1863-7-3,Keiss Wick Caithness,631269 Primary Open
  \end{verbatim}
 }
 
@@ -451,70 +381,19 @@ CSVファイルを標準入力により与えることで，実行する例を�
 
 {\fontsize{10pt}{11pt} \selectfont
  \begin{verbatim}
-　%P command is invoked with arg: 'contoso'
-　%C command is invoked with no arg
- \end{verbatim}
-}
-
-まず，入力データについて説明する．
-コマンドは\verb|%P|, \verb|%C|, \verb|%Q|の3つを記述している．
-また，このCSVファイルには2件のデータを保存しており，
-それぞれの項目はカンマで区切られている．
-\%Qコマンドはプログラムの終了を意味している．
-
-また今回はデータの登録のみをバックグラウンドで行っている．
-出力結果については，コマンド名とその引数を表示させている．
-
-%---------------------------------------------------------------%
-\subsubsection{第5回講義 (\texttt{\%C \%P}コマンド)}
-%---------------------------------------------------------------%
-
-第\ref{code:5}節に記述してあるプログラムを実行すると，
-プログラムの出力結果としてCSVデータの各項目が読みやすい形式で出力される．
-例えば，下記の \verb|stdin.csv| に対して，
-
-{\fontsize{10pt}{11pt} \selectfont
- \begin{verbatim}
-  5100046,The Bridge,1845-11-2,14 Seafield Road Longman Inverness,SEN Unit 2.0 Open
-  5100224,Canisbay Primary School,1928-7-5,Canisbay Wick,01955 611337 Primary 56 3.5 Open
-  %P 0
-  %P 2
-  %P -3
-  %C
-  %Q
- \end{verbatim}
-}
-
-\noindent
-以下のような出力が得られる．
-
-{\fontsize{10pt}{11pt} \selectfont
- \begin{verbatim}
-  Id    : 5100046
-  Name  : The Bridge
-  Birth : 1845-11-02
-  Addr. : 14 Seafield Road Longman Inverness
-  Comm. : SEN Unit 2.0 Open
-
   Id    : 5100224
   Name  : Canisbay Primary School
   Birth : 1928-07-05
   Addr. : Canisbay Wick
-  Comm. : 01955 611337 Primary 56 3.5 Open
+  Comm. : 611337 Primary Open
 
+  Id    : 5100127
+  Name  : Bower Primary School
+  Birth : 1908-01-19
+  Addr. : Bowermadden Bower Caithness
+  Comm. : 641225 Primary Open
 
-  Id    : 5100046
-  Name  : The Bridge
-  Birth : 1845-11-02
-  Addr. : 14 Seafield Road Longman Inverness
-  Comm. : SEN Unit 2.0 Open
-
-  Id    : 5100224
-  Name  : Canisbay Primary School
-  Birth : 1928-07-05
-  Addr. : Canisbay Wick
-  Comm. : 01955 611337 Primary 56 3.5 Open
-
+  5 profile(s)
 
   Id    : 5100046
   Name  : The Bridge
@@ -522,108 +401,41 @@ CSVファイルを標準入力により与えることで，実行する例を�
   Addr. : 14 Seafield Road Longman Inverness
   Comm. : SEN Unit 2.0 Open
 
-  Id    : 5100224
-  Name  : Canisbay Primary School
-  Birth : 1928-07-05
-  Addr. : Canisbay Wick
-  Comm. : 01955 611337 Primary 56 3.5 Open
-
-  2 profile(s)
- \end{verbatim}
-}
-
-まず，入力データについて説明する．
-コマンドは\verb|%P|, \verb|%C|, \verb|%Q|の3つを記述している．
-また，このCSVファイルには2件のデータを保存しており，
-それぞれの項目はカンマで区切られている．
-出力結果については，コマンド名とその引数を表示させている．
-
-\verb|%Q|コマンドはプログラムの終了を意味している．
-\verb|%P|コマンドでは，引数が0の場合・引数が要素数と同じ場合・引数の絶対値が要素数よりも多い場合の
-3通りを実行している．
-また\verb|%C|コマンドを実行すると，要素数が表示される．
-
-%---------------------------------------------------------------%
-\subsubsection{第6回講義 (最終コード)}
-%---------------------------------------------------------------%
-
-第\ref{code:6}節に記述してあるプログラムを実行すると，
-プログラムの出力結果としてCSVデータの各項目が読みやすい形式で出力される．
-例えば，下記の \verb|stdin.csv| に対して，
-
-{\fontsize{10pt}{11pt} \selectfont
- \begin{verbatim}
-  5100046,The Bridge,1845-11-2,14 Seafield Road Longman Inverness,SEN Unit 2.0 Open
-  5100224,Canisbay Primary School,1928-7-5,Canisbay Wick,01955 611337 Primary 56 3.5 Open
-  ...
-  8681040,St Francis Day Unit,1922-11-22,Cora Campus,01505 862899 Special 31 6.8 Open
-  %C
-  %P 0
-  %P 2892
-  %P -2893
-  %Q
+  Id    : 5100046
+  Name  : The Bridge
+  Birth : 1845-11-02
+  Addr. : 14 Seafield Road Longman Inverness
+  Comm. : SEN Unit 2.0 Open
  \end{verbatim}
 }
 
 \noindent
-以下のような出力が得られる．
+以下は，生成された\verb|stdout.csv|ファイルの中身である．
 
 {\fontsize{10pt}{11pt} \selectfont
  \begin{verbatim}
-  2892 profile(s)
-
-  Id    : 5100046
-  Name  : The Bridge
-  Birth : 1845-11-02
-  Addr. : 14 Seafield Road Longman Inverness
-  Comm. : SEN Unit 2.0 Open
-  ...
-  Id    : 8681040
-  Name  : St Francis Day Unit
-  Birth : 1922-11-22
-  Addr. : Cora Campus
-  Comm. : 01505 862899 Special 31 6.8 Open
-
-
-  Id    : 5100046
-  Name  : The Bridge
-  Birth : 1845-11-02
-  Addr. : 14 Seafield Road Longman Inverness
-  Comm. : SEN Unit 2.0 Open
-  ...
-  Id    : 8681040
-  Name  : St Francis Day Unit
-  Birth : 1922-11-22
-  Addr. : Cora Campus
-  Comm. : 01505 862899 Special 31 6.8 Open
-
-
-  Id    : 5100046
-  Name  : The Bridge
-  Birth : 1845-11-02
-  Addr. : 14 Seafield Road Longman Inverness
-  Comm. : SEN Unit 2.0 Open
-  ...
-  Id    : 8681040
-  Name  : St Francis Day Unit
-  Birth : 1922-11-22
-  Addr. : Cora Campus
-  Comm. : 01505 862899 Special 31 6.8 Open
-
+  5100046,The Bridge,1845-11-02,14 Seafield Road Longman Inverness,SEN Unit 2.0 Open
+  5100720,Keiss Primary School,1863-07-03,Keiss Wick Caithness,631269 Primary Open
+  5100925,Lybster Primary School,1863-07-07,Lybster Wick,721224 Primary Open
+  5100127,Bower Primary School,1908-01-19,Bowermadden Bower Caithness,641225 Primary Open
+  5100224,Canisbay Primary School,1928-07-05,Canisbay Wick,611337 Primary Open
  \end{verbatim}
 }
 
 まず，入力データについて説明する．
-コマンドは\verb|%P|, \verb|%C|, \verb|%Q|の3つを記述している．
-また，このCSVファイルには2892件のデータを保存しており，
+コマンドは\verb|%Q|, \verb|%C|, \verb|%P|, \verb|%R|, \verb|%W|, \verb|%F|,
+ \verb|%S|, \verb|%M|の全てを記述している．
+また，このCSVファイルから更に\verb|database.csv|ファイルのデータを読み込んでおり，
 それぞれの項目はカンマで区切られている．
-要素数を増やした際でも正常に動くかテストを行なったため，一部データを...で省略してある．
-また出力結果の整合性は，\verb|db-sample|の出力結果と，\verb|diff|コマンドを用いて確認してある．
+出力結果の整合性は，\verb|db-sample|の出力結果と，\verb|diff|コマンドを用いて確認してある．
 
-\verb|%Q|コマンドはプログラムの終了を意味している．
-\verb|%P|コマンドでは，引数が0の場合・引数が要素数と同じ場合・引数の絶対値が要素数よりも多い場合の
-3通りを実行している．
-また\verb|%C|コマンドを実行すると，要素数が表示される．
+処理内容は，データを2件登録，\verb|%P -2|コマンドで下から2件分表示，
+\verb|%R datastore.csv|コマンドで\verb|datastore.csv|ファイルの読み込み，更に1件登録，
+\verb|%C|コマンドで登録件数を表示，\verb|%S 3|コマンドで誕生日カラムで並び替え，
+\verb|%W stdout.csv|コマンドで\verb|stdout.csv|に登録データの書き出し，
+\verb|%F The Bridge|コマンドで\verb|The Bridge|をもつデータを表示，
+\verb|%M bridge|コマンドで\verb|bridge|文字列を含むデータを表示，
+\verb|%Q|コマンドで終了を行っている．
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -633,13 +445,16 @@ CSVファイルを標準入力により与えることで，実行する例を�
 \ref{sec:3}章のプログラムの説明，および，\ref{sec:4}章の使用法と実行結果から，
 演習課題として作成したプログラムが，
 \ref{sec:1}章で述べた基本要件と基本仕様のいずれも満たしていることを示した．
-ここでは，個別の課題のうち，以下の3つの項目について，考察を述べる．
+ここでは，個別の課題のうち，以下の6つの項目について，考察を述べる．
 
 \begin{enumerate}
 \setlength{\parskip}{2pt} \setlength{\itemsep}{2pt}
     \item 文字列操作の基礎：\verb|subst|関数と\verb|split|関数の実装
     \item 標準入力の取得と構文解析
     \item コマンドの実装：\verb|%P|コマンド
+    \item コマンドの実装：\verb|%R|コマンドと\verb|%W|コマンド
+    \item コマンドの実装：\verb|%S|コマンド
+    \item 独自コマンドの実装
 \end{enumerate}
 
 %--------------------------------------------------------------------%
@@ -648,22 +463,19 @@ CSVファイルを標準入力により与えることで，実行する例を�
 
 \subsubsection{「\texttt{subst}関数」に関する考察}
 
-ここでは\verb|subst|関数について考察を行う．練習問題の解答例を見てみると，
-\verb|main|関数内で複数の文字列を変換できるようにループさせており，
-また配列に保存した複数の文字を置換した結果も出力できるようにしてある．
-このことから，最終的に完成するプログラムでは，配列に保存された文字列を複数個
-\verb|subst|関数にかけるのではないかと考察できる．
-
-また，\verb|for|文で囲まれた部分に着目すると，
-他の言語での\verb|foreach|文に似たような動作をしていることがわかった．
+ここでは\verb|subst|関数について考察を行う．
+文字列の先頭にポインタを合わせて，その文字が置き換える対象の文字かどうか判断をして置換している．
+ポインタをインクリメントして文字を進めてゆき，終端ヌル文字で終了する．
+返り値は，置換した回数をカウントしておきその値とする．
 
 \subsubsection{「\texttt{split}関数」に関する考察}
 
 次に，\verb|split|関数についての考察を行う．
-今回工夫したところは，カンマを終端文字に置き換えることで，
-文字列の先頭にポインタを合わせることで一気に文字列をコピーできることである．
-その後，ポインタを終端ヌル文字の分1つ右へ移動させることで，次の文字列の文頭にポインタを移動している．
-
+メモリを削減するために，1つの文字列にそれぞれの要素のポインタをつけていく仕様にしてある．
+カンマを終端文字に置き換えることで，ポインタから終端文字までを1つの文字列とするため，
+別変数に要素をコピーをする必要もない．
+ポインタアドレスをコピーした後は，ポインタを終端ヌル文字の分1つ右へ移動させることで，
+次の文字列の文頭にポインタを移動している．
 
 %--------------------------------------------------------------------%
 \subsection{「標準入力の取得と構文解析」に関する考察}
@@ -673,16 +485,16 @@ CSVファイルを標準入力により与えることで，実行する例を�
 
 \verb|get_line|関数についての考察を行う．
 今回重要なポイントとなってくるところは，\verb|fgets|の最大文字数を1024ではなく1025に設定したところである．
-1024文字以上であることを確認するために，文字を1文字多く取得しそこに文字があるかで返り値を変えている．
-しかし，\verb|strlen|関数は終端文字をカウントしないので，\verb|strlen|関数の値が1025文字以上を含まないようにしている．
+もちろん，\verb|main|関数内で\verb|line|配列も1025文字にしているので，バッファオーバーフローを起こすことはない．
+\verb|strlen|関数などのC言語の関数は終端ヌル文字をカウントしないことが多いので，
+終端ヌル文字を別の文字に置き換えたりする場合でもエラーが起こらないように考慮した．
 
 \subsubsection{「\texttt{parse\_line}関数」に関する考察}
 
-\verb|parse_line|関数についての考察を行う．
+次に，\verb|parse_line|関数についての考察を行う．
 まずコマンドか否かの判別は，文字頭の値が\verb|%|で始まるかどうかで行っている．
-これは，データ入力の場合文字列の始めは\verb|[0-9]|で始まるので，上記の条件に含まれることはないからである．
-96行目では，ポインタの4文字目以降からヌル終端文字までを配列に格納している．
-
+これは，データ入力の場合文字列の始めは\verb|%|以外で始まるため，上記の条件に含まれることはないからである．
+658行目では，ポインタの4文字目以降からヌル終端文字までを配列に格納している．
 
 %--------------------------------------------------------------------%
 \subsection{コマンドの実装：\texttt{\%P}コマンド}
@@ -691,14 +503,79 @@ CSVファイルを標準入力により与えることで，実行する例を�
 \verb|cmd_print(CMD, PARAM)|関数についての考察を行う．
 まず，\verb|atoi()|関数で引数を\verb|int|型に変換する．
 引数が0の場合，正の場合，負の場合で条件分岐を行う．
-また，引数の絶対値が要素数よりも大きい場合は，要素数を用いて処理を行う．
+また，314行目$\cdot$ 330行目では，引数の絶対値が要素数よりも大きい場合は，要素数を用いて処理を行う．
 今回考慮するべきは，引数が入力されていない場合や数字以外が入力された場合であり，
 \verb|atoi()|関数ではそのような値に$0$という値を返すため
 \verb|db_sample|の仕様通りになる．
 
+%--------------------------------------------------------------------%
+\subsection{コマンドの実装：\texttt{\%R}コマンドと\texttt{\%W}コマンド}
+%--------------------------------------------------------------------%
+
+\subsubsection{「\texttt{cmd\_read}関数」に関する考察}
+
+\verb|cmd_read(CMD, PARAM)|関数についての考察を行う．
+まず，ファイルポインタ\verb|fp|に読み込みファイルのポインタをあわせ，ファイルが存在していれば続行する．
+これで\verb|fp|に情報が入っているので，\verb|get_line|関数で\verb|fp|から1行を読み取る処理に切り替わる．
+\verb|get_line|関数と\verb|parse_line|関数をループするところは\verb|main|関数と同じ動作である．
+
+\subsubsection{「\texttt{cmd\_write}関数」に関する考察}
+
+次に，\verb|cmd_read(CMD, PARAM)|関数についての考察を行う．
+ファイルポインタ\verb|fp|の取り扱いは\verb|cmd_read|関数と同じであり，ファイルが存在すれば上書き，または新規作成となる．
+\verb|fprintf|関数とは，1つ目の引数（この場合\verb|fp|）に2つ目の引数の文字列を書き込むという関数である．
+
+\verb|cmd_read|関数も\verb|cmd_write|関数も，ファイルが存在しない$\cdot$書き込み権限がない際の警告は
+標準エラー出力に書き出すようにしている．
+
+%--------------------------------------------------------------------%
+\subsection{コマンドの実装：\texttt{\%S}コマンド}
+%--------------------------------------------------------------------%
+
+\verb|cmd_sort(CMD, PARAM)|関数についての考察を行う．
+\verb|cmd_sort(CMD, PARAM)|関数では引数に応じて，\verb|switch|文で各クイックソート関数を呼び出している．
+各クイックソート関数では自身を再起的に呼び出し，並び替えが完了すると処理が終了する．
+
+また，誕生日カラムのクイックソートについて，日付の大小を比べるために\verb|compare_date(D1, D2)|関数を用意した．
+「年」の時点で大小が決まればその差を返し，もし同じだった場合には「月」を比べ，最終的には「日」の差を返す．
+そのため関数の返り値で判別するには，正の数が返れば\verb|d1|の方が大きく，$0$が返れば日付が一致，
+負の数が返れば\verb|d2|の方が大きいと処理する．
+
+%--------------------------------------------------------------------%
+\subsection{独自コマンドの実装}
+%--------------------------------------------------------------------%
+
+\verb|cmd_match(CMD, PARAM)|関数についての考察を行う．
+まずこの関数の475行目$\cdot$ 479行目で，探索するデータを1行に戻しておき，探索回数をできるだけ少なくするように工夫した．
+
+また，\verb|upper(STRING)|関数という，ポインタで渡された文字列を大文字に変換する関数を用意し，
+部分一致検索に用いる変数を全て通してある．
+これは検索時に大文字$\cdot$小文字関係なく入力できるようにするためである．
+
+あとこの関数内では，\verb|match(STRING, FIND)|関数に渡し\verb|true|が返った場合，そのデータを出力するだけである．
+
+\verb|match(STRING, FIND)|関数では，引数\verb|string| $\cdot$ \verb|find|を受け取る．
+これはそれぞれ，探索対象となる文字列と探し出したい文字列のポインタである．
+まず，251行目$\cdot$ 252行目でポインタのオリジナルを保存しておく．
+仕様としては，\verb|string|のポインタを1文字ずつ進めてゆき，\verb|find|の先頭文字と一致すれば
+\verb|string|と\verb|find|の両方のポインタを1文字ずらし，再び一致するかを繰り返していく．
+一致しなかった場合は\verb|find|ポインタが先頭に戻され，
+\verb|string|が終端ヌル文字まで到達かつ\verb|find|が終端ヌル文字まで到達していない場合，返り値$0$で終了する．
+\verb|find|が終端ヌル文字まで到達した場合は返り値$1$で終了する．
+
+ここで問題となるのが，\verb|string|がaabcd，\verb|find|がabcdの時である．
+2文字目が一致しないので，\verb|find|ポインタが先頭に戻されてしまう．
+そのため，非同期処理で（オリジナルの）\verb|find|文字列の1文字目が出てくるかの確認を随時行い，
+検出された場合はその文字を先頭とする文字列とオリジナルの\verb|find|で再起呼び出しを行う．
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{感想} \label{sec:6}
+\section{発展課題} \label{sec:6}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{感想} \label{sec:7}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 今回のプログラムでは，\verb|split()|関数で苦労した．
@@ -706,7 +583,7 @@ CSVファイルを標準入力により与えることで，実行する例を�
 配列\verb|ret|の\verb|max|番目の要素には模範解答のように
 残りの文字列をむりやり入れるような仕様にはしていなかった．
 
-\ref{code:7}節のコードのように，
+\ref{sec:8}章添付のコードのように，
 受け取った文字列\verb|str|をまず初めに\verb|subst()|関数にかけることで，
 カンマを全て終端\verb|NULL|文字に置き換え，ポインタを用いて一気に文字列を代入できる方法を思いついた．
 カンマを終端\verb|NULL|文字に置き換えるという発想自体は良かったのだが，
@@ -720,387 +597,28 @@ CSVファイルを標準入力により与えることで，実行する例を�
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{作成したプログラム} \label{sec:7}
+\section{作成したプログラム} \label{sec:8}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 作成したプログラムを以下に添付する．
 なお，\ref{sec:1}章に示した課題については，
 \ref{sec:4}章で示したようにすべて正常に動作したことを付記しておく．
 
-%---------------------------------------------------------------%
-\subsection{第1回 \texttt{subst}関数} \label{code:1}
-%---------------------------------------------------------------%
-
-\begin{Verbatim}[numbers=left, xleftmargin=10mm, numbersep=6pt,
-    fontsize=\small, baselinestretch=0.8]
-#include <stdio.h>
-
-int subst(char *str, char c1, char c2) {
-  int diff = 0;
-  char *p;
-
-  p = str;
-
-  while (*p != '\0') {
-    if (*p == c1) {
-      *p = c2;
-      diff++;
-    }
-    p++;
-  }
-
-  return diff;
-}
-
-int main(void) {
-  char c1 = 'A';
-  char c2 = 'B';
-  char s[80] = "ABCDE";
-
-  printf("文字列: %s\n置換文字: %c -> %c\n\n", s, c1, c2);
-  printf("実行結果: %s\n差分: %d\n", s, subst(s, c1, c2));
-}
-
-\end{Verbatim}
-
-%---------------------------------------------------------------%
-\subsection{第2回 \texttt{split}関数と\texttt{get\_line}関数} \label{code:2}
-%---------------------------------------------------------------%
-
-\begin{Verbatim}[numbers=left, xleftmargin=10mm, numbersep=6pt,
-    fontsize=\small, baselinestretch=0.8]
-#include <stdio.h>
-#include <string.h>
-
-int subst(char *str, char c1, char c2) {
-    int diff = 0;
-    char *p;
-
-    p = str;
-    while (*p != '\0') {
-        if (*p == c1) {
-            *p = c2;
-            diff++;
-        }
-        p++;
-    }
-    return diff;
-}
-
-int split(char *str, char *ret[], char sep, int max) {
-    int i, count = 0;
-    for (i=0; i<max; i++) {
-        ret[i] = str;
-        str += strlen(str)+1;
-        count++;
-    }
-    return count;
-}
-
-int get_line(char *line) {
-    if (fgets(line, 1026, stdin) == NULL || strlen(line) >1024 || *line == '\n') {
-        return 0;
-    } else {
-        subst(line, '\n', '\0');
-        subst(line, ',', '\0');
-        return 1;
-    }
-}
-
-int main(void) {
-    int i, count = 1, max = 5;
-    char line[1024] = {0};
-    char *ret[80] = {0};
-    char sep = ',';
-
-    while (get_line(line)) {
-        printf("Line%d\n", count++);
-        split(line, ret, sep, max);
-        for (i = 0; i < max; i++) {
-            printf(" >ret[%d] = '%s'\n", i, ret[i]);
-        }
-    }
-}
-
-\end{Verbatim}
-
-%---------------------------------------------------------------%
-\subsection{第3回 \texttt{parse\_line}関数} \label{code:3}
-%---------------------------------------------------------------%
-
 \begin{Verbatim}[numbers=left, xleftmargin=10mm, numbersep=6pt,
     fontsize=\small, baselinestretch=0.8]
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
-#define MAX_LINE_LEN 1024
+#define MAX_LINE_LEN 1024 /* Maximum characters per line */
 
-void cmd_quit(void) {
-    exit(0);
-}
-
-void cmd_check(char cmd) {
-    fprintf(stderr, "%%%c command is invoked with no arg\n", cmd);
-}
-
-void cmd_print(char cmd, char *param) {
-    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
-}
-
-void cmd_read(char cmd, char *param) {
-    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
-}
-
-void cmd_write(char cmd, char *param) {
-    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
-}
-
-void cmd_find(char cmd, char *param) {
-    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
-}
-
-void cmd_sort(char cmd, char *param) {
-    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
-}
-
-void exec_command(char cmd, char *param) {
-    switch (cmd) {
-        case 'Q': cmd_quit();   break;
-        case 'C': cmd_check(cmd);  break;
-        case 'P': cmd_print(cmd, param);  break;
-        case 'R': cmd_read(cmd, param);   break;
-        case 'W': cmd_write(cmd, param);  break;
-        case 'F': cmd_find(cmd, param);   break;
-        case 'S': cmd_sort(cmd, param);   break;
-        default:
-        printf("Unregistered Command Is Entered.\n");
-    }
-}
-
-int subst(char *str, char c1, char c2) {
-    int diff = 0;
-    char *p;
-
-    p = str;
-    while (*p != '\0') {
-        if (*p == c1) {
-            *p = c2;
-            diff++;
-        }
-        p++;
-    }
-    return diff;
-}
-
-int split(char *str, char *ret[], char sep, int max) {
-    int i, count = 0;
-    subst(str, sep, '\0');
-    for (i=0; i<max; i++) {
-        ret[i] = str;
-        str += strlen(str)+1;
-        count++;
-    }
-    return count;
-}
-
-int get_line(char *line) {
-    if (fgets(line, MAX_LINE_LEN + 1, stdin) == NULL || strlen(line) > MAX_LINE_LEN ||
-                                                                        *line == '\n') {
-        return 0;
-    } else {
-        subst(line, '\n', '\0');
-        return 1;
-    }
-}
-
-void new_profile(char *line) {
-    int i, max = 5;
-    char *ret[80] = {0}, sep = ',';
-    split(line, ret, sep, max);
-    for (i = 0; i < max; i++) {
-        printf(" >ret[%d] = '%s'\n", i, ret[i]);
-    }
-}
-
-void parse_line(char *line) {
-    char cmd, param[80] = {0};
-    if (*line == '%') {
-        cmd = *(line+1);
-        strcpy(param, line+3);
-        exec_command(cmd, param);
-    } else {
-        new_profile(line);
-    }
-}
-
-int main(void) {
-    char line[MAX_LINE_LEN + 1];
-    while (get_line(line)) {
-        parse_line(line);
-    }
-    return 0;
-}
-\end{Verbatim}
-
-%---------------------------------------------------------------%
-\subsection{第4回 \texttt{new\_profile}関数} \label{code:4}
-%---------------------------------------------------------------%
-
-\begin{Verbatim}[numbers=left, xleftmargin=10mm, numbersep=6pt,
-    fontsize=\small, baselinestretch=0.8]
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#define MAX_LINE_LEN 1024
-
-struct date {
-    int y;
-    int m;
-    int d;
-};
-
-struct profile {
-    int id;
-    char name[70];
-    struct date birthday;
-    char address[70];
-    char note[80];
-};
-
-int profile_data_nitems = 0;
-struct profile profile_data_store[10000];
-
-void cmd_quit(void) {
-    exit(0);
-}
-
-void cmd_check(char cmd) {
-    fprintf(stderr, "%%%c command is invoked with no arg\n", cmd);
-}
-
-void cmd_print(char cmd, char *param) {
-    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
-}
-
-void cmd_read(char cmd, char *param) {
-    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
-}
-
-void cmd_write(char cmd, char *param) {
-    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
-}
-
-void cmd_find(char cmd, char *param) {
-    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
-}
-
-void cmd_sort(char cmd, char *param) {
-    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
-}
-
-void exec_command(char cmd, char *param) {
-    switch (cmd) {
-        case 'Q': cmd_quit();   break;
-        case 'C': cmd_check(cmd);  break;
-        case 'P': cmd_print(cmd, param);  break;
-        case 'R': cmd_read(cmd, param);   break;
-        case 'W': cmd_write(cmd, param);  break;
-        case 'F': cmd_find(cmd, param);   break;
-        case 'S': cmd_sort(cmd, param);   break;
-        default:
-        printf("Unregistered Command Is Entered.\n");
-    }
-}
-
-int subst(char *str, char c1, char c2) {
-    int diff = 0;
-    char *p;
-
-    p = str;
-    while (*p != '\0') {
-        if (*p == c1) {
-            *p = c2;
-            diff++;
-        }
-        p++;
-    }
-    return diff;
-}
-
-int split(char *str, char *ret[], char sep, int max) {
-    int i, count = 0;
-    subst(str, sep, '\0');
-    for (i=0; i<max; i++) {
-        ret[i] = str;
-        str += strlen(str)+1;
-        count++;
-    }
-    return count;
-}
-
-int get_line(char *line) {
-    if (fgets(line, MAX_LINE_LEN + 1, stdin) == NULL || strlen(line) > MAX_LINE_LEN ||
-                                                                        *line == '\n') {
-        return 0;
-    } else {
-        subst(line, '\n', '\0');
-        return 1;
-    }
-}
-
-void new_profile(struct profile *profile_data_store, char *line) {
-    int max_line = 5, max_date = 3;
-    char *ret[80] = {0}, *date[80] = {0}, sep_line = ',', sep_date = '-';
-
-    split(line, ret, sep_line, max_line);
-    split(ret[2], date, sep_date, max_date);
-
-    profile_data_store->id = atoi(ret[0]);
-    strcpy(profile_data_store->name, ret[1]);
-
-    profile_data_store->birthday.y = atoi(date[0]);
-    profile_data_store->birthday.m = atoi(date[1]);
-    profile_data_store->birthday.d = atoi(date[2]);
-
-    strcpy(profile_data_store->address, ret[3]);
-    strcpy(profile_data_store->note, ret[4]);
-}
-
-void parse_line(char *line) {
-    char cmd, param[80] = {0};
-    if (*line == '%') {
-        cmd = *(line+1);
-        strcpy(param, line+3);
-        exec_command(cmd, param);
-    } else {
-        new_profile(&profile_data_store[profile_data_nitems++], line);
-    }
-}
-
-int main(void) {
-    char line[MAX_LINE_LEN + 1];
-    while (get_line(line)) {
-        parse_line(line);
-    }
-    return 0;
-}
-
-\end{Verbatim}
-
-%---------------------------------------------------------------%
-\subsection{第5回 \texttt{\%C \%P}コマンド} \label{code:5}
-%---------------------------------------------------------------%
-
-\begin{Verbatim}[numbers=left, xleftmargin=10mm, numbersep=6pt,
-    fontsize=\small, baselinestretch=0.8]
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#define MAX_LINE_LEN 1024
-
+/*
+Overview: Structure for specifying date.
+@type: {int} y - Year.
+@type: {int} m - Month.
+@type: {int} d - Day.
+*/
 struct date
 {
     int y;
@@ -1108,239 +626,14 @@ struct date
     int d;
 };
 
-struct profile
-{
-    int id;
-    char name[70];
-    struct date birthday;
-    char address[70];
-    char note[80];
-};
-
-int profile_data_nitems = 0;
-struct profile profile_data_store[10000];
-
-void cmd_quit(void)
-{
-    exit(0);
-}
-
-void cmd_check(char cmd)
-{
-    printf("%d profile(s)\n", profile_data_nitems);
-}
-
-void cmd_print(char cmd, char *param)
-{
-    int count, num = atoi(param);
-    if (num == 0) // 引数が0の場合
-    {
-        count = 0;
-        while (count < profile_data_nitems)
-        {
-            printf("Id    : %d\n", profile_data_store[count].id);
-            printf("Name  : %s\n", profile_data_store[count].name);
-            printf("Birth : %04d-%02d-%02d\n", profile_data_store[count].birthday.y,
-                profile_data_store[count].birthday.m, profile_data_store[count].birthday.d);
-            printf("Addr. : %s\n", profile_data_store[count].address);
-            printf("Comm. : %s\n\n", profile_data_store[count].note);
-            count++;
-        }
-    }
-    else if (num > 0) // 引数が正の場合
-    {
-        if (num > profile_data_nitems) // 要素数よりも大きい値が入力された場合
-            num = profile_data_nitems;
-        count = 0;
-        while (count < num)
-        {
-            printf("Id    : %d\n", profile_data_store[count].id);
-            printf("Name  : %s\n", profile_data_store[count].name);
-            printf("Birth : %04d-%02d-%02d\n", profile_data_store[count].birthday.y,
-                profile_data_store[count].birthday.m, profile_data_store[count].birthday.d);
-            printf("Addr. : %s\n", profile_data_store[count].address);
-            printf("Comm. : %s\n\n", profile_data_store[count].note);
-            count++;
-        }
-    }
-    else if (num < 0) // 引数が負の場合
-    {
-        if (num < -profile_data_nitems) // 要素数よりも大きい値が入力された場合
-            num = -profile_data_nitems;
-        count = profile_data_nitems + num;
-        while (count < profile_data_nitems)
-        {
-            printf("Id    : %d\n", profile_data_store[count].id);
-            printf("Name  : %s\n", profile_data_store[count].name);
-            printf("Birth : %04d-%02d-%02d\n", profile_data_store[count].birthday.y,
-                profile_data_store[count].birthday.m, profile_data_store[count].birthday.d);
-            printf("Addr. : %s\n", profile_data_store[count].address);
-            printf("Comm. : %s\n\n", profile_data_store[count].note);
-            count++;
-        }
-    }
-}
-
-void cmd_read(char cmd, char *param)
-{
-    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
-}
-
-void cmd_write(char cmd, char *param)
-{
-    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
-}
-
-void cmd_find(char cmd, char *param)
-{
-    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
-}
-
-void cmd_sort(char cmd, char *param)
-{
-    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
-}
-
-void exec_command(char cmd, char *param)
-{
-    switch (cmd)
-    {
-    case 'Q':
-        cmd_quit();
-        break;
-    case 'C':
-        cmd_check(cmd);
-        break;
-    case 'P':
-        cmd_print(cmd, param);
-        break;
-    case 'R':
-        cmd_read(cmd, param);
-        break;
-    case 'W':
-        cmd_write(cmd, param);
-        break;
-    case 'F':
-        cmd_find(cmd, param);
-        break;
-    case 'S':
-        cmd_sort(cmd, param);
-        break;
-    default:
-        printf("Unregistered Command Is Entered.\n");
-    }
-}
-
-int subst(char *str, char c1, char c2)
-{
-    int diff = 0;
-    char *p;
-
-    p = str; // 文字の先頭にポインタをあわせる
-    while (*p != '\0')
-    {
-        if (*p == c1)
-        {
-            *p = c2;
-            diff++;
-        }
-        p++;
-    }
-    return diff;
-}
-
-int split(char *str, char *ret[], char sep, int max)
-{
-    int i, count = 0;
-    subst(str, sep, '\0'); // カンマをNULL終端に置き換え
-    for (i = 0; i < max; i++)
-    {
-        ret[i] = str;
-        str += strlen(str) + 1;
-        count++;
-    }
-    return count;
-}
-
-int get_line(char *line)
-{
-    if (fgets(line, MAX_LINE_LEN + 1, stdin) == NULL || strlen(line) > MAX_LINE_LEN ||
-                                                                            *line == '\n')
-    {
-        return 0;
-    }
-    else
-    {
-        subst(line, '\n', '\0');
-        return 1;
-    }
-}
-
-void new_profile(struct profile *profile_data_store, char *line)
-{
-    int max_line = 5, max_date = 3;
-    char *ret[80] = {0}, *date[80] = {0}, sep_line = ',', sep_date = '-';
-
-    split(line, ret, sep_line, max_line);
-    split(ret[2], date, sep_date, max_date);
-
-    profile_data_store->id = atoi(ret[0]);
-    strcpy(profile_data_store->name, ret[1]);
-
-    profile_data_store->birthday.y = atoi(date[0]);
-    profile_data_store->birthday.m = atoi(date[1]);
-    profile_data_store->birthday.d = atoi(date[2]);
-
-    strcpy(profile_data_store->address, ret[3]);
-    strcpy(profile_data_store->note, ret[4]);
-}
-
-void parse_line(char *line)
-{
-    char cmd, param[80] = {0};
-    if (*line == '%')
-    {
-        cmd = *(line + 1);
-        strcpy(param, line + 3);
-        exec_command(cmd, param);
-    }
-    else
-    {
-        new_profile(&profile_data_store[profile_data_nitems++], line);
-    }
-}
-
-int main(void)
-{
-    char line[MAX_LINE_LEN + 1];
-    while (get_line(line))
-    {
-        parse_line(line);
-    }
-    return 0;
-}
-
-\end{Verbatim}
-
-%---------------------------------------------------------------%
-\subsection{第6回 最終コード} \label{code:6}
-%---------------------------------------------------------------%
-
-\begin{Verbatim}[numbers=left, xleftmargin=10mm, numbersep=6pt,
-    fontsize=\small, baselinestretch=0.8]
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#define MAX_LINE_LEN 1024
-
-struct date
-{
-    int y;
-    int m;
-    int d;
-};
-
+/*
+Overview: Structure for specifying user profiles.
+@type: {int} id - ID.
+@type: {char} name - Name.
+@type: {struct date} birthday - Birthday.
+@type: {char} address - Address.
+@type: {char} note - Others.
+*/
 struct profile
 {
     int id;
@@ -1350,23 +643,267 @@ struct profile
     char note[1024];
 };
 
+/*
+@type: {int} profile_data_nitems - Total number of registered items.
+@type: {struct profile} profile_data_store[] - For storing registered data.
+@type: {FILE *} fp - Pointer for writing/reading.
+*/
 int profile_data_nitems = 0;
 struct profile profile_data_store[10000];
+FILE *fp;
 
+int get_line(char *line);
+void parse_line(char *line);
+
+/*
+Overview: Swap elements in profile_data_store array.
+@argument: {struct profile*} source - Replacement source.
+@argument: {struct profile*} destination - Replace destination.
+@return: No return
+*/
+void swap(struct profile *source, struct profile *destination)
+{
+    struct profile tmp;
+
+    tmp = *source;
+    *source = *destination;
+    *destination = tmp;
+}
+
+/*
+Overview: Quick sort profile_data_store array by id column.
+@argument: {int} low - Left edge of quick sort.
+@argument: {int} high - Right edge of quick sort.
+@return: No return
+*/
+void quicksort_id(int low, int high)
+{
+    if (low < high)
+    {
+        int mid = (low + high) / 2;
+        int x = profile_data_store[mid].id;
+        int i = low;
+        int j = high;
+        while (i <= j)
+        {
+            while (profile_data_store[i].id < x)
+                i += 1;
+            while (profile_data_store[j].id > x)
+                j -= 1;
+            if (i <= j)
+                swap(&profile_data_store[i++], &profile_data_store[j--]);
+        }
+        quicksort_id(low, j);
+        quicksort_id(i, high);
+    }
+}
+
+/*
+Overview: Quick sort profile_data_store array by name column.
+@argument: {int} low - Left edge of quick sort.
+@argument: {int} high - Right edge of quick sort.
+@return: No return
+*/
+void quicksort_name(int low, int high)
+{
+    if (low < high)
+    {
+        int mid, i, j;
+        char x[70];
+        mid = (low + high) / 2;
+        strcpy(x, profile_data_store[mid].name);
+        i = low;
+        j = high;
+        while (i <= j)
+        {
+            while (strcmp(profile_data_store[i].name, x) < 0)
+                i += 1;
+            while (strcmp(profile_data_store[j].name, x) > 0)
+                j -= 1;
+            if (i <= j)
+                swap(&profile_data_store[i++], &profile_data_store[j--]);
+        }
+        quicksort_name(low, j);
+        quicksort_name(i, high);
+    }
+}
+
+/*
+Overview: Compares two dates and returns the difference.
+@argument: {struct date *} d1 - Date1.
+@argument: {struct date *} d2 - Date2.
+@return: {int} (Date1 - Date2) - Positive or negative or zero.
+*/
+int compare_date(struct date *d1, struct date *d2)
+{
+    if (d1->y != d2->y)
+        return d1->y - d2->y;
+    if (d1->m != d2->m)
+        return d1->m - d2->m;
+    return d1->d - d2->d;
+}
+
+/*
+Overview: Quick sort profile_data_store array by birthday column.
+@argument: {int} low - Left edge of quick sort.
+@argument: {int} high - Right edge of quick sort.
+@return: No return
+*/
+void quicksort_birthday(int low, int high)
+{
+    if (low < high)
+    {
+        int mid = (low + high) / 2;
+        struct date x = profile_data_store[mid].birthday;
+        int i = low;
+        int j = high;
+        while (i <= j)
+        {
+            while (compare_date(&profile_data_store[i].birthday, &x) < 0)
+                i += 1;
+            while (compare_date(&profile_data_store[j].birthday, &x) > 0)
+                j -= 1;
+            if (i <= j)
+                swap(&profile_data_store[i++], &profile_data_store[j--]);
+        }
+        quicksort_birthday(low, j);
+        quicksort_birthday(i, high);
+    }
+}
+
+/*
+Overview: Quick sort profile_data_store array by address column.
+@argument: {int} low - Left edge of quick sort.
+@argument: {int} high - Right edge of quick sort.
+@return: No return
+*/
+void quicksort_address(int low, int high)
+{
+    if (low < high)
+    {
+        int mid, i, j;
+        char x[70];
+        mid = (low + high) / 2;
+        strcpy(x, profile_data_store[mid].address);
+        i = low;
+        j = high;
+        while (i <= j)
+        {
+            while (strcmp(profile_data_store[i].address, x) < 0)
+                i += 1;
+            while (strcmp(profile_data_store[j].address, x) > 0)
+                j -= 1;
+            if (i <= j)
+                swap(&profile_data_store[i++], &profile_data_store[j--]);
+        }
+        quicksort_address(low, j);
+        quicksort_address(i, high);
+    }
+}
+
+/*
+Overview: Quick sort profile_data_store array by note column.
+@argument: {int} low - Left edge of quick sort.
+@argument: {int} high - Right edge of quick sort.
+@return: No return
+*/
+void quicksort_note(int low, int high)
+{
+    if (low < high)
+    {
+        int mid, i, j;
+        char x[1024];
+        mid = (low + high) / 2;
+        strcpy(x, profile_data_store[mid].note);
+        i = low;
+        j = high;
+        while (i <= j)
+        {
+            while (strcmp(profile_data_store[i].note, x) < 0)
+                i += 1;
+            while (strcmp(profile_data_store[j].note, x) > 0)
+                j -= 1;
+            if (i <= j)
+                swap(&profile_data_store[i++], &profile_data_store[j--]);
+        }
+        quicksort_note(low, j);
+        quicksort_note(i, high);
+    }
+}
+
+/*
+Overview: Converts lowercase letters to uppercase.
+@argument: {char *} string - The string to convert.
+@return: No return
+*/
+void upper(char *string)
+{
+    while (*string)
+    {
+        *string = toupper(*string);
+        string++;
+    }
+}
+
+/*
+Overview: Search by partial match.
+@argument: {char *} string - string to search.
+@argument: {char *} find - string to find.
+@return: No return
+*/
+int match(char *string, char *find)
+{
+    int i;
+    char *string_tmp, *find_tmp;
+
+    string_tmp = string;
+    find_tmp = find;
+
+    for (i = 0; i <= strlen(string); i++)
+    {
+        if (!*find_tmp)
+            return 1;
+        if (*string_tmp == *find && *string_tmp != *find_tmp)
+            if (match(string_tmp, find))
+                return 1;
+        if (*string_tmp == *find_tmp)
+            find_tmp++;
+        else
+            find_tmp = find;
+        string_tmp++;
+    }
+    return 0;
+}
+
+/*
+Overview: Exit the program.
+@return: No return
+*/
 void cmd_quit(void)
 {
     exit(0);
 }
 
+/*
+Overview: Output the number of registrations.
+@argument: {char} cmd - Command alphabet.
+@return: No return
+*/
 void cmd_check(char cmd)
 {
     printf("%d profile(s)\n", profile_data_nitems);
 }
 
+/*
+Overview: Output data according to argument.
+@argument: {char} cmd - Command alphabet.
+@argument: {char *} param - Command argument.
+@return: No return
+*/
 void cmd_print(char cmd, char *param)
 {
     int count, num = atoi(param);
-    if (num == 0) // 引数が0の場合
+    if (num == 0)
     {
         count = 0;
         while (count < profile_data_nitems)
@@ -1380,9 +917,9 @@ void cmd_print(char cmd, char *param)
             count++;
         }
     }
-    else if (num > 0) // 引数が正の場合
+    else if (num > 0)
     {
-        if (num > profile_data_nitems) // 要素数よりも大きい値が入力された場合
+        if (num > profile_data_nitems)
             num = profile_data_nitems;
         count = 0;
         while (count < num)
@@ -1396,9 +933,9 @@ void cmd_print(char cmd, char *param)
             count++;
         }
     }
-    else if (num < 0) // 引数が負の場合
+    else if (num < 0)
     {
-        if (num < -profile_data_nitems) // 要素数よりも大きい値が入力された場合
+        if (num < -profile_data_nitems)
             num = -profile_data_nitems;
         count = profile_data_nitems + num;
         while (count < profile_data_nitems)
@@ -1414,26 +951,168 @@ void cmd_print(char cmd, char *param)
     }
 }
 
+/*
+Overview: Read data and register in array.
+@argument: {char} cmd - Command alphabet.
+@argument: {char *} param - Command argument.
+@return: No return
+*/
 void cmd_read(char cmd, char *param)
 {
-    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
+    char line[MAX_LINE_LEN + 1];
+    fp = fopen(param, "r");
+    if (fp != NULL)
+    {
+        while (get_line(line))
+        {
+            parse_line(line);
+        }
+    }
+    else
+    {
+        fprintf(stderr, "Enterd file cannot be opened.\n");
+    }
+    fclose(fp);
 }
 
+/*
+Overview: Export registered data.
+@argument: {char} cmd - Command alphabet.
+@argument: {char *} param - Command argument.
+@return: No return
+*/
 void cmd_write(char cmd, char *param)
 {
-    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
+    int i;
+    fp = fopen(param, "w");
+    if (fp != NULL)
+    {
+        for (i = 0; i < profile_data_nitems; i++)
+        {
+            fprintf(fp, "%d,%s,%04d-%02d-%02d,%s,%s\n", profile_data_store[i].id,
+                profile_data_store[i].name, profile_data_store[i].birthday.y,
+                profile_data_store[i].birthday.m, profile_data_store[i].birthday.d,
+                profile_data_store[i].address, profile_data_store[i].note);
+        }
+    }
+    else
+    {
+        fprintf(stderr, "Enterd file cannot be opened.\n");
+    }
+    fclose(fp);
 }
 
+/*
+Overview: Search for matching data from registered data and output.
+@argument: {char} cmd - Command alphabet.
+@argument: {char *} param - Command argument.
+@return: No return
+*/
 void cmd_find(char cmd, char *param)
 {
-    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
+    int i;
+    char id_tmp[9];
+    char birthday_tmp[11];
+    struct profile *p;
+    for (i = 0; i < profile_data_nitems; i++)
+    {
+        p = &profile_data_store[i];
+        sprintf(id_tmp, "%d", p->id);
+        sprintf(birthday_tmp,"%04d-%02d-%02d", p->birthday.y, p->birthday.m, p->birthday.d);
+        if (
+            strcmp(id_tmp, param) == 0 ||
+            strcmp(p->name, param) == 0 ||
+            strcmp(birthday_tmp, param) == 0 ||
+            strcmp(p->address, param) == 0 ||
+            strcmp(p->note, param) == 0)
+        {
+            printf("Id    : %d\n", profile_data_store[i].id);
+            printf("Name  : %s\n", profile_data_store[i].name);
+            printf("Birth : %04d-%02d-%02d\n", profile_data_store[i].birthday.y,
+                profile_data_store[i].birthday.m, profile_data_store[i].birthday.d);
+            printf("Addr. : %s\n", profile_data_store[i].address);
+            printf("Comm. : %s\n\n", profile_data_store[i].note);
+        }
+    }
 }
 
+/*
+Overview: Specify the column with an argument and sort the registered data.
+@argument: {char} cmd - Command alphabet.
+@argument: {char *} param - Command argument.
+@return: No return
+*/
 void cmd_sort(char cmd, char *param)
 {
-    fprintf(stderr, "%%%c command is invoked with arg: '%s'\n", cmd, param);
+    switch (atoi(param))
+    {
+    case 1:
+        quicksort_id(0, profile_data_nitems - 1);
+        break;
+    case 2:
+        quicksort_name(0, profile_data_nitems - 1);
+        break;
+    case 3:
+        quicksort_birthday(0, profile_data_nitems - 1);
+        break;
+    case 4:
+        quicksort_address(0, profile_data_nitems - 1);
+        break;
+    case 5:
+        quicksort_note(0, profile_data_nitems - 1);
+        break;
+    default:
+        break;
+    }
 }
 
+/*
+Overview: Output partial match data in array.
+@argument: {char} cmd - Command alphabet.
+@argument: {char *} param - Command argument.
+@return: No return
+*/
+void cmd_match(char cmd, char *param)
+{
+    int i;
+    for (i = 0; i < profile_data_nitems; i++)
+    {
+        char string[2][1024];
+        char find[1024];
+
+        sprintf(string[0], "%d, %s, %d-%d-%d, %s, %s\n", profile_data_store[i].id,
+            profile_data_store[i].name, profile_data_store[i].birthday.y,
+            profile_data_store[i].birthday.m, profile_data_store[i].birthday.d,
+            profile_data_store[i].address, profile_data_store[i].note);
+        sprintf(string[1], "%d, %s, %d-%02d-%02d, %s, %s\n", profile_data_store[i].id,
+            profile_data_store[i].name, profile_data_store[i].birthday.y,
+            profile_data_store[i].birthday.m, profile_data_store[i].birthday.d,
+            profile_data_store[i].address, profile_data_store[i].note);
+
+        strcpy(find, param);
+
+        upper(string[0]);
+        upper(string[1]);
+        upper(find);
+
+        if (match(string[0], find) || match(string[1], find))
+        {
+            printf("Id    : %d\n", profile_data_store[i].id);
+            printf("Name  : %s\n", profile_data_store[i].name);
+            printf("Birth : %04d-%02d-%02d\n", profile_data_store[i].birthday.y,
+                profile_data_store[i].birthday.m, profile_data_store[i].birthday.d);
+            printf("Addr. : %s\n", profile_data_store[i].address);
+            printf("Comm. : %s\n\n", profile_data_store[i].note);
+        }
+    }
+}
+
+/*
+Overview: Calls functions when the command is input.
+@argument: {char} cmd - Command alphabet.
+@argument: {char *} param - Command argument.
+@return: No return
+*/
 void exec_command(char cmd, char *param)
 {
     switch (cmd)
@@ -1459,17 +1138,28 @@ void exec_command(char cmd, char *param)
     case 'S':
         cmd_sort(cmd, param);
         break;
+    case 'M':
+        cmd_match(cmd, param);
+        break;
     default:
+        fprintf(stderr, "Unregistered Command Is Entered.\n");
         break;
     }
 }
 
+/*
+Overview: Replaces c1 in the string with c2.
+@argument: {char *} str - String.
+@argument: {char} c1 - Replaced.
+@argument: {char} c2 - Replace.
+@return: {int} diff - Number of replacements.
+*/
 int subst(char *str, char c1, char c2)
 {
     int diff = 0;
     char *p;
 
-    p = str; // 文字の先頭にポインタをあわせる
+    p = str;
     while (*p != '\0')
     {
         if (*p == c1)
@@ -1482,6 +1172,14 @@ int subst(char *str, char c1, char c2)
     return diff;
 }
 
+/*
+Overview: Separate string by the specified number of characters/times.
+@argument: {char *} str - String.
+@argument: {char *} ret[] - Separated string.
+@argument: {char} sep - Delimiter.
+@argument: {int} max - Maximum number to divide.
+@return: Number of divisions
+*/
 int split(char *str, char *ret[], char sep, int max)
 {
     int count = 1;
@@ -1489,11 +1187,11 @@ int split(char *str, char *ret[], char sep, int max)
 
     while (*str)
     {
-        if (count >= max) // 規定値よりも多い時
+        if (count >= max)
             break;
         if (*str == sep)
         {
-            *str = '\0'; // NULL終端に置き換え
+            *str = '\0';
             ret[count++] = str + 1;
         }
         str++;
@@ -1502,10 +1200,19 @@ int split(char *str, char *ret[], char sep, int max)
     return count;
 }
 
+/*
+Overview: Get line from file or standard input.
+@argument: {char *} line - Full text.
+@return: Whether there is next line.
+*/
 int get_line(char *line)
 {
-    if (fgets(line, MAX_LINE_LEN + 1, stdin) == NULL || strlen(line) > MAX_LINE_LEN ||
-                                                                            *line == '\n')
+    if (fp != NULL && fgets(line, MAX_LINE_LEN + 1, fp) != NULL)
+    {
+        subst(line, '\n', '\0');
+        return 1;
+    }
+    if (fgets(line, MAX_LINE_LEN + 1, stdin) == NULL)
     {
         return 0;
     }
@@ -1516,10 +1223,21 @@ int get_line(char *line)
     }
 }
 
-void new_profile(struct profile *profile_data_store, char *line)
+/*
+Overview: New data registration.
+@argument: {struct profile *} profile_data_store - Pointer to store the new data.
+@argument: {char *} line - One line to register.
+@return: Successful or not.
+*/
+int new_profile(struct profile *profile_data_store, char *line)
 {
     int max_line = 5, max_date = 3;
     char *ret[80] = {0}, *date[80] = {0}, sep_line = ',', sep_date = '-';
+
+    if (split(line, ret, sep_line, max_line) != 5)
+    {
+        return -1;
+    }
 
     split(line, ret, sep_line, max_line);
     split(ret[2], date, sep_date, max_date);
@@ -1533,16 +1251,19 @@ void new_profile(struct profile *profile_data_store, char *line)
 
     strcpy(profile_data_store->address, ret[3]);
     strcpy(profile_data_store->note, ret[4]);
+    return 0;
 }
 
+/*
+Overview: Check new data registration or command.
+@argument: {char *} line - One line.
+@return: No return
+*/
 void parse_line(char *line)
 {
-    char cmd, param[80] = {0};
     if (*line == '%')
     {
-        cmd = *(line + 1);
-        strcpy(param, line + 3);
-        exec_command(cmd, param);
+        exec_command(line[1], &line[3]);
     }
     else
     {
@@ -1550,6 +1271,10 @@ void parse_line(char *line)
     }
 }
 
+/*
+Overview: Main function.
+@return: Successful or not.
+*/
 int main(void)
 {
     char line[MAX_LINE_LEN + 1];
@@ -1562,9 +1287,7 @@ int main(void)
 
 \end{Verbatim}
 
-%---------------------------------------------------------------%
-\subsection{\texttt{split}関数 (修正前)} \label{code:7}
-%---------------------------------------------------------------%
+添付コード
 
 \begin{Verbatim}[numbers=left, xleftmargin=10mm, numbersep=6pt,
     fontsize=\small, baselinestretch=0.8]
@@ -1580,7 +1303,6 @@ int split(char *str, char *ret[], char sep, int max)
     }
     return count;
 }
-
 \end{Verbatim}
 
 
