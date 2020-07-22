@@ -32,7 +32,7 @@ struct profile
     char name[70];
     struct date birthday;
     char address[70];
-    char note[1024];
+    char *note;
 };
 
 /*
@@ -621,6 +621,7 @@ int new_profile(struct profile *profile_data_store, char *line)
     split(ret[2], date, sep_date, max_date);
 
     profile_data_store->id = atoi(ret[0]);
+
     strcpy(profile_data_store->name, ret[1]);
 
     profile_data_store->birthday.y = atoi(date[0]);
@@ -628,6 +629,8 @@ int new_profile(struct profile *profile_data_store, char *line)
     profile_data_store->birthday.d = atoi(date[2]);
 
     strcpy(profile_data_store->address, ret[3]);
+
+    profile_data_store->note = (char *)malloc(sizeof(char) * (strlen(ret[4])+1));
     strcpy(profile_data_store->note, ret[4]);
     return 0;
 }
@@ -660,5 +663,6 @@ int main(void)
     {
         parse_line(line);
     }
+    // printf("sizeof(struct profile) = %ld\n", sizeof(struct profile));
     return 0;
 }
