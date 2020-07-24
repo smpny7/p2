@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <ctype.h>
 
 #define MAX_LINE_LEN 1024 /* Maximum characters per line */
@@ -38,14 +39,23 @@ struct profile
 /*
 @type: {int} profile_data_nitems - Total number of registered items.
 @type: {struct profile} profile_data_store[] - For storing registered data.
+@type: {struct profile} profile_data_store_ptr[] - For storing pointer data.
 @type: {FILE *} fp - Pointer for writing/reading.
 */
 int profile_data_nitems = 0;
 struct profile profile_data_store[10000];
+struct profile *profile_data_store_ptr[10000];
 FILE *fp;
 
 int get_line(char *line);
 void parse_line(char *line);
+
+void make_profile_shadow(struct profile data_store[], struct profile *shadow[], int size)
+{
+    int i;
+    for (i = 0; i < size; i++)
+        shadow[i] = &data_store[i];
+}
 
 /*
 Overview: Swap elements in profile_data_store array.
@@ -53,13 +63,13 @@ Overview: Swap elements in profile_data_store array.
 @argument: {struct profile*} destination - Replace destination.
 @return: No return
 */
-void swap(struct profile *source, struct profile *destination)
+void swap(struct profile source, struct profile destination)
 {
     struct profile tmp;
 
-    tmp = *source;
-    *source = *destination;
-    *destination = tmp;
+    tmp = source;
+    source = destination;
+    destination = tmp;
 }
 
 /*
@@ -73,17 +83,17 @@ void quicksort_id(int low, int high)
     if (low < high)
     {
         int mid = (low + high) / 2;
-        int x = profile_data_store[mid].id;
+        int x = profile_data_store_ptr[mid]->id;
         int i = low;
         int j = high;
         while (i <= j)
         {
-            while (profile_data_store[i].id < x)
+            while (profile_data_store_ptr[i]->id < x)
                 i += 1;
-            while (profile_data_store[j].id > x)
+            while (profile_data_store_ptr[j]->id > x)
                 j -= 1;
             if (i <= j)
-                swap(&profile_data_store[i++], &profile_data_store[j--]);
+                swap(*profile_data_store_ptr[i++], *profile_data_store_ptr[j--]);
         }
         quicksort_id(low, j);
         quicksort_id(i, high);
@@ -103,17 +113,17 @@ void quicksort_name(int low, int high)
         int mid, i, j;
         char x[70];
         mid = (low + high) / 2;
-        strcpy(x, profile_data_store[mid].name);
+        strcpy(x, profile_data_store_ptr[mid]->name);
         i = low;
         j = high;
         while (i <= j)
         {
-            while (strcmp(profile_data_store[i].name, x) < 0)
+            while (strcmp(profile_data_store_ptr[i]->name, x) < 0)
                 i += 1;
-            while (strcmp(profile_data_store[j].name, x) > 0)
+            while (strcmp(profile_data_store_ptr[j]->name, x) > 0)
                 j -= 1;
             if (i <= j)
-                swap(&profile_data_store[i++], &profile_data_store[j--]);
+                swap(*profile_data_store_ptr[i++], *profile_data_store_ptr[j--]);
         }
         quicksort_name(low, j);
         quicksort_name(i, high);
@@ -146,17 +156,17 @@ void quicksort_birthday(int low, int high)
     if (low < high)
     {
         int mid = (low + high) / 2;
-        struct date x = profile_data_store[mid].birthday;
+        struct date x = profile_data_store_ptr[mid]->birthday;
         int i = low;
         int j = high;
         while (i <= j)
         {
-            while (compare_date(&profile_data_store[i].birthday, &x) < 0)
+            while (compare_date(&profile_data_store_ptr[i]->birthday, &x) < 0)
                 i += 1;
-            while (compare_date(&profile_data_store[j].birthday, &x) > 0)
+            while (compare_date(&profile_data_store_ptr[j]->birthday, &x) > 0)
                 j -= 1;
             if (i <= j)
-                swap(&profile_data_store[i++], &profile_data_store[j--]);
+                swap(*profile_data_store_ptr[i++], *profile_data_store_ptr[j--]);
         }
         quicksort_birthday(low, j);
         quicksort_birthday(i, high);
@@ -176,17 +186,17 @@ void quicksort_address(int low, int high)
         int mid, i, j;
         char x[70];
         mid = (low + high) / 2;
-        strcpy(x, profile_data_store[mid].address);
+        strcpy(x, profile_data_store_ptr[mid]->address);
         i = low;
         j = high;
         while (i <= j)
         {
-            while (strcmp(profile_data_store[i].address, x) < 0)
+            while (strcmp(profile_data_store_ptr[i]->address, x) < 0)
                 i += 1;
-            while (strcmp(profile_data_store[j].address, x) > 0)
+            while (strcmp(profile_data_store_ptr[j]->address, x) > 0)
                 j -= 1;
             if (i <= j)
-                swap(&profile_data_store[i++], &profile_data_store[j--]);
+                swap(*profile_data_store_ptr[i++], *profile_data_store_ptr[j--]);
         }
         quicksort_address(low, j);
         quicksort_address(i, high);
@@ -206,17 +216,17 @@ void quicksort_note(int low, int high)
         int mid, i, j;
         char x[1024];
         mid = (low + high) / 2;
-        strcpy(x, profile_data_store[mid].note);
+        strcpy(x, profile_data_store_ptr[mid]->note);
         i = low;
         j = high;
         while (i <= j)
         {
-            while (strcmp(profile_data_store[i].note, x) < 0)
+            while (strcmp(profile_data_store_ptr[i]->note, x) < 0)
                 i += 1;
-            while (strcmp(profile_data_store[j].note, x) > 0)
+            while (strcmp(profile_data_store_ptr[j]->note, x) > 0)
                 j -= 1;
             if (i <= j)
-                swap(&profile_data_store[i++], &profile_data_store[j--]);
+                swap(*profile_data_store_ptr[i++], *profile_data_store_ptr[j--]);
         }
         quicksort_note(low, j);
         quicksort_note(i, high);
@@ -300,11 +310,11 @@ void cmd_print(char cmd, char *param)
         count = 0;
         while (count < profile_data_nitems)
         {
-            printf("Id    : %d\n", profile_data_store[count].id);
-            printf("Name  : %s\n", profile_data_store[count].name);
-            printf("Birth : %04d-%02d-%02d\n", profile_data_store[count].birthday.y, profile_data_store[count].birthday.m, profile_data_store[count].birthday.d);
-            printf("Addr. : %s\n", profile_data_store[count].address);
-            printf("Comm. : %s\n\n", profile_data_store[count].note);
+            printf("Id    : %d\n", profile_data_store_ptr[count]->id);
+            printf("Name  : %s\n", profile_data_store_ptr[count]->name);
+            printf("Birth : %04d-%02d-%02d\n", profile_data_store_ptr[count]->birthday.y, profile_data_store_ptr[count]->birthday.m, profile_data_store_ptr[count]->birthday.d);
+            printf("Addr. : %s\n", profile_data_store_ptr[count]->address);
+            printf("Comm. : %s\n\n", profile_data_store_ptr[count]->note);
             count++;
         }
     }
@@ -315,11 +325,11 @@ void cmd_print(char cmd, char *param)
         count = 0;
         while (count < num)
         {
-            printf("Id    : %d\n", profile_data_store[count].id);
-            printf("Name  : %s\n", profile_data_store[count].name);
-            printf("Birth : %04d-%02d-%02d\n", profile_data_store[count].birthday.y, profile_data_store[count].birthday.m, profile_data_store[count].birthday.d);
-            printf("Addr. : %s\n", profile_data_store[count].address);
-            printf("Comm. : %s\n\n", profile_data_store[count].note);
+            printf("Id    : %d\n", profile_data_store_ptr[count]->id);
+            printf("Name  : %s\n", profile_data_store_ptr[count]->name);
+            printf("Birth : %04d-%02d-%02d\n", profile_data_store_ptr[count]->birthday.y, profile_data_store_ptr[count]->birthday.m, profile_data_store_ptr[count]->birthday.d);
+            printf("Addr. : %s\n", profile_data_store_ptr[count]->address);
+            printf("Comm. : %s\n\n", profile_data_store_ptr[count]->note);
             count++;
         }
     }
@@ -330,11 +340,11 @@ void cmd_print(char cmd, char *param)
         count = profile_data_nitems + num;
         while (count < profile_data_nitems)
         {
-            printf("Id    : %d\n", profile_data_store[count].id);
-            printf("Name  : %s\n", profile_data_store[count].name);
-            printf("Birth : %04d-%02d-%02d\n", profile_data_store[count].birthday.y, profile_data_store[count].birthday.m, profile_data_store[count].birthday.d);
-            printf("Addr. : %s\n", profile_data_store[count].address);
-            printf("Comm. : %s\n\n", profile_data_store[count].note);
+            printf("Id    : %d\n", profile_data_store_ptr[count]->id);
+            printf("Name  : %s\n", profile_data_store_ptr[count]->name);
+            printf("Birth : %04d-%02d-%02d\n", profile_data_store_ptr[count]->birthday.y, profile_data_store_ptr[count]->birthday.m, profile_data_store_ptr[count]->birthday.d);
+            printf("Addr. : %s\n", profile_data_store_ptr[count]->address);
+            printf("Comm. : %s\n\n", profile_data_store_ptr[count]->note);
             count++;
         }
     }
@@ -378,7 +388,7 @@ void cmd_write(char cmd, char *param)
     {
         for (i = 0; i < profile_data_nitems; i++)
         {
-            fprintf(fp, "%d,%s,%04d-%02d-%02d,%s,%s\n", profile_data_store[i].id, profile_data_store[i].name, profile_data_store[i].birthday.y, profile_data_store[i].birthday.m, profile_data_store[i].birthday.d, profile_data_store[i].address, profile_data_store[i].note);
+            fprintf(fp, "%d,%s,%04d-%02d-%02d,%s,%s\n", profile_data_store_ptr[i]->id, profile_data_store_ptr[i]->name, profile_data_store_ptr[i]->birthday.y, profile_data_store_ptr[i]->birthday.m, profile_data_store_ptr[i]->birthday.d, profile_data_store_ptr[i]->address, profile_data_store_ptr[i]->note);
         }
     }
     else
@@ -402,7 +412,7 @@ void cmd_find(char cmd, char *param)
     struct profile *p;
     for (i = 0; i < profile_data_nitems; i++)
     {
-        p = &profile_data_store[i];
+        p = profile_data_store_ptr[i];
         sprintf(id_tmp, "%d", p->id);
         sprintf(birthday_tmp, "%04d-%02d-%02d", p->birthday.y, p->birthday.m, p->birthday.d);
         if (
@@ -412,11 +422,11 @@ void cmd_find(char cmd, char *param)
             strcmp(p->address, param) == 0 ||
             strcmp(p->note, param) == 0)
         {
-            printf("Id    : %d\n", profile_data_store[i].id);
-            printf("Name  : %s\n", profile_data_store[i].name);
-            printf("Birth : %04d-%02d-%02d\n", profile_data_store[i].birthday.y, profile_data_store[i].birthday.m, profile_data_store[i].birthday.d);
-            printf("Addr. : %s\n", profile_data_store[i].address);
-            printf("Comm. : %s\n\n", profile_data_store[i].note);
+            printf("Id    : %d\n", profile_data_store_ptr[i]->id);
+            printf("Name  : %s\n", profile_data_store_ptr[i]->name);
+            printf("Birth : %04d-%02d-%02d\n", profile_data_store_ptr[i]->birthday.y, profile_data_store_ptr[i]->birthday.m, profile_data_store_ptr[i]->birthday.d);
+            printf("Addr. : %s\n", profile_data_store_ptr[i]->address);
+            printf("Comm. : %s\n\n", profile_data_store_ptr[i]->note);
         }
     }
 }
@@ -465,8 +475,8 @@ void cmd_match(char cmd, char *param)
         char string[2][1024];
         char find[1024];
 
-        sprintf(string[0], "%d, %s, %d-%d-%d, %s, %s\n", profile_data_store[i].id, profile_data_store[i].name, profile_data_store[i].birthday.y, profile_data_store[i].birthday.m, profile_data_store[i].birthday.d, profile_data_store[i].address, profile_data_store[i].note);
-        sprintf(string[1], "%d, %s, %d-%02d-%02d, %s, %s\n", profile_data_store[i].id, profile_data_store[i].name, profile_data_store[i].birthday.y, profile_data_store[i].birthday.m, profile_data_store[i].birthday.d, profile_data_store[i].address, profile_data_store[i].note);
+        sprintf(string[0], "%d, %s, %d-%d-%d, %s, %s\n", profile_data_store_ptr[i]->id, profile_data_store_ptr[i]->name, profile_data_store_ptr[i]->birthday.y, profile_data_store_ptr[i]->birthday.m, profile_data_store_ptr[i]->birthday.d, profile_data_store_ptr[i]->address, profile_data_store_ptr[i]->note);
+        sprintf(string[1], "%d, %s, %d-%02d-%02d, %s, %s\n", profile_data_store_ptr[i]->id, profile_data_store_ptr[i]->name, profile_data_store_ptr[i]->birthday.y, profile_data_store_ptr[i]->birthday.m, profile_data_store_ptr[i]->birthday.d, profile_data_store_ptr[i]->address, profile_data_store_ptr[i]->note);
 
         strcpy(find, param);
 
@@ -476,11 +486,11 @@ void cmd_match(char cmd, char *param)
 
         if (match(string[0], find) || match(string[1], find))
         {
-            printf("Id    : %d\n", profile_data_store[i].id);
-            printf("Name  : %s\n", profile_data_store[i].name);
-            printf("Birth : %04d-%02d-%02d\n", profile_data_store[i].birthday.y, profile_data_store[i].birthday.m, profile_data_store[i].birthday.d);
-            printf("Addr. : %s\n", profile_data_store[i].address);
-            printf("Comm. : %s\n\n", profile_data_store[i].note);
+            printf("Id    : %d\n", profile_data_store_ptr[i]->id);
+            printf("Name  : %s\n", profile_data_store_ptr[i]->name);
+            printf("Birth : %04d-%02d-%02d\n", profile_data_store_ptr[i]->birthday.y, profile_data_store_ptr[i]->birthday.m, profile_data_store_ptr[i]->birthday.d);
+            printf("Addr. : %s\n", profile_data_store_ptr[i]->address);
+            printf("Comm. : %s\n\n", profile_data_store_ptr[i]->note);
         }
     }
 }
@@ -630,7 +640,7 @@ int new_profile(struct profile *profile_data_store, char *line)
 
     strcpy(profile_data_store->address, ret[3]);
 
-    profile_data_store->note = (char *)malloc(sizeof(char) * (strlen(ret[4])+1));
+    profile_data_store->note = (char *)malloc(sizeof(char) * (strlen(ret[4]) + 1));
     strcpy(profile_data_store->note, ret[4]);
     return 0;
 }
@@ -648,7 +658,7 @@ void parse_line(char *line)
     }
     else
     {
-        new_profile(&profile_data_store[profile_data_nitems++], line);
+        new_profile(profile_data_store_ptr[profile_data_nitems++], line);
     }
 }
 
@@ -658,11 +668,18 @@ Overview: Main function.
 */
 int main(void)
 {
+    clock_t start, end;
     char line[MAX_LINE_LEN + 1];
+
+    start = clock();
+    make_profile_shadow(profile_data_store, profile_data_store_ptr, 10000);
     while (get_line(line))
     {
         parse_line(line);
     }
-    // printf("sizeof(struct profile) = %ld\n", sizeof(struct profile));
+    end = clock();
+
+    printf("sizeof(struct profile) = %ld\n", sizeof(struct profile));
+    printf("%.5f seconds to finish\n", (double)(end - start) / CLOCKS_PER_SEC);
     return 0;
 }
