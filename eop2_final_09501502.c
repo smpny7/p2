@@ -3,8 +3,13 @@
 #include <string.h>
 #include <time.h>
 #include <ctype.h>
+#include <stdbool.h>
 
 #define MAX_LINE_LEN 1024 /* Maximum characters per line */
+
+bool show_size = false;    /* Whether to show size of struct */
+bool swap_pointer = false; /* Whether to use pointer in swap function */
+bool time_record = false;  /* Whether to record the time */
 
 /*
 Overview: Structure for specifying date.
@@ -58,18 +63,33 @@ void make_profile_shadow(struct profile data_store[], struct profile *shadow[], 
 }
 
 /*
+Overview: Swap elements in profile_data_store array using pointer.
+@argument: {struct profile*} source - Replacement source.
+@argument: {struct profile*} destination - Replace destination.
+@return: No return
+*/
+void swap_p(struct profile **source, struct profile **destination)
+{
+    struct profile *tmp;
+
+    tmp = *source;
+    *source = *destination;
+    *destination = tmp;
+}
+
+/*
 Overview: Swap elements in profile_data_store array.
 @argument: {struct profile*} source - Replacement source.
 @argument: {struct profile*} destination - Replace destination.
 @return: No return
 */
-void swap(struct profile source, struct profile destination)
+void swap(struct profile *source, struct profile *destination)
 {
     struct profile tmp;
 
-    tmp = source;
-    source = destination;
-    destination = tmp;
+    tmp = *source;
+    *source = *destination;
+    *destination = tmp;
 }
 
 /*
@@ -93,7 +113,12 @@ void quicksort_id(int low, int high)
             while (profile_data_store_ptr[j]->id > x)
                 j -= 1;
             if (i <= j)
-                swap(*profile_data_store_ptr[i++], *profile_data_store_ptr[j--]);
+                if (swap_pointer)
+                    swap_p(&profile_data_store_ptr[i++], &profile_data_store_ptr[j--]);
+                else
+                    swap(profile_data_store_ptr[i++], profile_data_store_ptr[j--]);
+            else
+                ;
         }
         quicksort_id(low, j);
         quicksort_id(i, high);
@@ -123,7 +148,12 @@ void quicksort_name(int low, int high)
             while (strcmp(profile_data_store_ptr[j]->name, x) > 0)
                 j -= 1;
             if (i <= j)
-                swap(*profile_data_store_ptr[i++], *profile_data_store_ptr[j--]);
+                if (swap_pointer)
+                    swap_p(&profile_data_store_ptr[i++], &profile_data_store_ptr[j--]);
+                else
+                    swap(profile_data_store_ptr[i++], profile_data_store_ptr[j--]);
+            else
+                ;
         }
         quicksort_name(low, j);
         quicksort_name(i, high);
@@ -166,7 +196,12 @@ void quicksort_birthday(int low, int high)
             while (compare_date(&profile_data_store_ptr[j]->birthday, &x) > 0)
                 j -= 1;
             if (i <= j)
-                swap(*profile_data_store_ptr[i++], *profile_data_store_ptr[j--]);
+                if (swap_pointer)
+                    swap_p(&profile_data_store_ptr[i++], &profile_data_store_ptr[j--]);
+                else
+                    swap(profile_data_store_ptr[i++], profile_data_store_ptr[j--]);
+            else
+                ;
         }
         quicksort_birthday(low, j);
         quicksort_birthday(i, high);
@@ -196,7 +231,12 @@ void quicksort_address(int low, int high)
             while (strcmp(profile_data_store_ptr[j]->address, x) > 0)
                 j -= 1;
             if (i <= j)
-                swap(*profile_data_store_ptr[i++], *profile_data_store_ptr[j--]);
+                if (swap_pointer)
+                    swap_p(&profile_data_store_ptr[i++], &profile_data_store_ptr[j--]);
+                else
+                    swap(profile_data_store_ptr[i++], profile_data_store_ptr[j--]);
+            else
+                ;
         }
         quicksort_address(low, j);
         quicksort_address(i, high);
@@ -226,7 +266,12 @@ void quicksort_note(int low, int high)
             while (strcmp(profile_data_store_ptr[j]->note, x) > 0)
                 j -= 1;
             if (i <= j)
-                swap(*profile_data_store_ptr[i++], *profile_data_store_ptr[j--]);
+                if (swap_pointer)
+                    swap_p(&profile_data_store_ptr[i++], &profile_data_store_ptr[j--]);
+                else
+                    swap(profile_data_store_ptr[i++], profile_data_store_ptr[j--]);
+            else
+                ;
         }
         quicksort_note(low, j);
         quicksort_note(i, high);
@@ -671,15 +716,28 @@ int main(void)
     clock_t start, end;
     char line[MAX_LINE_LEN + 1];
 
-    start = clock();
+    if (time_record)
+        start = clock();
+
     make_profile_shadow(profile_data_store, profile_data_store_ptr, 10000);
     while (get_line(line))
     {
         parse_line(line);
     }
-    end = clock();
 
-    printf("sizeof(struct profile) = %ld\n", sizeof(struct profile));
-    printf("%.5f seconds to finish\n", (double)(end - start) / CLOCKS_PER_SEC);
+    if (show_size)
+    {
+        printf("sizeof(struct profile) = %ld\n", sizeof(struct profile));
+        printf("sizeof(struct profile) = %ld\n", sizeof(struct profile *));
+        printf("sizeof(struct profile) = %ld\n", sizeof(profile_data_store));
+        printf("sizeof(struct profile) = %ld\n", sizeof(profile_data_store_ptr));
+    }
+
+    if (time_record)
+    {
+        end = clock();
+        printf("%.5f seconds to finish\n", (double)(end - start) / CLOCKS_PER_SEC);
+    }
+
     return 0;
 }

@@ -7,8 +7,8 @@
 \geometry{hmargin=25truemm,top=25truemm,bottom=25truemm,footskip=10truemm}
 
 \usepackage{graphicx}
-
 \usepackage{fancyvrb}
+\usepackage{subfigure}
 
 %%======== レポートタイトル等 ======================================%%
 \title{プログラミング演習2 \\
@@ -18,7 +18,7 @@
         学生番号: 09501502}
 
 \date{出題日: 2020年04月22日 \\
-      提出日: 2020年07月21日 \\
+      提出日: 2020年07月28日 \\
       締切日: 2020年07月29日 \\}
 
 %%======== 本文 ====================================================%%
@@ -151,7 +151,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 プログラムリストは\ref{sec:8}章に添付している．
-プログラムは全部で679行からなる．
+プログラムは全部で743行からなる．
 以下では，\ref{sec:1}節の課題ごとに，プログラムの主な構造について説明する．
 
 %--------------------------------------------------------------------%
@@ -159,8 +159,8 @@
 %--------------------------------------------------------------------%
 
 まず，汎用的な文字列操作関数として，
-\verb|subst()|関数を549--565行目で宣言し，
-\verb|split()|関数を575--593行目で宣言している．
+\verb|subst()|関数を590--606行目で宣言し，
+\verb|split()|関数を616--634行目で宣言している．
 また，これらの関数で利用するために，\verb|stdio.h|，\verb|string.h|のヘッダファイルを読み込んでいる．
 
 \verb|subst(STR, C1, C2)|関数は，
@@ -180,14 +180,14 @@
 %--------------------------------------------------------------------%
 
 本プログラムでは，構造体の配列に名簿データを格納していく．
-14--19行目で，\verb|date|構造体を定義し，
-29--36行目で，\verb|profile|構造体を定義している．
+20--25行目で，\verb|date|構造体を定義し，
+35--42行目で，\verb|profile|構造体を定義している．
 ID, 氏名, 誕生日, 住所, 備考の5つの組み合わせで1つの名簿データとなる．
 名簿データの誕生日の箇所については\verb|date|構造体を用い，年$\cdot$月$\cdot$日を\verb|int|型として別々に保存しておく．
 こうすることで，並び替えなどを行う際に効率よく実行ができる．
 
-そして，44行目の\verb|profile_data_store|変数で全名簿データを管理し，
-43行目の\verb|profile_data_nitems|変数で，名簿データの個数を管理している．
+そして，51行目の\verb|profile_data_store|変数で全名簿データを管理し，
+50行目の\verb|profile_data_nitems|変数で，名簿データの個数を管理している．
 
 %--------------------------------------------------------------------%
 \subsection{標準入力の取得と構文解析}
@@ -494,7 +494,7 @@ CSVファイルを標準入力により与えることで，実行する例を�
 次に，\verb|parse_line|関数についての考察を行う．
 まずコマンドか否かの判別は，文字頭の値が\verb|%|で始まるかどうかで行っている．
 これは，データ入力の場合文字列の始めは\verb|%|以外で始まるため，上記の条件に含まれることはないからである．
-658行目では，ポインタの4文字目以降からヌル終端文字までを配列に格納している．
+702行目では，ポインタの4文字目以降からヌル終端文字までを配列に格納している．
 
 %--------------------------------------------------------------------%
 \subsection{コマンドの実装：\texttt{\%P}コマンド}
@@ -503,10 +503,11 @@ CSVファイルを標準入力により与えることで，実行する例を�
 \verb|cmd_print(CMD, PARAM)|関数についての考察を行う．
 まず，\verb|atoi()|関数で引数を\verb|int|型に変換する．
 引数が0の場合，正の場合，負の場合で条件分岐を行う．
-また，314行目$\cdot$ 330行目では，引数の絶対値が要素数よりも大きい場合は，要素数を用いて処理を行う．
+また，368行目$\cdot$ 383行目では，引数の絶対値が要素数よりも大きい場合は，要素数を用いて処理を行う．
 今回考慮するべきは，引数が入力されていない場合や数字以外が入力された場合であり，
 \verb|atoi()|関数ではそのような値に$0$という値を返すため
 \verb|db_sample|の仕様通りになる．
+*参考文献\cite{web:atoi}
 
 %--------------------------------------------------------------------%
 \subsection{コマンドの実装：\texttt{\%R}コマンドと\texttt{\%W}コマンド}
@@ -534,7 +535,7 @@ CSVファイルを標準入力により与えることで，実行する例を�
 
 \verb|cmd_sort(CMD, PARAM)|関数についての考察を行う．
 \verb|cmd_sort(CMD, PARAM)|関数では引数に応じて，\verb|switch|文で各クイックソート関数を呼び出している．
-各クイックソート関数では自身を再起的に呼び出し，並び替えが完了すると処理が終了する．
+各クイックソート関数では自身を再起的に呼び出し，並び替えが完了すると処理が終了する．*参考文献\cite{book:algodata}
 
 また，誕生日カラムのクイックソートについて，日付の大小を比べるために\verb|compare_date(D1, D2)|関数を用意した．
 「年」の時点で大小が決まればその差を返し，もし同じだった場合には「月」を比べ，最終的には「日」の差を返す．
@@ -546,7 +547,7 @@ CSVファイルを標準入力により与えることで，実行する例を�
 %--------------------------------------------------------------------%
 
 \verb|cmd_match(CMD, PARAM)|関数についての考察を行う．
-まずこの関数の475行目$\cdot$ 479行目で，探索するデータを1行に戻しておき，探索回数をできるだけ少なくするように工夫した．
+まずこの関数の523行目$\cdot$ 524行目で，探索するデータを1行に戻しておき，探索回数をできるだけ少なくするように工夫した．
 
 また，\verb|upper(STRING)|関数という，ポインタで渡された文字列を大文字に変換する関数を用意し，
 部分一致検索に用いる変数を全て通してある．
@@ -556,7 +557,7 @@ CSVファイルを標準入力により与えることで，実行する例を�
 
 \verb|match(STRING, FIND)|関数では，引数\verb|string| $\cdot$ \verb|find|を受け取る．
 これはそれぞれ，探索対象となる文字列と探し出したい文字列のポインタである．
-まず，251行目$\cdot$ 252行目でポインタのオリジナルを保存しておく．
+まず，306行目$\cdot$ 307行目でポインタのオリジナルを保存しておく．
 仕様としては，\verb|string|のポインタを1文字ずつ進めてゆき，\verb|find|の先頭文字と一致すれば
 \verb|string|と\verb|find|の両方のポインタを1文字ずらし，再び一致するかを繰り返していく．
 一致しなかった場合は\verb|find|ポインタが先頭に戻され，
@@ -573,6 +574,178 @@ CSVファイルを標準入力により与えることで，実行する例を�
 \section{発展課題} \label{sec:6}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%--------------------------------------------------------------------%
+\subsection{ポインタや構造体のサイズ}
+%--------------------------------------------------------------------%
+
+構造体\verb|profile|内の\verb|note|カラムに\verb|malloc|関数を用いることで，
+構造体のサイズがどのくらい変わるのか，また，\verb|profile_data_store|をポインタにすることで
+どのくらい構造体のサイズが変わるのか検証してみた．
+
+まず，\verb|note|データを，\verb|malloc|関数を用いずにサイズ指定
+（今回は1行が1024文字までなので\verb|note[1024]|）というに宣言してみた[\ref{sec:8.2}]．
+\verb|sizeof|関数を用いて，\verb|struct profile|構造体のサイズと
+\verb|profile_data_store|のサイズを確認する．
+
+実行結果は以下の通りである．
+
+\begin{Verbatim}[numbers=left, xleftmargin=10mm, numbersep=6pt,
+    fontsize=\small, baselinestretch=0.8]
+    sizeof(struct profile) = 1184
+    sizeof(profile_data_store) = 11840000
+\end{Verbatim}
+
+\verb|struct profile|自体のサイズは1184であることが分かった．
+\verb|profile_data_store|は要素数10000の配列で宣言しているため，
+サイズはその10000倍になっていることがわかる．
+
+これを何気に使っていた\verb|malloc|関数でのデータ登録に変更すると，
+以下のような結果になる．
+
+\begin{Verbatim}[numbers=left, xleftmargin=10mm, numbersep=6pt,
+    fontsize=\small, baselinestretch=0.8]
+    sizeof(struct profile) = 168
+    sizeof(profile_data_store) = 1680000
+\end{Verbatim}
+
+値は1184から168と一気に小さくなった．
+私はこの差，1016という値について考察してみた．
+配列の要素数1024を取り除いたが，サイズが8だけ増加している．
+そこで以下の出力を行ってみた．
+
+\begin{Verbatim}[numbers=left, xleftmargin=10mm, numbersep=6pt,
+    fontsize=\small, baselinestretch=0.8]
+    sizeof(char *) = 8
+    sizeof(profile_data_store->note) = 8
+    sizeof(struct profile) = 168
+    sizeof(profile_data_store) = 1680000
+\end{Verbatim}
+
+これは，代わりに\verb|char|型のポインタを用意したために増加されたサイズであることが分かった．
+
+次に，\verb|profile_data_store|をポインタにすることで，
+どのくらい構造体のサイズが変わるのか検証してみた．
+
+\begin{Verbatim}[numbers=left, xleftmargin=10mm, numbersep=6pt,
+    fontsize=\small, baselinestretch=0.8]
+    sizeof(struct profile) = 168
+    sizeof(profile_data_store) = 1680000
+    sizeof(profile_data_store_ptr) = 80000
+\end{Verbatim}
+
+ポインタを使わない場合，1データ当たりのサイズ168を単純に10000個用意したサイズになっていたが，
+ポインタを使う場合，1データ当たりのサイズが8となり確保するメモリのサイズが小さくなることがわかった．
+
+\begin{Verbatim}[numbers=left, xleftmargin=10mm, numbersep=6pt,
+    fontsize=\small, baselinestretch=0.8]
+    sizeof(struct profile *) = 8
+\end{Verbatim}
+
+%--------------------------------------------------------------------%
+\subsection{パフォーマンスチューニング}
+%--------------------------------------------------------------------%
+
+次に，プログラムの実行速度を向上させるために，データの入れ替えをポインタを用いて行った．
+時間計測にてパフォーマンスの改善を検証する．プログラムは\ref{sec:8.2}節に記載してある．
+ここで注意しておきたいのが，C言語には\verb|clock()|と\verb|time()|の2種類が用意されてある．
+\verb|clock()|はプロセス実行時間であり，同時実行している他のプロセスによって左右されてしまうため，
+今回は\verb|time()|を用いて計測を行なっていきたいと思う．
+
+処理自体はすぐに終了してしまうので，とりあえずソートを100回ずつ行う処理で比較していきたいと思う．
+表\ref{tab:time100}は，処理をそれぞれ10回ずつ行ったときの平均値である．
+明らかにポインタを使ったデータ交換の方が早いことがわかる．
+
+小数では値が小さくなるほど数値の保証がされないので，1000回試行した結果も表\ref{tab:time1000}に記載しておく．
+
+%========================= COMMAND LIST ================================%
+\begin{table}[t]
+    \begin{minipage}[t]{.45\textwidth}
+        \centering
+        \begin{tabular}{|l|l|l|}
+            \hline
+            \textbf{} & \textbf{通常} & \textbf{ポインタ} \\
+            \hline\hline
+            1 & 0.12444 & 0.10045 \\
+            \hline
+            2 & 0.11758 & 0.10185 \\
+            \hline
+            3 & 0.11889 & 0.10426 \\
+            \hline
+            4 & 0.12075 & 0.09961 \\
+            \hline
+            5 & 0.11305 & 0.09916 \\
+            \hline
+            6 & 0.12596 & 0.09763 \\
+            \hline
+            7 & 0.12282 & 0.10317 \\
+            \hline
+            8 & 0.11239 & 0.10752 \\
+            \hline
+            9 & 0.12051 & 0.10188 \\
+            \hline
+            10 & 0.11715 & 0.09994 \\
+            \hline\hline
+            平均 & 0.11935 & 0.10155 \\
+            \hline
+        \end{tabular}
+    \caption{100回のソートにかかる時間}
+        \label{tab:time100}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{.45\textwidth}
+        \centering
+        \begin{tabular}{|l|l|l|}
+            \hline
+            \textbf{} & \textbf{通常} & \textbf{ポインタ} \\
+            \hline\hline
+            1 & 0.72817 & 0.59453 \\
+            \hline
+            2 & 0.72894 & 0.59216 \\
+            \hline
+            3 & 0.72037 & 0.59088 \\
+            \hline
+            4 & 0.70810 & 0.60655 \\
+            \hline
+            5 & 0.72486 & 0.62740 \\
+            \hline
+            6 & 0.74986 & 0.61127 \\
+            \hline
+            7 & 0.73831 & 0.60605 \\
+            \hline
+            8 & 0.74023 & 0.59776 \\
+            \hline
+            9 & 0.70818 & 0.61044 \\
+            \hline
+            10 & 0.71994 & 0.60842 \\
+            \hline\hline
+            平均 & 0.72670 & 0.60455 \\
+            \hline
+        \end{tabular}
+        \caption{1000回のソートにかかる時間}
+        \label{tab:time1000}
+    \end{minipage}
+\end{table}
+%========================= COMMAND LIST ================================%
+
+%--------------------------------------------------------------------%
+\subsection{不足機能の考察}
+%--------------------------------------------------------------------%
+
+不足機能として挙げられるのが，まずデータの削除を行うコマンドである．
+不要になった登録データや誤入力のデータを削除する必要性は出てくる．
+
+その実装方法について説明する．
+今回はリストではなく配列でデータの登録を行っているため，
+データを削除した後は配列を詰めていく必要がある．
+削除するデータより後のデータを1つずつ\verb|for|文で1つ前にコピーしてゆき，
+最後に\verb|profile_data_nitems|番目の値を初期化して，\verb|profile_data_nitems--|をすればよい．
+
+また，データベースを活用するのも非常に大きな手だと思う．
+\verb|MySQL|などのデータベースを扱うためのヘッダファイル\verb|mysql.h|なども用意されている *参考文献\cite{web:mysql}．
+CSVファイルは何かと扱いにくく，カンマを含めないなどの汎用性も低い．
+DBを活用することで入力値の正規化が必然となり，もちろん探索や挿入削除も高速に行えるため，
+\verb|.csv|ではなく\verb|.db|として扱うメリットは大きいと考える．
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{感想} \label{sec:7}
@@ -582,23 +755,31 @@ CSVファイルを標準入力により与えることで，実行する例を�
 私は最初，カンマ区切りの要素数よりも\verb|max|値の方が小さければ，
 配列\verb|ret|の\verb|max|番目の要素には模範解答のように
 残りの文字列をむりやり入れるような仕様にはしていなかった．
-
-\ref{sec:8}章添付のコードのように，
+\ref{sec:8.4}節添付のコードのように，
 受け取った文字列\verb|str|をまず初めに\verb|subst()|関数にかけることで，
-カンマを全て終端\verb|NULL|文字に置き換え，ポインタを用いて一気に文字列を代入できる方法を思いついた．
+カンマを全て終端\verb|NULL|文字に置き換え，ポインタを用いて一気に文字列を代入できる方法を実装した．
 カンマを終端\verb|NULL|文字に置き換えるという発想自体は良かったのだが，
 これだと仕様を満たしていなかったためテストを通過できなかった．
+また，その模範解答との優劣を比較できるほどの能力がないことを悔しく感じた．
+
+そしてデータ探索や整列など，普段何気なく使っている様々な言語のライブラリをいざアルゴリズムから考えて実装するとなると，
+ものすごくわくわくする気持ちがある反面，完全な例外対策やアルゴリズムを突き詰めて処理を高速化するなど，
+先人たちの努力の上にモジュールやパッケージなど使わせていただいてるんだなということが身に染みて感じた．
 
 また，C言語にもともと用意されている関数を使う場面も多く，
 リファレンスから行いたい処理をしてくれる関数を見つけ出す検索力も
 プログラミングには必要だなと感じた．
 希望する動作を行ってくれる関数を探し出す力，バグの原因と解決策を自分で見つけ出す力など，
-行く行くはプログラムを行なっていく際に自分で解決する力を養うことが今の僕たちには大切だなと感じた．
+行く行くはプログラムを行なっていく際に自分で解決する力を養うことが今の僕たちには大切だなと感じたた．
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{作成したプログラム} \label{sec:8}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%--------------------------------------------------------------------%
+\subsection{ソースコード} \label{sec:8.1}
+%--------------------------------------------------------------------%
 
 作成したプログラムを以下に添付する．
 なお，\ref{sec:1}章に示した課題については，
@@ -609,9 +790,15 @@ CSVファイルを標準入力により与えることで，実行する例を�
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include <ctype.h>
+#include <stdbool.h>
 
 #define MAX_LINE_LEN 1024 /* Maximum characters per line */
+
+bool show_size = false;    /* Whether to show size of struct */
+bool swap_pointer = false; /* Whether to use pointer in swap function */
+bool time_record = false;  /* Whether to record the time */
 
 /*
 Overview: Structure for specifying date.
@@ -640,20 +827,44 @@ struct profile
     char name[70];
     struct date birthday;
     char address[70];
-    char note[1024];
+    char *note;
 };
 
 /*
 @type: {int} profile_data_nitems - Total number of registered items.
 @type: {struct profile} profile_data_store[] - For storing registered data.
+@type: {struct profile} profile_data_store_ptr[] - For storing pointer data.
 @type: {FILE *} fp - Pointer for writing/reading.
 */
 int profile_data_nitems = 0;
 struct profile profile_data_store[10000];
+struct profile *profile_data_store_ptr[10000];
 FILE *fp;
 
 int get_line(char *line);
 void parse_line(char *line);
+
+void make_profile_shadow(struct profile data_store[], struct profile *shadow[], int size)
+{
+    int i;
+    for (i = 0; i < size; i++)
+        shadow[i] = &data_store[i];
+}
+
+/*
+Overview: Swap elements in profile_data_store array using pointer.
+@argument: {struct profile*} source - Replacement source.
+@argument: {struct profile*} destination - Replace destination.
+@return: No return
+*/
+void swap_p(struct profile **source, struct profile **destination)
+{
+    struct profile *tmp;
+
+    tmp = *source;
+    *source = *destination;
+    *destination = tmp;
+}
 
 /*
 Overview: Swap elements in profile_data_store array.
@@ -681,17 +892,22 @@ void quicksort_id(int low, int high)
     if (low < high)
     {
         int mid = (low + high) / 2;
-        int x = profile_data_store[mid].id;
+        int x = profile_data_store_ptr[mid]->id;
         int i = low;
         int j = high;
         while (i <= j)
         {
-            while (profile_data_store[i].id < x)
+            while (profile_data_store_ptr[i]->id < x)
                 i += 1;
-            while (profile_data_store[j].id > x)
+            while (profile_data_store_ptr[j]->id > x)
                 j -= 1;
             if (i <= j)
-                swap(&profile_data_store[i++], &profile_data_store[j--]);
+                if (swap_pointer)
+                    swap_p(&profile_data_store_ptr[i++], &profile_data_store_ptr[j--]);
+                else
+                    swap(profile_data_store_ptr[i++], profile_data_store_ptr[j--]);
+            else
+                ;
         }
         quicksort_id(low, j);
         quicksort_id(i, high);
@@ -711,17 +927,22 @@ void quicksort_name(int low, int high)
         int mid, i, j;
         char x[70];
         mid = (low + high) / 2;
-        strcpy(x, profile_data_store[mid].name);
+        strcpy(x, profile_data_store_ptr[mid]->name);
         i = low;
         j = high;
         while (i <= j)
         {
-            while (strcmp(profile_data_store[i].name, x) < 0)
+            while (strcmp(profile_data_store_ptr[i]->name, x) < 0)
                 i += 1;
-            while (strcmp(profile_data_store[j].name, x) > 0)
+            while (strcmp(profile_data_store_ptr[j]->name, x) > 0)
                 j -= 1;
             if (i <= j)
-                swap(&profile_data_store[i++], &profile_data_store[j--]);
+                if (swap_pointer)
+                    swap_p(&profile_data_store_ptr[i++], &profile_data_store_ptr[j--]);
+                else
+                    swap(profile_data_store_ptr[i++], profile_data_store_ptr[j--]);
+            else
+                ;
         }
         quicksort_name(low, j);
         quicksort_name(i, high);
@@ -754,17 +975,22 @@ void quicksort_birthday(int low, int high)
     if (low < high)
     {
         int mid = (low + high) / 2;
-        struct date x = profile_data_store[mid].birthday;
+        struct date x = profile_data_store_ptr[mid]->birthday;
         int i = low;
         int j = high;
         while (i <= j)
         {
-            while (compare_date(&profile_data_store[i].birthday, &x) < 0)
+            while (compare_date(&profile_data_store_ptr[i]->birthday, &x) < 0)
                 i += 1;
-            while (compare_date(&profile_data_store[j].birthday, &x) > 0)
+            while (compare_date(&profile_data_store_ptr[j]->birthday, &x) > 0)
                 j -= 1;
             if (i <= j)
-                swap(&profile_data_store[i++], &profile_data_store[j--]);
+                if (swap_pointer)
+                    swap_p(&profile_data_store_ptr[i++], &profile_data_store_ptr[j--]);
+                else
+                    swap(profile_data_store_ptr[i++], profile_data_store_ptr[j--]);
+            else
+                ;
         }
         quicksort_birthday(low, j);
         quicksort_birthday(i, high);
@@ -784,17 +1010,22 @@ void quicksort_address(int low, int high)
         int mid, i, j;
         char x[70];
         mid = (low + high) / 2;
-        strcpy(x, profile_data_store[mid].address);
+        strcpy(x, profile_data_store_ptr[mid]->address);
         i = low;
         j = high;
         while (i <= j)
         {
-            while (strcmp(profile_data_store[i].address, x) < 0)
+            while (strcmp(profile_data_store_ptr[i]->address, x) < 0)
                 i += 1;
-            while (strcmp(profile_data_store[j].address, x) > 0)
+            while (strcmp(profile_data_store_ptr[j]->address, x) > 0)
                 j -= 1;
             if (i <= j)
-                swap(&profile_data_store[i++], &profile_data_store[j--]);
+                if (swap_pointer)
+                    swap_p(&profile_data_store_ptr[i++], &profile_data_store_ptr[j--]);
+                else
+                    swap(profile_data_store_ptr[i++], profile_data_store_ptr[j--]);
+            else
+                ;
         }
         quicksort_address(low, j);
         quicksort_address(i, high);
@@ -814,17 +1045,22 @@ void quicksort_note(int low, int high)
         int mid, i, j;
         char x[1024];
         mid = (low + high) / 2;
-        strcpy(x, profile_data_store[mid].note);
+        strcpy(x, profile_data_store_ptr[mid]->note);
         i = low;
         j = high;
         while (i <= j)
         {
-            while (strcmp(profile_data_store[i].note, x) < 0)
+            while (strcmp(profile_data_store_ptr[i]->note, x) < 0)
                 i += 1;
-            while (strcmp(profile_data_store[j].note, x) > 0)
+            while (strcmp(profile_data_store_ptr[j]->note, x) > 0)
                 j -= 1;
             if (i <= j)
-                swap(&profile_data_store[i++], &profile_data_store[j--]);
+                if (swap_pointer)
+                    swap_p(&profile_data_store_ptr[i++], &profile_data_store_ptr[j--]);
+                else
+                    swap(profile_data_store_ptr[i++], profile_data_store_ptr[j--]);
+            else
+                ;
         }
         quicksort_note(low, j);
         quicksort_note(i, high);
@@ -908,12 +1144,11 @@ void cmd_print(char cmd, char *param)
         count = 0;
         while (count < profile_data_nitems)
         {
-            printf("Id    : %d\n", profile_data_store[count].id);
-            printf("Name  : %s\n", profile_data_store[count].name);
-            printf("Birth : %04d-%02d-%02d\n", profile_data_store[count].birthday.y,
-                profile_data_store[count].birthday.m, profile_data_store[count].birthday.d);
-            printf("Addr. : %s\n", profile_data_store[count].address);
-            printf("Comm. : %s\n\n", profile_data_store[count].note);
+            printf("Id    : %d\n", profile_data_store_ptr[count]->id);
+            printf("Name  : %s\n", profile_data_store_ptr[count]->name);
+            printf("Birth : %04d-%02d-%02d\n", profile_data_store_ptr[count]->birthday.y, profile_data_store_ptr[count]->birthday.m, profile_data_store_ptr[count]->birthday.d);
+            printf("Addr. : %s\n", profile_data_store_ptr[count]->address);
+            printf("Comm. : %s\n\n", profile_data_store_ptr[count]->note);
             count++;
         }
     }
@@ -924,12 +1159,11 @@ void cmd_print(char cmd, char *param)
         count = 0;
         while (count < num)
         {
-            printf("Id    : %d\n", profile_data_store[count].id);
-            printf("Name  : %s\n", profile_data_store[count].name);
-            printf("Birth : %04d-%02d-%02d\n", profile_data_store[count].birthday.y,
-                profile_data_store[count].birthday.m, profile_data_store[count].birthday.d);
-            printf("Addr. : %s\n", profile_data_store[count].address);
-            printf("Comm. : %s\n\n", profile_data_store[count].note);
+            printf("Id    : %d\n", profile_data_store_ptr[count]->id);
+            printf("Name  : %s\n", profile_data_store_ptr[count]->name);
+            printf("Birth : %04d-%02d-%02d\n", profile_data_store_ptr[count]->birthday.y, profile_data_store_ptr[count]->birthday.m, profile_data_store_ptr[count]->birthday.d);
+            printf("Addr. : %s\n", profile_data_store_ptr[count]->address);
+            printf("Comm. : %s\n\n", profile_data_store_ptr[count]->note);
             count++;
         }
     }
@@ -940,12 +1174,11 @@ void cmd_print(char cmd, char *param)
         count = profile_data_nitems + num;
         while (count < profile_data_nitems)
         {
-            printf("Id    : %d\n", profile_data_store[count].id);
-            printf("Name  : %s\n", profile_data_store[count].name);
-            printf("Birth : %04d-%02d-%02d\n", profile_data_store[count].birthday.y,
-                profile_data_store[count].birthday.m, profile_data_store[count].birthday.d);
-            printf("Addr. : %s\n", profile_data_store[count].address);
-            printf("Comm. : %s\n\n", profile_data_store[count].note);
+            printf("Id    : %d\n", profile_data_store_ptr[count]->id);
+            printf("Name  : %s\n", profile_data_store_ptr[count]->name);
+            printf("Birth : %04d-%02d-%02d\n", profile_data_store_ptr[count]->birthday.y, profile_data_store_ptr[count]->birthday.m, profile_data_store_ptr[count]->birthday.d);
+            printf("Addr. : %s\n", profile_data_store_ptr[count]->address);
+            printf("Comm. : %s\n\n", profile_data_store_ptr[count]->note);
             count++;
         }
     }
@@ -989,10 +1222,7 @@ void cmd_write(char cmd, char *param)
     {
         for (i = 0; i < profile_data_nitems; i++)
         {
-            fprintf(fp, "%d,%s,%04d-%02d-%02d,%s,%s\n", profile_data_store[i].id,
-                profile_data_store[i].name, profile_data_store[i].birthday.y,
-                profile_data_store[i].birthday.m, profile_data_store[i].birthday.d,
-                profile_data_store[i].address, profile_data_store[i].note);
+            fprintf(fp, "%d,%s,%04d-%02d-%02d,%s,%s\n", profile_data_store_ptr[i]->id, profile_data_store_ptr[i]->name, profile_data_store_ptr[i]->birthday.y, profile_data_store_ptr[i]->birthday.m, profile_data_store_ptr[i]->birthday.d, profile_data_store_ptr[i]->address, profile_data_store_ptr[i]->note);
         }
     }
     else
@@ -1016,9 +1246,9 @@ void cmd_find(char cmd, char *param)
     struct profile *p;
     for (i = 0; i < profile_data_nitems; i++)
     {
-        p = &profile_data_store[i];
+        p = profile_data_store_ptr[i];
         sprintf(id_tmp, "%d", p->id);
-        sprintf(birthday_tmp,"%04d-%02d-%02d", p->birthday.y, p->birthday.m, p->birthday.d);
+        sprintf(birthday_tmp, "%04d-%02d-%02d", p->birthday.y, p->birthday.m, p->birthday.d);
         if (
             strcmp(id_tmp, param) == 0 ||
             strcmp(p->name, param) == 0 ||
@@ -1026,12 +1256,11 @@ void cmd_find(char cmd, char *param)
             strcmp(p->address, param) == 0 ||
             strcmp(p->note, param) == 0)
         {
-            printf("Id    : %d\n", profile_data_store[i].id);
-            printf("Name  : %s\n", profile_data_store[i].name);
-            printf("Birth : %04d-%02d-%02d\n", profile_data_store[i].birthday.y,
-                profile_data_store[i].birthday.m, profile_data_store[i].birthday.d);
-            printf("Addr. : %s\n", profile_data_store[i].address);
-            printf("Comm. : %s\n\n", profile_data_store[i].note);
+            printf("Id    : %d\n", profile_data_store_ptr[i]->id);
+            printf("Name  : %s\n", profile_data_store_ptr[i]->name);
+            printf("Birth : %04d-%02d-%02d\n", profile_data_store_ptr[i]->birthday.y, profile_data_store_ptr[i]->birthday.m, profile_data_store_ptr[i]->birthday.d);
+            printf("Addr. : %s\n", profile_data_store_ptr[i]->address);
+            printf("Comm. : %s\n\n", profile_data_store_ptr[i]->note);
         }
     }
 }
@@ -1080,14 +1309,8 @@ void cmd_match(char cmd, char *param)
         char string[2][1024];
         char find[1024];
 
-        sprintf(string[0], "%d, %s, %d-%d-%d, %s, %s\n", profile_data_store[i].id,
-            profile_data_store[i].name, profile_data_store[i].birthday.y,
-            profile_data_store[i].birthday.m, profile_data_store[i].birthday.d,
-            profile_data_store[i].address, profile_data_store[i].note);
-        sprintf(string[1], "%d, %s, %d-%02d-%02d, %s, %s\n", profile_data_store[i].id,
-            profile_data_store[i].name, profile_data_store[i].birthday.y,
-            profile_data_store[i].birthday.m, profile_data_store[i].birthday.d,
-            profile_data_store[i].address, profile_data_store[i].note);
+        sprintf(string[0], "%d, %s, %d-%d-%d, %s, %s\n", profile_data_store_ptr[i]->id, profile_data_store_ptr[i]->name, profile_data_store_ptr[i]->birthday.y, profile_data_store_ptr[i]->birthday.m, profile_data_store_ptr[i]->birthday.d, profile_data_store_ptr[i]->address, profile_data_store_ptr[i]->note);
+        sprintf(string[1], "%d, %s, %d-%02d-%02d, %s, %s\n", profile_data_store_ptr[i]->id, profile_data_store_ptr[i]->name, profile_data_store_ptr[i]->birthday.y, profile_data_store_ptr[i]->birthday.m, profile_data_store_ptr[i]->birthday.d, profile_data_store_ptr[i]->address, profile_data_store_ptr[i]->note);
 
         strcpy(find, param);
 
@@ -1097,12 +1320,11 @@ void cmd_match(char cmd, char *param)
 
         if (match(string[0], find) || match(string[1], find))
         {
-            printf("Id    : %d\n", profile_data_store[i].id);
-            printf("Name  : %s\n", profile_data_store[i].name);
-            printf("Birth : %04d-%02d-%02d\n", profile_data_store[i].birthday.y,
-                profile_data_store[i].birthday.m, profile_data_store[i].birthday.d);
-            printf("Addr. : %s\n", profile_data_store[i].address);
-            printf("Comm. : %s\n\n", profile_data_store[i].note);
+            printf("Id    : %d\n", profile_data_store_ptr[i]->id);
+            printf("Name  : %s\n", profile_data_store_ptr[i]->name);
+            printf("Birth : %04d-%02d-%02d\n", profile_data_store_ptr[i]->birthday.y, profile_data_store_ptr[i]->birthday.m, profile_data_store_ptr[i]->birthday.d);
+            printf("Addr. : %s\n", profile_data_store_ptr[i]->address);
+            printf("Comm. : %s\n\n", profile_data_store_ptr[i]->note);
         }
     }
 }
@@ -1243,6 +1465,7 @@ int new_profile(struct profile *profile_data_store, char *line)
     split(ret[2], date, sep_date, max_date);
 
     profile_data_store->id = atoi(ret[0]);
+
     strcpy(profile_data_store->name, ret[1]);
 
     profile_data_store->birthday.y = atoi(date[0]);
@@ -1250,6 +1473,8 @@ int new_profile(struct profile *profile_data_store, char *line)
     profile_data_store->birthday.d = atoi(date[2]);
 
     strcpy(profile_data_store->address, ret[3]);
+
+    profile_data_store->note = (char *)malloc(sizeof(char) * (strlen(ret[4]) + 1));
     strcpy(profile_data_store->note, ret[4]);
     return 0;
 }
@@ -1267,7 +1492,7 @@ void parse_line(char *line)
     }
     else
     {
-        new_profile(&profile_data_store[profile_data_nitems++], line);
+        new_profile(profile_data_store_ptr[profile_data_nitems++], line);
     }
 }
 
@@ -1277,17 +1502,91 @@ Overview: Main function.
 */
 int main(void)
 {
+    clock_t start, end;
     char line[MAX_LINE_LEN + 1];
+
+    if (time_record)
+        start = clock();
+
+    make_profile_shadow(profile_data_store, profile_data_store_ptr, 10000);
     while (get_line(line))
     {
         parse_line(line);
     }
+
+    if (show_size)
+    {
+        printf("sizeof(struct profile) = %ld\n", sizeof(struct profile));
+        printf("sizeof(struct profile) = %ld\n", sizeof(struct profile *));
+        printf("sizeof(struct profile) = %ld\n", sizeof(profile_data_store));
+        printf("sizeof(struct profile) = %ld\n", sizeof(profile_data_store_ptr));
+    }
+
+    if (time_record)
+    {
+        end = clock();
+        printf("%.5f seconds to finish\n", (double)(end - start) / CLOCKS_PER_SEC);
+    }
+
     return 0;
 }
 
 \end{Verbatim}
 
-添付コード
+
+%--------------------------------------------------------------------%
+\subsection{ポインタや構造体のサイズ} \label{sec:8.2}
+%--------------------------------------------------------------------%
+
+データの備考欄を\verb|malloc|関数を使わずにサイズ指定を行う場合．
+
+\begin{Verbatim}[numbers=left, xleftmargin=10mm, numbersep=6pt,
+    fontsize=\small, baselinestretch=0.8]
+// Structure that does not use malloc function.
+struct profile
+{
+    int id;
+    char name[70];
+    struct date birthday;
+    char address[70];
+    char note[1024];
+};
+
+\end{Verbatim}
+
+\verb|profile_data_store|をポインタに変更．
+
+\begin{Verbatim}[numbers=left, xleftmargin=10mm, numbersep=6pt,
+    fontsize=\small, baselinestretch=0.8]
+void make_profile_shadow(struct profile data_store[], struct profile *shadow[], int size)
+{
+    int i;
+    for (i = 0; i < size; i++)
+        shadow[i] = &data_store[i];
+}
+
+\end{Verbatim}
+
+%--------------------------------------------------------------------%
+\subsection{パフォーマンスチューニング} \label{sec:8.3}
+%--------------------------------------------------------------------%
+
+\begin{Verbatim}[numbers=left, xleftmargin=10mm, numbersep=6pt,
+    fontsize=\small, baselinestretch=0.8]
+void swap_p(struct profile **source, struct profile **destination)
+{
+    struct profile *tmp;
+
+    tmp = *source;
+    *source = *destination;
+    *destination = tmp;
+}
+
+\end{Verbatim}
+
+%--------------------------------------------------------------------%
+\subsection{split関数の別実装} \label{sec:8.4}
+%--------------------------------------------------------------------%
 
 \begin{Verbatim}[numbers=left, xleftmargin=10mm, numbersep=6pt,
     fontsize=\small, baselinestretch=0.8]
@@ -1314,6 +1613,7 @@ int split(char *str, char *ret[], char sep, int max)
 \begin{thebibliography}{99}
   \bibitem{book:algodata} 平田富雄，アルゴリズムとデータ構造，森北出版，1990.
   \bibitem{web:atoi} C言語のatoiで出来ること, https://arma-search.jp/article/clanguage-atoi, 2020/05/20.
+  \bibitem{web:mysql} C言語からMySQL, https://tech.pjin.jp/blog/2017/08/20/mysql\_c\_windows5/, 2020/07/28.
 \end{thebibliography}
 
 %--------------------------------------------------------------------%
