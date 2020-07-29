@@ -5,6 +5,7 @@
 \RequirePackage{geometry}
 \geometry{reset,a4paper}
 \geometry{hmargin=25truemm,top=25truemm,bottom=25truemm,footskip=10truemm}
+% \geometry{showframe} % はみ出し確認用
 
 \usepackage{graphicx}
 \usepackage{fancyvrb}
@@ -230,7 +231,7 @@ ID, 氏名, 誕生日, 住所, 備考の5つの組み合わせで1つの名簿�
 %--------------------------------------------------------------------%
 
 \verb|cmd_print(CMD, PARAM)|関数内では，
-入力された引数が0, 正, 負であるかによって条件分岐される．
+入力された引数が0，正，負であるかによって条件分岐される．
 また，登録されている要素数の絶対値より大きい引数が入力された場合，
 要素数分の処理のみ実行する．
 また，出力のフォーマットは\verb|db_sample|と同じように揃えている．
@@ -1146,7 +1147,9 @@ void cmd_print(char cmd, char *param)
         {
             printf("Id    : %d\n", profile_data_store_ptr[count]->id);
             printf("Name  : %s\n", profile_data_store_ptr[count]->name);
-            printf("Birth : %04d-%02d-%02d\n", profile_data_store_ptr[count]->birthday.y, profile_data_store_ptr[count]->birthday.m, profile_data_store_ptr[count]->birthday.d);
+            printf("Birth : %04d-%02d-%02d\n", profile_data_store_ptr[count]->birthday.y,
+             profile_data_store_ptr[count]->birthday.m,
+             profile_data_store_ptr[count]->birthday.d);
             printf("Addr. : %s\n", profile_data_store_ptr[count]->address);
             printf("Comm. : %s\n\n", profile_data_store_ptr[count]->note);
             count++;
@@ -1161,7 +1164,9 @@ void cmd_print(char cmd, char *param)
         {
             printf("Id    : %d\n", profile_data_store_ptr[count]->id);
             printf("Name  : %s\n", profile_data_store_ptr[count]->name);
-            printf("Birth : %04d-%02d-%02d\n", profile_data_store_ptr[count]->birthday.y, profile_data_store_ptr[count]->birthday.m, profile_data_store_ptr[count]->birthday.d);
+            printf("Birth : %04d-%02d-%02d\n", profile_data_store_ptr[count]->birthday.y,
+             profile_data_store_ptr[count]->birthday.m,
+             profile_data_store_ptr[count]->birthday.d);
             printf("Addr. : %s\n", profile_data_store_ptr[count]->address);
             printf("Comm. : %s\n\n", profile_data_store_ptr[count]->note);
             count++;
@@ -1176,7 +1181,9 @@ void cmd_print(char cmd, char *param)
         {
             printf("Id    : %d\n", profile_data_store_ptr[count]->id);
             printf("Name  : %s\n", profile_data_store_ptr[count]->name);
-            printf("Birth : %04d-%02d-%02d\n", profile_data_store_ptr[count]->birthday.y, profile_data_store_ptr[count]->birthday.m, profile_data_store_ptr[count]->birthday.d);
+            printf("Birth : %04d-%02d-%02d\n", profile_data_store_ptr[count]->birthday.y,
+             profile_data_store_ptr[count]->birthday.m,
+             profile_data_store_ptr[count]->birthday.d);
             printf("Addr. : %s\n", profile_data_store_ptr[count]->address);
             printf("Comm. : %s\n\n", profile_data_store_ptr[count]->note);
             count++;
@@ -1222,7 +1229,10 @@ void cmd_write(char cmd, char *param)
     {
         for (i = 0; i < profile_data_nitems; i++)
         {
-            fprintf(fp, "%d,%s,%04d-%02d-%02d,%s,%s\n", profile_data_store_ptr[i]->id, profile_data_store_ptr[i]->name, profile_data_store_ptr[i]->birthday.y, profile_data_store_ptr[i]->birthday.m, profile_data_store_ptr[i]->birthday.d, profile_data_store_ptr[i]->address, profile_data_store_ptr[i]->note);
+            fprintf(fp, "%d,%s,%04d-%02d-%02d,%s,%s\n", profile_data_store_ptr[i]->id,
+             profile_data_store_ptr[i]->name, profile_data_store_ptr[i]->birthday.y,
+             profile_data_store_ptr[i]->birthday.m, profile_data_store_ptr[i]->birthday.d,
+             profile_data_store_ptr[i]->address, profile_data_store_ptr[i]->note);
         }
     }
     else
@@ -1248,7 +1258,7 @@ void cmd_find(char cmd, char *param)
     {
         p = profile_data_store_ptr[i];
         sprintf(id_tmp, "%d", p->id);
-        sprintf(birthday_tmp, "%04d-%02d-%02d", p->birthday.y, p->birthday.m, p->birthday.d);
+        sprintf(birthday_tmp,"%04d-%02d-%02d", p->birthday.y, p->birthday.m, p->birthday.d);
         if (
             strcmp(id_tmp, param) == 0 ||
             strcmp(p->name, param) == 0 ||
@@ -1258,7 +1268,8 @@ void cmd_find(char cmd, char *param)
         {
             printf("Id    : %d\n", profile_data_store_ptr[i]->id);
             printf("Name  : %s\n", profile_data_store_ptr[i]->name);
-            printf("Birth : %04d-%02d-%02d\n", profile_data_store_ptr[i]->birthday.y, profile_data_store_ptr[i]->birthday.m, profile_data_store_ptr[i]->birthday.d);
+            printf("Birth : %04d-%02d-%02d\n", profile_data_store_ptr[i]->birthday.y,
+             profile_data_store_ptr[i]->birthday.m, profile_data_store_ptr[i]->birthday.d);
             printf("Addr. : %s\n", profile_data_store_ptr[i]->address);
             printf("Comm. : %s\n\n", profile_data_store_ptr[i]->note);
         }
@@ -1309,8 +1320,14 @@ void cmd_match(char cmd, char *param)
         char string[2][1024];
         char find[1024];
 
-        sprintf(string[0], "%d, %s, %d-%d-%d, %s, %s\n", profile_data_store_ptr[i]->id, profile_data_store_ptr[i]->name, profile_data_store_ptr[i]->birthday.y, profile_data_store_ptr[i]->birthday.m, profile_data_store_ptr[i]->birthday.d, profile_data_store_ptr[i]->address, profile_data_store_ptr[i]->note);
-        sprintf(string[1], "%d, %s, %d-%02d-%02d, %s, %s\n", profile_data_store_ptr[i]->id, profile_data_store_ptr[i]->name, profile_data_store_ptr[i]->birthday.y, profile_data_store_ptr[i]->birthday.m, profile_data_store_ptr[i]->birthday.d, profile_data_store_ptr[i]->address, profile_data_store_ptr[i]->note);
+        sprintf(string[0], "%d, %s, %d-%d-%d, %s, %s\n", profile_data_store_ptr[i]->id,
+         profile_data_store_ptr[i]->name, profile_data_store_ptr[i]->birthday.y,
+         profile_data_store_ptr[i]->birthday.m, profile_data_store_ptr[i]->birthday.d,
+         profile_data_store_ptr[i]->address, profile_data_store_ptr[i]->note);
+        sprintf(string[1], "%d, %s, %d-%02d-%02d, %s, %s\n", profile_data_store_ptr[i]->id,
+         profile_data_store_ptr[i]->name, profile_data_store_ptr[i]->birthday.y,
+         profile_data_store_ptr[i]->birthday.m, profile_data_store_ptr[i]->birthday.d,
+         profile_data_store_ptr[i]->address, profile_data_store_ptr[i]->note);
 
         strcpy(find, param);
 
@@ -1322,7 +1339,8 @@ void cmd_match(char cmd, char *param)
         {
             printf("Id    : %d\n", profile_data_store_ptr[i]->id);
             printf("Name  : %s\n", profile_data_store_ptr[i]->name);
-            printf("Birth : %04d-%02d-%02d\n", profile_data_store_ptr[i]->birthday.y, profile_data_store_ptr[i]->birthday.m, profile_data_store_ptr[i]->birthday.d);
+            printf("Birth : %04d-%02d-%02d\n", profile_data_store_ptr[i]->birthday.y,
+             profile_data_store_ptr[i]->birthday.m, profile_data_store_ptr[i]->birthday.d);
             printf("Addr. : %s\n", profile_data_store_ptr[i]->address);
             printf("Comm. : %s\n\n", profile_data_store_ptr[i]->note);
         }
